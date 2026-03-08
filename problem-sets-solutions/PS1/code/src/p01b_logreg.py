@@ -42,7 +42,7 @@ class LogisticRegression(LinearModel):
             y: Training example labels. Shape (m,).
         """
         # *** START CODE HERE ***
-        
+
         # Init theta
         m, n = x.shape
         self.theta = np.zeros(n)
@@ -51,13 +51,16 @@ class LogisticRegression(LinearModel):
         while True:
             # Save old theta
             theta_old = np.copy(self.theta)
-            
+
             # Compute Hessian Matrix
             h_x = 1 / (1 + np.exp(-x.dot(self.theta)))
-            H = (x.T * h_x * (1 - h_x)).dot(x) / m
+            # H = (x.T * h_x * (1 - h_x)).dot(x) / m        # original
+            # mathematisch korrekte Notation:
+            S = np.diag(h_x * (1 - h_x))
+            H = x.T.dot(S).dot(x) / m       # äquivalent zu H = (x.T @ S @ x) / m
             gradient_J_theta = x.T.dot(h_x - y) / m
 
-            # Updata theta
+            # Update theta
             self.theta -= np.linalg.inv(H).dot(gradient_J_theta)
 
             # End training
@@ -76,7 +79,7 @@ class LogisticRegression(LinearModel):
             Outputs of shape (m,).
         """
         # *** START CODE HERE ***
-        
+
         return 1 / (1 + np.exp(-x.dot(self.theta)))
 
         # *** END CODE HERE ***

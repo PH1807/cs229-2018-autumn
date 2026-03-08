@@ -16,7 +16,7 @@ def main(train_path, eval_path, pred_path):
     x_train, y_train = util.load_dataset(train_path, add_intercept=False)
 
     # *** START CODE HERE ***
-    
+
     # Train GDA
     model = GDA()
     model.fit(x_train, y_train)
@@ -44,7 +44,7 @@ class GDA(LinearModel):
             theta: GDA model parameters.
         """
         # *** START CODE HERE ***
-        
+
         # Init theta
         m, n = x.shape
         self.theta = np.zeros(n+1)
@@ -58,9 +58,15 @@ class GDA(LinearModel):
 
         # Compute theta
         sigma_inv = np.linalg.inv(sigma)
+        """Anmerkung: normalweise würde (mu_0 -mu_1).T.dot(...) verwendet werden, aber mu_0 und mu_1 1D-Arrays sind (Shape (n,)), nicht 2D-Matrizen.
+            Bei einem 1D-Array hat .T keinen Effekt — NumPy interpretiert es als Zeilenvektor, und das Transponieren eines
+            Zeilenvektors wäre ein Spaltenvektor der Form (n, 1), aber NumPy macht bei 1D-Arrays gar nichts.
+            In der GDA-Formel ist das aber kein Problem, weil .dot() bei 1D-Arrays automatisch das Richtige tut: v.dot(A).dot(w)
+            wird als $v^T A w$ interpretiert, unabhängig davon ob .T steht oder nicht.
+        """
         self.theta[0] = 0.5 * (mu_0 + mu_1).dot(sigma_inv).dot(mu_0 - mu_1) - np.log((1 - phi) / phi)
         self.theta[1:] = sigma_inv.dot(mu_1 - mu_0)
-        
+
         # Return theta
         return self.theta
 
@@ -76,7 +82,7 @@ class GDA(LinearModel):
             Outputs of shape (m,).
         """
         # *** START CODE HERE ***
-        
+
         return 1 / (1 + np.exp(-x.dot(self.theta)))
 
         # *** END CODE HERE
