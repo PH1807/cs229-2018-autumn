@@ -1,0 +1,101 @@
+\hnheader[Online-Lernen: erst vorhersagen, dann das wahre Label sehen. Gezählt werden die Fehler.][Fehlerschranke $(D/\gamma)^2$ -- unabhängig von $n$ und $d$!]{Perceptron}{\& Online Learning}{Lernen aus einem Strom von Beispielen}
+\hnsrc{notes/cs229-notes6.pdf (Perceptron and large margin classifiers)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Online vs.\ Batch}
+\textbf{Batch}: Trainingsdaten vorab, danach Test.\\
+\textbf{Online}: Beispiele kommen nacheinander; für jedes $x^{(i)}$ wird zuerst vorhergesagt, dann $y^{(i)}$ enthüllt. Bewertung: \hlt{Gesamtzahl der Fehler}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Perceptron-Regel}
+$y\in\{-1,+1\}$, $h_\theta(x)=g(\theta\T x)$ mit $g(z)=+1$ für $z\ge0$, sonst $-1$.\\
+Update \emph{nur bei Fehler} ($\theta$ Gewichte, $x$ Merkmale, $y$ wahres Label):
+\[ \theta\leftarrow\theta+y\,x \]
+Lernrate egal (skaliert nur $\theta$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: ein Update}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[hnnavy,dashed] (.3,.3)--(3.6,2.7);
+  \draw[hnorange,thick] (.6,2.9)--(3.4,.2);
+  \draw[->,hnnavy,thick] (1.9,1.5)--(1.1,2.3) node[left,font=\tiny]{$\theta_{\mathrm{alt}}$};
+  \draw[->,hnorange,thick] (1.9,1.5)--(2.6,2.2) node[right,font=\tiny]{$\theta_{\mathrm{neu}}$};
+  \fill[hnpurple] (3.3,1.55) circle(.08) node[right,font=\tiny]{$x$ ($y{=}{+}1$)};
+  \draw[->,hnpurple] (1.1,2.3)--(2.1,2.75) node[above,font=\tiny]{$+yx$};
+  \node[font=\tiny,hnnavy] at (.9,.4) {alte Grenze};
+  \node[font=\tiny,hnorange] at (3,3) {neue Grenze};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Algorithmus}
+\begin{pcode}[Perceptron (online)]
+$\theta\leftarrow\vec0$\\
+\kw{for} $t=1,2,\ldots$ (Strom von Beispielen):\\
+\hii $\hat y\leftarrow\mathrm{sign}(\theta^{\top}x_t)$ \ \ \cm{\# Vorhersage}\\
+\hii \kw{if} $\hat y\ne y_t$:\ \ \cm{\# Label enthüllt}\\
+\hiii $\theta\leftarrow\theta+y_tx_t$\\
+\hiii mistakes $\leftarrow$ mistakes $+1$
+\end{pcode}
+Nicht-probabilistisch; passt sich bei jedem Fehler an. Trennbare Daten $\Rightarrow$ nach endlich vielen Fehlern fehlerfrei.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Satz von Block \& Novikoff (1962)}
+Gilt $\|x^{(i)}\|\le D$ und trennt ein Einheitsvektor $u$ die Daten mit Margin $\gamma$ ($y^{(i)}u\T x^{(i)}\ge\gamma$), macht der Perceptron höchstens $(D/\gamma)^2$ Fehler.\\
+\emph{Beweisidee} ($\theta^{(k)}$ = Parameter beim $k$-ten Fehler):
+\begin{itemize}
+\item $\theta^{(k+1)\top}u\ge k\gamma$ (wächst linear)
+\item $\|\theta^{(k+1)}\|^2\le kD^2$ (wächst höchstens linear)
+\item Cauchy--Schwarz: $k\gamma\le\sqrt kD\Rightarrow k\le(D/\gamma)^2$
+\end{itemize}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 2 Fehler, dann fertig}
+Folge: $(x_1{=}(1,2),y{=}-1)$, $(x_2{=}(2,1),y{=}+1)$, wiederholt. Start $\theta=(0,0)$.\\
+\hnsol\ (1) $\theta\T x_1=0\Rightarrow\hat y=+1\ne-1$: Fehler, $\theta=(-1,-2)$.\\
+(2) $\theta\T x_2=-4\Rightarrow\hat y=-1\ne+1$: Fehler, $\theta=(-1,-2)+(2,1)=(1,-1)$.\\
+(3) $x_1$: $-1\Rightarrow-1$ \checkmark \ (4) $x_2$: $+1\Rightarrow+1$ \checkmark\\
+Kontrolle: $D=\sqrt5$, $\gamma=1/\sqrt2$ $\Rightarrow(D/\gamma)^2=10\ge2$ \hlm{Schranke erfüllt}.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Verbindung zu anderen Kapiteln}
+\begin{itemize}
+\item \textbf{SVM}: gleiche Margin-Sprache, die Schranke wächst mit $1/\gamma^2$.
+\item \textbf{Kernel-Perceptron}: $\theta=\sum\beta_i\phi(x_i)$, Vorhersage über $K$ (Aufgabenblatt 2).
+\item \textbf{Logistische Regression}: ähnliche Regel, aber mit weichem $h$.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item extrem einfach \& schnell
+\item speichert nur $\theta$
+\item Fehlerschranke ohne $n,d$
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item nur bei Trennbarkeit sinnvoll
+\item kein Wahrscheinlichkeitsmodell
+\item Ergebnis hängt von Reihenfolge ab
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Update nur bei Fehler: $\theta\mathrel{+}=yx$
+\item Mistake Bound $(D/\gamma)^2$
+\item Bindeglied zu SVM \& Kernels
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wie lautet die Fehlerschranke?}{$\le(D/\gamma)^2$, unabhängig von $n$ und $d$.}{Wann ändert sich $\theta$?}{Nur bei Fehlklassifikation: $\theta\leftarrow\theta+yx$.}{Nicht trennbare Daten?}{Keine Konvergenz: es treten immer wieder Fehler auf.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Lerne nur aus deinen Fehlern -- und beweise, dass es nur endlich viele sind.“
+\end{hnbanner}
+\end{hngrid}

@@ -1,0 +1,57 @@
+\hnheader[AUROC als Wahrscheinlichkeit, $F_1$ als harmonisches Mittel und $R^2$ als Varianzzerlegung.][Kennzahlen sind Rechnungen -- man kann sie herleiten]{Klassifikations- \& Regressionsmetriken:}{Vertiefung}{Herleitung und Code}
+\hnsrc{section/evaluation\_metrics\_spring2020.pdf, hand-notes/ML Notes.pdf; Herleitungen ausformuliert; Code: code/sk\_metrics.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{AUROC $=P(S^+>S^-)$}
+Schwelle $t$: $\mathrm{TPR}(t)=P(S^+>t)$, $\mathrm{FPR}(t)=P(S^->t)$ mit Scores positiver/negativer Beispiele.
+\hnleg{$S^+,S^-$ Score eines zufälligen positiven bzw.\ negativen Beispiels, $t$ Entscheidungsschwelle, TPR/FPR Trefferrate/Fehlalarmrate, $f_{S^-}$ Dichte der Negativ-Scores, AUC Fläche unter der ROC-Kurve.}
+\begin{align*}
+\mathrm{AUC}&=\int\mathrm{TPR}\;d\mathrm{FPR}=\int P(S^+>t)\,f_{S^-}(t)\,dt\\
+&=\E_{S^-}\bigl[P(S^+>S^-)\bigr]=P(S^+>S^-)&&\why{$d\mathrm{FPR}=-f_{S^-}dt$}
+\end{align*}
+Empirisch: Anteil der (pos., neg.)-Paare mit $s^+>s^-$ (Gleichstand zählt $\frac12$) -- die \emph{Mann--Whitney-$U$-Statistik}. Nur das \emph{Ranking} zählt, deshalb unabhängig von der Prävalenz.
+\hnwords{AUROC ist die Wahrscheinlichkeit, dass ein zufälliges positives Beispiel einen höheren Score bekommt als ein zufälliges negatives.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{$F_1$ als harmonisches Mittel}
+\hnleg{$P$ Precision, $R$ Recall, $TP$, $FP$, $FN$ Anzahl richtig-positiver, falsch-positiver, falsch-negativer Vorhersagen.}
+\begin{align*}
+F_1&=\frac{2PR}{P+R},\quad P=\tfrac{TP}{TP+FP},\;R=\tfrac{TP}{TP+FN}\\
+&=\frac{2\,TP^2}{TP\,(2TP+FP+FN)}=\frac{2\,TP}{2\,TP+FP+FN}
+\end{align*}
+$TN$ kommt nicht vor. Harmonisch, weil es Ungleichgewicht bestraft: $P=1,\,R=0.1$ ergibt $F_1=0.18$, das arithmetische Mittel $0.55$.
+\hnwords{Das harmonische Mittel wird vom schlechteren Wert dominiert: ein guter Wert kann einen schlechten nicht ausgleichen.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{3}{$R^2\in[0,1]$ (OLS mit Achsenabschnitt)}
+\hnleg{$y_i$ Beobachtung, $\bar y$ deren Mittel, $\hat y_i$ Vorhersage, $e_i=y_i-\hat y_i$ Residuum; SST Gesamtstreuung, SSR erklärte Streuung, SSE unerklärte (Rest-)Streuung.}
+\begin{align*}
+\mathrm{SST}&=\textstyle\sum(y_i-\bar y)^2=\sum\bigl[(\hat y_i-\bar y)+(y_i-\hat y_i)\bigr]^2\\
+&=\mathrm{SSR}+\mathrm{SSE}+2\textstyle\sum(\hat y_i-\bar y)(y_i-\hat y_i)\\
+&=\mathrm{SSR}+\mathrm{SSE}\quad\why{Kreuzterm $=0$}
+\end{align*}
+Das Kreuzterm-Null folgt aus den Normalgleichungen ($X\T e=0$; $\mathbf 1$ ist Spalte $\Rightarrow\sum e_i=0$). Also $R^2=\frac{\mathrm{SSR}}{\mathrm{SST}}=1-\frac{\mathrm{SSE}}{\mathrm{SST}}$.
+\hnwords{$R^2$ ist der Anteil der Streuung von $y$, den das Modell erklärt.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: AUROC durch Paare zählen}
+10 positive, 10 negative Beispiele $\Rightarrow$ $100$ Paare (jedes positive mit jedem negativen).\\
+\hnsol\ Mit den Scores aus dem Code ergibt das Auszählen \ora{93.5} von 100 Paaren (Gleichstände halb) $\Rightarrow$ $\mathrm{AUROC}=0.935$ \hlm{(identisch zu \texttt{roc\_auc\_score})}.\\
+$F_1$: $TP=9$, $FP=2$, $FN=1$: $\frac{2\cdot9}{18+2+1}=\ora{0.857}$.
+\end{hnex}
+%
+\hnsnip[hnpurple]{sk_metrics}{Klassifikations- und Regressionsmetriken in scikit-learn}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{4}{Lesart der Ausgabe}
+\texttt{confusion\_matrix} liefert \emph{Zeilen $=$ Wahrheit} ($[[TN,FP],[FN,TP]]$), anders als die Tabellen in diesem Skript (Zeilen $=$ Vorhersage). Precision $0.82$, Recall $0.90$, $F_1=0.857$ entsprechen dem Beispiel oben; AUROC $0.935$ und AUPRC $0.939$ ändern sich nicht mit der Schwelle. Regression: MAE $0.54$, RMSE $0.557$, $R^2=0.874$ (Kapitel Regressionsmetriken).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Was ist AUROC als Wahrscheinlichkeit?}{$P(S^+>S^-)$ für zufällig gezogene positive/negative Beispiele (Mann--Whitney).}{Warum kommt $TN$ in $F_1$ nicht vor?}{$F_1=\frac{2TP}{2TP+FP+FN}$ -- $TN$ kürzt sich.}{Warum ist $R^2\ge0$ bei OLS mit Achsenabschnitt?}{$\mathrm{SST}=\mathrm{SSR}+\mathrm{SSE}$ mit verschwindendem Kreuzterm.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer eine Kennzahl herleiten kann, versteht, was sie nicht misst.“
+\end{hnbanner}
+\end{hngrid}

@@ -1,0 +1,93 @@
+\hnheader[Ohne Labels: finde Gruppen ähnlicher Punkte.][Jeder Schritt senkt $J$ -- aber nur bis zu einem \emph{lokalen} Minimum!]{K-Means}{Clustering}{Unüberwachtes Lernen: Zentroide alternierend anpassen}
+\hnsrc{main\_notes.pdf (Clustering), notes/cs229-notes7a.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Gegeben Daten $\{x^{(i)}\}$ \emph{ohne} Labels: teile sie in $K$ Cluster mit Mittelpunkten (Zentroiden) $\mu_1,\dots,\mu_K$, sodass Punkte nahe an ihrem Zentroid liegen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Zielfunktion}
+Summe der quadratischen Abstände zum zugewiesenen Zentroid:
+\[ J(c,\mu)=\sum_{i=1}^{n}\bigl\|x^{(i)}-\mu_{c^{(i)}}\bigr\|^2 \]
+$c^{(i)}\in\{1..K\}$: Clusterzuweisung von Punkt $i$, $\mu_k$: Zentroid von Cluster $k$, $n$: Anzahl Punkte. $J$ ist nicht konvex.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: 2 Cluster}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \foreach \x/\y in {.5/.7,.9/1.2,.6/1.6,1.1/.6,1.3/1.4}{\fill[hnorange] (\x,\y) circle(.06);}
+  \foreach \x/\y in {2.9/2.0,3.3/2.5,3.7/2.1,3.1/1.7,3.6/2.7}{\fill[hnpurple] (\x,\y) circle(.06);}
+  \node[star,star points=5,star point ratio=2.2,draw=hnorange,fill=hnorange!40,inner sep=1.5pt] at (.88,1.1) {};
+  \node[star,star points=5,star point ratio=2.2,draw=hnpurple,fill=hnpurple!40,inner sep=1.5pt] at (3.32,2.2) {};
+  \draw[dashed,hnnavy] (1.4,2.6)--(2.5,.5);
+  \node[font=\tiny] at (.88,.3) {$\mu_1$}; \node[font=\tiny] at (3.3,1.4) {$\mu_2$};
+  \node[font=\tiny,hnnavy] at (2.3,.25) {Grenze};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Algorithmus}
+\begin{pcode}[K-Means]
+initialisiere $\mu_1,\dots,\mu_K$ (z.\,B.\ zufällige Datenpunkte)\\
+\kw{repeat} bis sich nichts mehr ändert:\\
+\hii \cm{\# Zuweisung}\\
+\hii \kw{for} jedes $i$: $c^{(i)}\leftarrow\arg\min_k\|x^{(i)}-\mu_k\|^2$\\
+\hii \cm{\# Update}\\
+\hii \kw{for} jedes $k$: $\mu_k\leftarrow$ Mittel aller $x^{(i)}$ mit $c^{(i)}=k$
+\end{pcode}
+Beide Schritte senken $J$ $\Rightarrow$ Konvergenz zu einem (lokalen) Minimum.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Initialisierung \& Wahl von $K$}
+\textbf{K-Means++}: nächsten Startzentroid mit Wahrscheinlichkeit $\propto\|x-\mu_{\text{nächster}}\|^2$ ziehen (verteilt Startpunkte) $\Rightarrow$ meist bessere Lösung.\\
+Mehrere Neustarts, bestes $J$ behalten.\\
+$K$ ist Hyperparameter: \hlt{Ellenbogen-Methode} (Web/Praxis): $J(K)$ plotten, wo die Kurve knickt.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=4]{Beispiel: lokales Minimum in 1D}
+Daten $\{1,2,9,10,20\}$, $K=2$. \hnq\ Was passiert bei Start $\mu=(1,10)$ bzw.\ $\mu=(2,20)$?\\
+\hnsol\ \textbf{Start $(1,10)$:} $\{1,2\}\to\mu_1$; $\{9,10,20\}\to\mu_2$. Update: $\mu_1=1.5$, $\mu_2=13$. Zuweisung bleibt $\Rightarrow$ \emph{konvergiert}: $J=0.5+16+9+49=\ora{74.5}$.\\
+\textbf{Start $(2,20)$:} $\{1,2,9,10\}\to\mu_1$, $\{20\}\to\mu_2$: $\mu=(5.5,20)$, $J=20.25+12.25+12.25+20.25=\ora{65}$ \hlm{besser!}\\
+Gleiche Daten, andere Startwerte, unterschiedliches Ergebnis.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{6}{Vorteile}
+\begin{hnpro}
+\item einfach, schnell ($O(nKd)$ pro Runde)
+\item skaliert auf große Daten
+\item gut interpretierbar
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{7}{Grenzen}
+\begin{hncon}
+\item lokale Minima, Startabhängig
+\item $K$ muss gewählt werden
+\item nur kugelförmige, ähnlich große Cluster
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{8}{Key Takeaways}
+\begin{hnchk}
+\item alternieren: zuweisen / Mittel bilden
+\item $J$ fällt monoton
+\item K-Means++ \& Neustarts
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{9}{Querverweise}
+K-Means ist ein ``hartes'' EM mit kugelförmigen Gauß-Komponenten; weicher Nachfolger: Gauß-Gemisch (nächste Seite). Anwendungen: Segmentierung, Farbquantisierung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{+}{K-Means in der Praxis (aus den ML Notes)}
+Zielfunktion heißt auch \emph{WCSS/Inertia} (within-cluster sum of squares). \textbf{Ellenbogen}: WCSS über $K$ plotten. \textbf{Silhouette} je Punkt: $s=\frac{b-a}{\max(a,b)}\in[-1,1]$ ($a$ mittlerer Abstand im eigenen Cluster, $b$ zum nächsten anderen); Mittel nahe $1$ $=$ gut getrennt. sklearn: \texttt{n\_clusters}, \texttt{init=`k-means++'}, \texttt{n\_init} (Neustarts), \texttt{max\_iter}, \texttt{tol}. Vorher \emph{skalieren}; nicht geeignet für nichtkonvexe/verschieden große Cluster und kategoriale Daten. Einsatz: Kundensegmentierung, Bildkompression (Farbquantisierung), Anomalieerkennung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum konvergiert K-Means?}{Beide Schritte senken $J$; endlich viele Zuordnungen $\Rightarrow$ lokales Minimum.}{Was ist K-Means++?}{Startzentroide mit Wkt.\ $\propto$ Abstand$^2$ zum nächsten Zentroid.}{Wo ist K-Means schwach?}{Lokale Minima, $K$ nötig, nur kugelförmige Cluster.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Zuweisen, mitteln, wiederholen -- bis nichts mehr wackelt.“
+\end{hnbanner}
+\end{hngrid}

@@ -1,0 +1,94 @@
+\hnheader[Lernen heißt Optimieren: Konvexität, Gradient, Newton und Lagrange.][Konvexes Problem: jedes lokale Minimum ist global!]{Grundlagen:}{Optimierung}{Konvexität, Gradient Descent, Newton \& Lagrange}
+\hnsrc{Vorwissen zu CS229; angelehnt an section/cs229-cvxopt.pdf, section/cs229-cvxopt2.pdf und hand-notes/ML Notes.pdf (Gradient Descent)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Konvexität}
+$f$ konvex: $f(\lambda x+(1{-}\lambda)y)\le\lambda f(x)+(1{-}\lambda)f(y)$. Äquivalent: Hesse $\nabla^2f\succeq0$.\\
+\hlt{Lokales Minimum $=$ globales Minimum.} Konvex: Least Squares, logistische Verluste, SVM. Nicht konvex: neuronale Netze, K-Means, EM.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Gradient Descent}
+Bergab entlang des negativen Gradienten:
+\[ \theta_{t+1}=\theta_t-\alpha\,\nabla J(\theta_t) \]
+$\alpha$ = Lernrate. Der Gradient zeigt in Richtung des steilsten \emph{Anstiegs}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Lernrate}
+\centering
+\begin{tikzpicture}[scale=.66,>=Stealth]
+  \foreach \ox/\t/\c in {0/zu klein/hnblue!80!black, 3.2/passend/hngreen, 6.4/zu groß/hnred}{
+    \begin{scope}[shift={(\ox,0)}]
+      \draw[gray!70,thick,domain=-1.3:1.3,samples=30] plot(\x,{\x*\x});
+      \node[font=\tiny] at (0,-.5) {\t};
+    \end{scope}}
+  \foreach \x in {-1.2,-1.1,-1.0,-.9}{\fill[hnblue!80!black] (\x,{\x*\x}) circle(.05);}
+  \foreach \x/\y in {-1.2/1.44,-.5/.25,-.1/.01}{\fill[hngreen] ({3.2+\x},\y) circle(.06);}
+  \foreach \x/\y in {-1.0/1.0,1.2/1.44,-1.3/1.69}{\fill[hnred] ({6.4+\x},\y) circle(.06);}
+  \draw[hnred,->] (5.4,1.0)--(7.6,1.44);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Varianten \& Algorithmus}
+\begin{pcode}[Gradient Descent (Batch / SGD / Mini-Batch)]
+\kw{init} $\theta$;\; \kw{repeat} bis Konvergenz:\\
+\hii wähle Datenmenge $\mathcal B$:\\
+\hiii Batch: alle $n$; \ SGD: 1 Beispiel; \ Mini-Batch: $B$\\
+\hii $g\leftarrow\frac1{|\mathcal B|}\sum_{i\in\mathcal B}\nabla J^{(i)}(\theta)$\\
+\hii $\theta\leftarrow\theta-\alpha\,g$
+\end{pcode}
+Batch: stabil, teuer. SGD: billig, verrauscht (entkommt flachen Stellen). Mini-Batch: Standard im Deep Learning.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Konvergenz \& Praxis}
+Für $J(\theta)=\frac12\theta\T H\theta$ konvergiert GD, wenn $\alpha<2/\lambda_{\max}(H)$; Geschwindigkeit hängt an der Konditionszahl $\lambda_{\max}/\lambda_{\min}$.\\
+\hlt{Features standardisieren} $\Rightarrow$ rundere Höhenlinien $\Rightarrow$ schnellere Konvergenz. Lernrate wählen: erst groß, dann abklingen lassen (Schedules); Verlust über die Iterationen plotten.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: GD auf $f(x)=x^2$, $x_0=4$}
+Gradient $f'(x)=2x$, Update $x\leftarrow x-2\alpha x=(1-2\alpha)x$.\\
+\hnsol\ $\alpha=0.1$: $x_k=4\cdot0.8^k$: $3.2,\,2.56,\,2.05,\dots\to0$ \hlm{konvergiert}.\\
+$\alpha=1.1$: Faktor $-1.2$: $x_1=-4.8$, $x_2=5.76,\dots$ \hlp{divergiert} ($|1-2\alpha|>1$).\\
+$\alpha=0.5$: $x_1=0$ -- in einem Schritt am Ziel (nur bei diesem Quadrat).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Newton-Verfahren}
+Zweite Ordnung: $\theta\leftarrow\theta-H^{-1}\nabla J$ ($H$ = Hesse). Für quadratische $J$ in \emph{einem} Schritt am Ziel; sonst quadratische Konvergenz nahe dem Optimum. Kosten $O(d^3)$ pro Schritt. Beispiel $f=x^2-4x$: $f'=2x-4$, $f''=2$, $x_1=x_0-\frac{2x_0-4}{2}=2$ (Minimum) für \emph{jedes} $x_0$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{7}{Lagrange \& KKT (Nebenbedingungen)}
+$\min f(x)$ s.t.\ $g(x)\le0$: $\mathcal L=f+\alpha g$, $\alpha\ge0$. KKT: Zulässigkeit, $\alpha\ge0$, \emph{Complementary Slackness} $\alpha g=0$, $\nabla_x\mathcal L=0$.\\
+\emph{Beispiel} $\min x^2$ s.t.\ $1-x\le0$: $\mathcal L=x^2+\alpha(1-x)$, $x=\alpha/2$, Dual $g(\alpha)=\alpha-\alpha^2/4$, max bei $\alpha^*=2$, $x^*=1$, Wert $1$ (Primal $=$ Dual).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Nicht konvex}
+\begin{itemize}
+\item lokale Minima, Sattelpunkte
+\item SGD-Rauschen + gute Initialisierung helfen
+\item Neustarts (K-Means, EM)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Nicht differenzierbar}
+\begin{itemize}
+\item $|x|$ (L1), Hinge, ReLU: \emph{Subgradient}
+\item $\partial|x|=\{-1\}$, $[-1,1]$, $\{1\}$
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Wo es gebraucht wird}
+\begin{itemize}
+\item alle Trainingsverfahren
+\item SVM-Dual (KKT), EM (ELBO)
+\item Regularisierung, Backprop
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wann ist ein lokales Minimum global?}{Wenn die Zielfunktion konvex ist.}{Warum standardisiert man Features vor Gradient Descent?}{Rundere Höhenlinien, kleinere Konditionszahl, schnellere und stabilere Konvergenz.}{Was sagt Complementary Slackness?}{$\alpha_ig_i=0$: entweder Nebenbedingung aktiv oder Multiplikator $0$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Bergab gehen ist einfach -- die Kunst ist, die richtige Schrittweite zu wählen.“
+\end{hnbanner}
+\end{hngrid}

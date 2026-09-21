@@ -1,0 +1,42 @@
+\hnheader[Regelung mit quadratischen Kosten in geschlossener Form -- plus Rechenbeispiel und Ableitungs-Tricks.][Quadratisch bleibt quadratisch: der Regler ist linear]{RL:}{Vertiefung 2}{LQR-Riccati, Beispiel und Tricks}
+\hnsrc{main\_notes.pdf Kap.\ 15--17 (MDPs, Value/Policy Iteration, LQR, Policy Gradient), notes/cs229-notes12.pdf, cs229-notes13.pdf; Schritte ergänzt}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{5}{LQR: Riccati-Rekursion}
+\hnleg{$x$ Zustand, $u$ Steuerung, $A,B$ lineare Dynamik $x'=Ax+Bu$, $Q,R$ Kostenmatrizen (Zustand, Steuerung; hier nicht die Belohnung), $P_t$ Kostenmatrix von $V_t$, $K_t$ Reglerverstärkung, $T$ Endzeitpunkt.}
+$V_{t+1}(x)=x\T P_{t+1}x$ (Induktion, $V_T=x\T Qx$). Bellman rückwärts:
+\begin{align*}
+V_t(x)&=\min_u\bigl[x\T Qx+u\T Ru+(Ax+Bu)\T P_{t+1}(Ax+Bu)\bigr]\\
+0&=2Ru+2B\T P_{t+1}(Ax+Bu)\;\Rightarrow\;u^*=-K_tx\\
+K_t&=(R+B\T P_{t+1}B)^{-1}B\T P_{t+1}A
+\end{align*}
+Einsetzen: $P_t=Q+A\T P_{t+1}A-A\T P_{t+1}B\,K_t$. Die Wertfunktion bleibt quadratisch $\Rightarrow$ Regler \emph{linear} im Zustand.
+\hnwords{Rückwärts in der Zeit: Die beste Steuerung minimiert Kosten jetzt plus Kosten danach. Weil alles quadratisch ist, ergibt sich $u=-Kx$ in geschlossener Form.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Bandit-Policy-Gradient}
+Softmax-Policy mit Logits $\theta=(0,0)$, also $\pi=(0.5,0.5)$.\\
+\hnsol\ $\nabla_\theta\log\pi(a{=}1)=e_1-\pi=(1,0)-(0.5,0.5)=\ora{(0.5,\,-0.5)}$.\\
+Zieht man $a=1$ mit Ertrag $G=1$: $\theta\leftarrow\theta+\alpha G\,(0.5,-0.5)$ -- Logit von $a_1$ steigt, der von $a_2$ sinkt. Mit Baseline $b=0.5$: Schritt nur halb so groß.\\
+VI-Kontraktion im MDP-Beispiel ($\gamma=0.9$): Fehler schrumpft je Iteration um den Faktor $0.9$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{6}{Ableitungs-Tricks}
+\begin{itemize}
+\item $\nabla f=f\,\nabla\log f$ (Log-Trick, überall wo Sampling steckt)
+\item Erwartungswert aus Summe: Gradient in Erwartung \emph{hineinziehen}
+\item Rekursion + Induktion: quadratische Form bleibt quadratisch (LQR)
+\item Kontraktion $\Rightarrow$ Fixpunkt + Konvergenzrate
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum darf $\nabla$ im Policy-Gradient nur auf $\pi_\theta$ wirken?}{Übergangsdynamik $P(s'|s,a)$ hängt nicht von $\theta$ ab und fällt beim Ableiten von $\log P(\tau)$ weg.}{Warum ist die Baseline unverzerrt?}{$\sum_a\nabla\pi(a|s)=\nabla1=0$.}{Warum konvergiert Value Iteration?}{$\mathcal B$ ist eine $\gamma$-Kontraktion in der Max-Norm.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Rekursion für Werte, Log-Trick für Policies -- die zwei Werkzeuge des RL.“
+\end{hnbanner}
+%
+\end{hngrid}

@@ -1,0 +1,101 @@
+\hnheader[Nicht \emph{ein} bester Fit, sondern eine Verteilung über Funktionen -- samt Unsicherheit.][Vorhersage $=$ Konditionierung einer Gauß-Verteilung!]{Gaussian}{Processes}{Bayessche Regression mit Kernels}
+\hnsrc{section/cs229-gaussian\_processes.pdf (Chuong Do, Honglak Lee)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Bayessche Sicht}
+Klassisch: ein Best-Fit-$\theta$. Bayessch: \hlt{Posterior-Verteilung} über Modelle $\Rightarrow$ jede Vorhersage kommt mit einem Unsicherheitsmaß (Konfidenzband).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Was ist ein GP?}
+Stochastischer Prozess $\{f(x)\}$, bei dem jede endliche Teilmenge gemeinsam \emph{multivariat gaußverteilt} ist:
+\[ f(\cdot)\sim\mathcal{GP}(m(\cdot),k(\cdot,\cdot)) \]
+Mittelwertfunktion $m$, Kovarianzfunktion $=$ \ora{Kernel} $k$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Posterior}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(4.9,0) node[right,font=\tiny]{$x$};
+  \draw[->,hnnavy] (0,-.1)--(0,2.9);
+  \fill[hnorange!20] (.2,1.4) .. controls (1.2,2.5) and (1.6,2.6) .. (2.2,2.0) .. controls (2.8,1.5) and (3.6,1.8) .. (4.7,2.5)
+     -- (4.7,1.0) .. controls (3.6,.9) and (2.8,.9) .. (2.2,1.2) .. controls (1.6,1.5) and (1.2,1.4) .. (.2,.9) -- cycle;
+  \draw[hnorange,very thick] (.2,1.15) .. controls (1.2,1.95) and (1.6,2.0) .. (2.2,1.6) .. controls (2.8,1.2) and (3.6,1.35) .. (4.7,1.75);
+  \foreach \x/\y in {.9/1.6,1.5/1.95,2.3/1.55,3.0/1.25}{\fill[hnnavy] (\x,\y) circle(.06);}
+  \node[font=\tiny,hnorange] at (3.9,2.65) {$\mu_*\pm2\sigma_*$};
+  \node[font=\tiny] at (4.0,.55) {Band weit weg von Daten};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Modell \& Kernel}
+\hnleg{$f$ unbekannte Funktion, $\varepsilon$ Rauschen mit Varianz $\sigma^2$, $k(x,x')$ Kernel (Ähnlichkeit zweier Eingaben), $\tau$ Längenskala.}
+$y^{(i)}=f(x^{(i)})+\varepsilon^{(i)}$, $\varepsilon\sim\N(0,\sigma^2)$, Prior $f\sim\mathcal{GP}(0,k)$. Standard: \emph{Squared-Exponential}-Kernel
+\[ k(x,x')=\exp\Bigl(-\tfrac{\|x-x'\|^2}{2\tau^2}\Bigr) \]
+Nahe Punkte $\to$ stark korreliert $\Rightarrow$ Funktionen sind \emph{lokal glatt}; $\tau$ klein: wackelig, $\tau$ groß: glatt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Vorhersage (Posterior Predictive)}
+Gemeinsam gaußverteilt $\Rightarrow$ Konditionieren:
+\hnleg{$X$ Trainings-, $X_*$ Testeingaben, $K(A,B)$ Matrix der Kernelwerte aller Paare aus $A$ und $B$, $\mu_*,\Sigma_*$ Mittel und Kovarianz der Vorhersage, $I$ Einheitsmatrix.}
+\begin{align*}
+\mu_*&=K(X_*,X)\bigl(K(X,X)+\sigma^2I\bigr)^{-1}y\\
+\Sigma_*&=K(X_*,X_*)-K(X_*,X)\bigl(K(X,X)+\sigma^2I\bigr)^{-1}K(X,X_*)
+\end{align*}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Algorithmus}
+\begin{pcode}[GP-Regression]
+$K\leftarrow[k(x_i,x_j)]_{ij}$ \ \cm{\# $n\times n$ Gram-Matrix; $L$: Cholesky-Faktor, $\alpha$: Gewichtsvektor}\\
+$L\leftarrow\mathrm{chol}(K+\sigma^2I)$\\
+$\alpha\leftarrow(L^{\top})^{-1}\bigl(L^{-1}y\bigr)$\\
+\kw{for} Testpunkt $x_*$:\\
+\hii $k_*\leftarrow[k(x_i,x_*)]_i$\\
+\hii $\mu_*\leftarrow k_*^{\top}\alpha$\\
+\hii $v\leftarrow L^{-1}k_*$;\;\; $\sigma_*^2\leftarrow k(x_*,x_*)-v^{\top}v$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 1 Trainingspunkt}
+$(x,y)=(0,1)$, $\sigma^2=0.1$, $\tau=1$. Vorhersage bei $x_*=1$:\\
+\hnsol\ $K+\sigma^2I=1.1$, $k_*=e^{-1/2}=0.607$.\\
+$\mu_*=0.607\cdot\frac1{1.1}\cdot1=\ora{0.55}$\\
+$\Sigma_*=1-\frac{0.607^2}{1.1}=1-0.334=\ora{0.67}$\\
+Bei $x_*=0$: $\mu=0.91$, Var $=0.09$ (sicher). Bei $x_*=3$: $\mu\approx0$, Var $\approx1$ (zurück zum Prior).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item liefert Unsicherheit
+\item wenige Hyperparameter
+\item Prädiktion in geschlossener Form
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item $O(n^3)$ Zeit, $O(n^2)$ Speicher
+\item Kernel-Wahl entscheidend
+\item Schwierig bei sehr großem $n$
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Prior über Funktionen via Kernel
+\item Vorhersage $=$ Gauß-Konditionierung
+\item $\Sigma_*$ ist kalibrierte Unsicherheit
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{10}{Verbindungen}
+Kernelisierte \emph{Bayessche lineare Regression} liefert dieselbe Vorhersageverteilung wie GP-Regression -- die Funktions-Sicht ist nur viel einfacher herzuleiten. Bausteine: Multivariate Gauß-Formeln (Marginal/Conditional aus der Faktorenanalyse), Kernels (Mercer), MAP-Regularisierung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was definiert einen GP?}{Mittelwertfunktion $m$ und Kernel $k$; jede endliche Teilmenge ist gaußverteilt.}{Was liefert $\Sigma_*$?}{Vorhersage-Unsicherheit: klein nahe Trainingspunkten, groß weit weg.}{Rechenaufwand?}{$O(n^3)$ (Cholesky der $n\times n$-Matrix).}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein guter Vorhersager weiß, wann er etwas nicht weiß.“
+\end{hnbanner}
+\end{hngrid}

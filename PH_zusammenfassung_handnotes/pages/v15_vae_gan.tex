@@ -1,0 +1,41 @@
+\hnheader[KL-Term und Reparametrisierung hergeleitet -- plus VAE- und GAN-Training in PyTorch.][Zufall steckt nur in $\xi$, nicht in $\mu,\sigma$]{VAE \& GAN:}{Vertiefung}{Herleitung und Code}
+\hnsrc{main\_notes.pdf Kap.\ 11.5 (Variational Auto-Encoder); GAN als Web-Zusatz (markiert); Herleitungen ausformuliert; Code: code/torch\_vae.py, torch\_gan.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{KL-Term in geschlossener Form}
+$Q=\N(\mu,\sigma^2)$, $P=\N(0,1)$, $z\sim Q$:
+\hnleg{$Q$ Encoder-Verteilung des latenten Codes $z$, $P$ Prior, $\mu,\sigma$ Mittel und Streuung von $Q$, KL Abstand zweier Verteilungen, $\E_Q$ Erwartung über $z\sim Q$.}
+\begin{align*}
+\mathrm{KL}(Q\|P)&=\E_Q\bigl[\log Q(z)-\log P(z)\bigr]\\
+&=\E\Bigl[-\tfrac12\log\sigma^2-\tfrac{(z-\mu)^2}{2\sigma^2}+\tfrac{z^2}{2}\Bigr]&&\why{$\log2\pi$ kürzt sich}\\
+&=-\tfrac12\log\sigma^2-\tfrac12+\tfrac12(\mu^2+\sigma^2)&&\why{$\E(z{-}\mu)^2=\sigma^2$, $\E z^2=\mu^2+\sigma^2$}
+\end{align*}
+$=\tfrac12\bigl(\mu^2+\sigma^2-1-\log\sigma^2\bigr)$, im Vektorfall summiert über die Dimensionen.
+\hnwords{Der KL-Term hält den Encoder nah am Prior $\N(0,1)$: null genau für $\mu=0,\sigma=1$.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Warum die Reparametrisierung funktioniert}
+\hnleg{$f$ beliebige Funktion des Codes (z.\,B.\ Rekonstruktionsverlust), $\xi$ Zufallszahl aus $\N(0,1)$, $\nabla_\mu,\nabla_\sigma$ Ableitungen des Erwartungswerts.}
+$\E_{z\sim\N(\mu,\sigma^2)}[f(z)]=\E_{\xi\sim\N(0,1)}[f(\mu+\sigma\xi)]$, denn $z=\mu+\sigma\xi$. Jetzt hängt die \emph{Verteilung} nicht mehr von $\mu,\sigma$ ab, nur die Funktion:
+\[ \nabla_\mu=\E_\xi\bigl[f'(\mu+\sigma\xi)\bigr],\qquad\nabla_\sigma=\E_\xi\bigl[f'(\mu+\sigma\xi)\,\xi\bigr] \]
+\emph{Check} $f(z)=z^2$: $\E f=\mu^2+\sigma^2$, also $\nabla_\mu=2\mu$ und $\nabla_\sigma=2\sigma$; rechts: $\E[2(\mu+\sigma\xi)]=2\mu$, $\E[2(\mu+\sigma\xi)\xi]=2\sigma$ \hlm{stimmt}. Der Gradient darf so in den Erwartungswert (Backprop durch das Sampling).
+\hnwords{Der Zufall wird in $\xi$ ausgelagert; $\mu$ und $\sigma$ stehen nur noch in einer gewöhnlichen Funktion, durch die Backprop laufen kann.}
+\end{hnp}
+%
+\hnsnip[hnrose]{torch_vae}{Variational Autoencoder: Reparametrisierung, Rekonstruktion + KL}
+%
+\hnsnip[hnnavy]{torch_gan}{GAN: Generator gegen Diskriminator auf 1D-Daten}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{3}{Lesart der Ausgaben}
+\textbf{VAE}: die Rekonstruktion fällt von $9.8$ auf $2.3$, der KL-Term steigt von $0.6$ auf $1.6$ -- der latente Code trägt zunehmend Information (Kompromiss der ELBO). \textbf{GAN}: der Generator lernt die Zielverteilung $\N(3,0.5^2)$: Mittel $3.02$ passt, die Standardabweichung $0.68$ ist noch zu breit (nach $3000$ Schritten, kurzes Training). Ein GAN hat \emph{keinen} monoton fallenden Verlust -- die Qualität prüft man an den Samples.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Wie lautet der KL-Term für zwei Gauß-Verteilungen?}{$\frac12(\mu^2+\sigma^2-1-\log\sigma^2)$ gegen $\N(0,1)$.}{Warum braucht man die Reparametrisierung?}{Damit der Gradient durch das Sampling fließt: $z=\mu+\sigma\xi$.}{Was ist Mode Collapse?}{Der GAN-Generator erzeugt nur wenige Varianten der Daten.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer die Daten erzeugen kann, hat sie verstanden.“
+\end{hnbanner}
+\end{hngrid}

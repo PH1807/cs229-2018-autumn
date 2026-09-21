@@ -1,0 +1,100 @@
+OK   LinReg theta [0.6667 0.5   ] erwartet [0.6666666666666666, 0.5]
+OK   LinReg h(4) 2.6667 erwartet 2.67
+OK   LogReg h 0.8808 erwartet 0.88
+OK   LogReg dtheta [0.0596 0.1192 0.1788] erwartet [0.06, 0.12, 0.18]
+OK   NB P(Spam|x) 0.64 erwartet 0.64
+OK   Kernel (x^T z)^2 25.0 erwartet 25
+OK   Kernel phi.phi 25.0 erwartet 25
+OK   SVM w,b [ 1. -1.] erwartet [1, -1]
+OK   SVM alpha [0.5 0.5] erwartet [0.5, 0.5]
+OK   SVM f(1.4) 0.4 erwartet 0.4
+OK   Perceptron theta [ 1. -1.] erwartet [1, -1]
+OK   Perceptron Schranke 10.0 erwartet 10
+OK   DT Entropie Eltern 0.7219 erwartet 0.722
+OK   DT Gain A 0.2365 erwartet 0.237
+OK   DT Gain B 0.0729 erwartet 0.073
+OK   AdaBoost alpha 1.3863 erwartet 1.39
+OK   AdaBoost w_norm [0.5   0.125] erwartet [0.5, 0.125]
+OK   Verluste logistisch [0.0486 0.4741 1.3133] erwartet [0.05, 0.47, 1.31]
+OK   Verluste exp [0.0498 0.6065 2.7183] erwartet [0.05, 0.61, 2.72]
+OK   NN y_hat 4.0 erwartet 4
+OK   NN Params 5560 erwartet 5560
+OK   Backprop nach SGD 0.1458 erwartet 0.146
+OK   Hoeffding n 3500.878 erwartet 3500
+OK   Ridge theta [0.7857 0.6875 0.3929] erwartet [0.786, 0.688, 0.393]
+OK   GP mu* 0.5514 erwartet 0.55
+OK   GP Sigma* 0.6656 erwartet 0.67
+OK   Metriken F1@0.5 0.8571 erwartet 0.857
+OK   Metriken F1@0.6 0.7368 erwartet 0.737
+OK   K-Means J lokal 74.5 erwartet 74.5
+OK   K-Means J besser 65.0 erwartet 65
+OK   EM gamma1 [9.997e-01 9.820e-01 3.000e-04] erwartet [0.9997, 0.982, 0.0003]
+OK   EM mu1 0.4961 erwartet 0.5
+OK   EM mu2 3.9457 erwartet 3.95
+OK   FA rho 0.7107 erwartet 0.71
+OK   HMM P(x) 0.077 erwartet 0.077
+OK   HMM Viterbi delta [0.028 0.03 ] erwartet [0.028, 0.03]
+OK   PCA EV [0.5 2. ] erwartet [0.5, 2]
+OK   PCA erklaert 0.8 erwartet 0.8
+OK   ICA Wx [ 1. -1.] erwartet [1, -1]
+OK   Attention Zeile1 [1.6605 2.6605] erwartet [1.66, 2.66]
+OK   Adversarial w^T eta 1.0 erwartet 1.0
+OK   MDP V* [ 9. 10.] erwartet [9, 10]
+OK   LQR P* 1.618 erwartet 1.618
+OK   LQR K* 0.618 erwartet 0.618
+OK   PG theta 0.25 erwartet 0.25
+OK   PG pi 0.5622 erwartet 0.56
+ML-Notes SST: 12.3 (Notes: 13.30) SSE: 1.55 R2: 0.874 (Notes: 0.884)
+---- neue Seiten ----
+OK   Bayes Medizintest 0.0876 erwartet 0.088
+OK   GD alpha=.1 [3.2   2.56  2.048] erwartet [3.2, 2.56, 2.048]
+OK   GD alpha=1.1 [-4.8   5.76] erwartet [-4.8, 5.76]
+OK   kNN k=1 A
+OK   kNN k=3 B
+OK   kNN k=5 A
+OK   Hier single [1. 2. 4. 7.] erwartet [1, 2, 4, 7]
+OK   Hier complete [ 1.  2.  7. 14.] erwartet [1, 2, 7, 14]
+OK   RegMetr [0.54   0.31   0.5568 0.874 ] erwartet [0.54, 0.31, 0.557, 0.874]
+OK   Skalierung z [-0.8485 -0.5657 -0.2828  1.6971] erwartet [-0.85, -0.57, -0.28, 1.7]
+OK   Skalierung minmax [0.     0.1111 0.2222 1.    ] erwartet [0, 0.11, 0.22, 1]
+OK   CV mean/std [0.828  0.0192] erwartet [0.828, 0.019]
+OK   Nested Fits 95 erwartet 95
+OK   Adam Schritt 0.001 erwartet 0.001
+OK   Conv1D [-2 -2 -2] erwartet [-2, -2, -2]
+OK   CNN Params [  80 1168 7850] erwartet [80, 1168, 7850]
+OK   VAE KL 0.1681 erwartet 0.168
+OK   EM LL vor -5.3174 erwartet -5.32
+OK   EM LL nach -4.906 erwartet -4.91
+OK   SVM Dual alpha 0.5 erwartet 0.5
+OK   SVM Dual W 0.5 erwartet 0.5
+OK   Backprop dW2 [0.  2.5] erwartet [0, 2.5]
+OK   Backprop delta1 [0. 2.] erwartet [0, 2]
+OK   Backprop dW1 [0. 0. 2. 4.] erwartet [0, 0, 2, 4]
+OK   LogReg Gradient-Check 1.0 erwartet 1.0
+OK   Hoeffding 2e^-5 0.0135 erwartet 0.0135
+OK   PG grad log pi [ 0.5 -0.5] erwartet [0.5, -0.5]
+---- SHAP / Fairness ----
+OK   Shapley Formel (Gewichte) [5. 4.] erwartet [5, 4]
+OK   Shapley Effizienz 9.0 erwartet 9
+OK   Linear-SHAP phi [4. 1.] erwartet [4, 1]
+OK   Linear-SHAP Summe 8.0 erwartet 8.0
+OK   Fair A sel,TPR,FPR,PPV [0.4    0.75   0.1667 0.75  ] erwartet [0.4, 0.75, 0.1667, 0.75]
+OK   Fair B sel,TPR,FPR,PPV [0.1    0.25   0.0625 0.5   ] erwartet [0.1, 0.25, 0.0625, 0.5]
+OK   Fair Accuracy gleich [0.8 0.8] erwartet [0.8, 0.8]
+OK   Fair Disparate Impact 0.25 erwartet 0.25
+OK   Unmoeglichkeit FPR-Formel A 0.1667 erwartet 0.16666666666666666
+OK   Selektionsrate = p TPR+(1-p) FPR A 0.4 erwartet 0.4
+OK   Unmoeglichkeit FPR-Formel B 0.0625 erwartet 0.0625
+OK   Selektionsrate = p TPR+(1-p) FPR B 0.1 erwartet 0.1
+OK   Reweighing Gewichte [0.75   1.1667 1.5    0.875 ] erwartet [0.75, 1.1667, 1.5, 0.875]
+OK   Reweighing pos. Rate A,B [0.3 0.3] erwartet [0.3, 0.3]
+---- Vertiefungsseiten ----
+OK   GDA Posterior = Sigmoid(theta'x+theta0) 0.4 erwartet 0.4
+OK   K-Means Mittel minimiert 4.0 erwartet 4.0
+OK   AUROC = P(s+>s-) 0.935 erwartet 0.9349999999999999
+OK   F1 = 2TP/(2TP+FP+FN) 0.8571 erwartet 0.8571428571428571
+OK   Adam m_5 = (1-b1^5) g 0.819 erwartet 0.8190199999999999
+OK   Adam m_hat = g 2.0 erwartet 2.0
+OK   KL numerisch = Formel 0.1681 erwartet 0.16814355131420972
+OK   Lasso Soft-Threshold z=.786, lam=.3 0.486 erwartet 0.486
+OK   Lasso lam=1 0.0 erwartet 0

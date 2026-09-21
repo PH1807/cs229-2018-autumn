@@ -1,0 +1,111 @@
+\hnheader[Viele Modelle schlagen eins: Bagging senkt die Varianz, Boosting den Bias.][$\mathrm{Var}(\bar X)=\rho\sigma^2+\frac{1-\rho}{n}\sigma^2$]{Ensemble-}{Methoden}{Bagging, Random Forests \& Boosting}
+\hnsrc{notes/cs229-notes-ensemble.pdf (R.\ Townshend), extra-notes/boosting.pdf (J.\ Duchi); Web-Zusatz zu XGBoost markiert}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Warum Ensembles?}
+Mittel von $n$ Modellfehlern (Varianz $\sigma^2$, Korrelation $\rho$):
+\[ \mathrm{Var}=\rho\sigma^2+\frac{1-\rho}{n}\sigma^2 \]
+Mehr Modelle ($n\uparrow$) und \hlt{weniger Korrelation} ($\rho\downarrow$) senken die Varianz.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Bagging}
+\textbf{Bootstrap}: ($M$ Modelle, $n$ Daten) $M$ Stichproben mit Zurücklegen (Größe $n$), je ein Modell $G_m$, dann $G(x)=\frac1M\sum_mG_m(x)$.\\
+Senkt Varianz, Bias steigt leicht. \emph{Out-of-Bag}: je $\approx\frac13$ der Daten ungenutzt $\Rightarrow$ gratis Validierung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: parallel vs.\ sequentiell}
+\centering
+\begin{tikzpicture}[scale=.88,>=Stealth,every node/.style={font=\tiny,draw=hnnavy,rounded corners=1pt,fill=hnblue!50,inner sep=2pt}]
+  \node[fill=hnmint] (d) at (0,1.5) {Daten};
+  \foreach \i/\y in {1/2.3,2/1.5,3/.7}{\node (b\i) at (1.4,\y) {Baum \i}; \draw[->] (d)--(b\i);}
+  \node[fill=hnyellow] (m) at (2.7,1.5) {Mittel};
+  \foreach \i in {1,2,3}{\draw[->] (b\i)--(m);}
+  \node[draw=none,fill=none] at (1.35,-.05) {Bagging};
+  \node[fill=hnmint] (e) at (3.4,1.5) {Daten};
+  \node (s1) at (4.4,1.5) {Stumpf 1};
+  \node (s2) at (5.4,1.5) {Stumpf 2};
+  \draw[->] (e)--(s1); \draw[->,hnorange,thick] (s1)--(s2) node[midway,above,draw=none,fill=none,font=\tiny]{};
+  \node[draw=none,fill=none] at (4.4,.95) {Gewichte};
+  \node[draw=none,fill=none] at (4.4,-.05) {Boosting};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Random Forest}
+Bagging von Decision Trees \emph{plus} zufällige Feature-Teilmenge pro Split $\Rightarrow$ Bäume dekorrelieren ($\rho\downarrow$).
+\begin{pcode}[Random Forest]
+\kw{for} $m=1..M$:\\
+\hii $Z_m\leftarrow$ Bootstrap-Stichprobe von $S$\\
+\hii Baum $G_m$ auf $Z_m$; bei jedem Split nur\\
+\hii \ zufällige Teilmenge der Features testen\\
+\kw{predict}: Mehrheit (bzw.\ Mittel) über alle $G_m$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{AdaBoost}
+Schwache Lerner (z.\,B.\ Stümpfe) nacheinander, falsch klassifizierte Punkte bekommen mehr Gewicht.
+\hnleg{$w_i$ Gewicht von Beispiel $i$, $G_m$ Lerner $m$, $\mathrm{err}_m$ gewichtete Fehlerrate, $\alpha_m$ Stimmgewicht, $N$ Beispiele.}
+\begin{pcode}[AdaBoost]
+$w_i\leftarrow1/N$\\
+\kw{for} $m=1..M$:\\
+\hii $G_m\leftarrow$ Lerner auf gewichteten Daten\\
+\hii $\mathrm{err}_m\leftarrow\sum w_i\I[y_i\ne G_m(x_i)]/\sum w_i$\\
+\hii $\alpha_m\leftarrow\log\frac{1-\mathrm{err}_m}{\mathrm{err}_m}$\\
+\hii $w_i\leftarrow w_i\,e^{\alpha_m\I[y_i\ne G_m(x_i)]}$\\
+\kw{return} $\mathrm{sign}\sum_m\alpha_mG_m(x)$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Forward Stagewise \& Gradient Boosting}
+$f_m=f_{m-1}+\beta_mG(x;\gamma_m)$ mit $(\beta_m,\gamma_m)=\arg\min\sum_iL\bigl(y_i,f_{m-1}(x_i)+\beta G(x_i;\gamma)\bigr)$. \hnleg{$f_m$ Ensemble nach $m$ Schritten, $G$ schwacher Lerner mit Parametern $\gamma_m$, $\beta_m$ Gewicht, $L$ Verlust, $g_i$ negativer Gradient (Residuum).}
+Quadr.\ Verlust $\Rightarrow$ Residuen fitten; $e^{-y\hat y}$ $\Rightarrow$ AdaBoost.
+\begin{pcode}[Gradient Boosting]
+$f\leftarrow0$\\
+\kw{for} $m=1..M$:\\
+\hii $g_i\leftarrow-\partial L(y_i,f(x_i))/\partial f(x_i)$\\
+\hii $G\leftarrow$ Regressor auf $(x_i,g_i)$ (Least Squares)\\
+\hii $f\leftarrow f+\beta\,G$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: eine AdaBoost-Runde}
+5 Punkte, Gewichte je $0.2$. Stumpf 1 klassifiziert einen falsch.\\
+\hnsol\ $\mathrm{err}=0.2$, $\alpha=\log\frac{0.8}{0.2}=\log4\approx1.39$.\\
+Update: falscher Punkt $0.2\cdot e^{1.39}=0.8$, die anderen bleiben $0.2$. Summe $=1.6$.\\
+Normiert: falscher Punkt $0.5$, die vier richtigen je $0.125$ $\Rightarrow$ \hlm{Runde 2 muss den schwierigen Punkt lösen.}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=4,acc=hnpurple]{7}{Bagging vs.\ Boosting}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{2.4cm}p{4.2cm}p{4.3cm}@{}}
+\hline
+&\textbf{Bagging}&\textbf{Boosting}\\\hline
+Ziel&Varianz senken&Bias senken\\
+Lerner&stark, tief (hohe Var.)&schwach (hoher Bias)\\
+Aufbau&parallel, unabhängig&sequentiell, abhängig\\
+Mehr Modelle&kein Overfitting&Overfitting möglich\\
+Extra&Out-of-Bag, RF&additive Modelle\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{8}{Key Takeaways}
+\begin{hnchk}
+\item Var$=\rho\sigma^2+\frac{1-\rho}n\sigma^2$
+\item Bagging: Bootstrap + Mittel
+\item RF: + Feature-Subsampling
+\item Boosting: sequentiell, gewichtet
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{9}{Voting, Stacking \& Praxis (ML Notes; Internet: XGBoost)}
+\textbf{Voting}: Mehrheit (hart) bzw.\ Mittel der Wahrscheinlichkeiten (weich). \textbf{Stacking}: ein \emph{Meta-Modell} kombiniert die Vorhersagen der Basis-Modelle; diese müssen \emph{out-of-fold} sein (sonst Leakage). Wahl: hohe Varianz $\to$ Bagging, hoher Bias $\to$ Boosting, beste Leistung $\to$ Stacking. \textbf{Internet-Zusatz} (nicht aus den Notes): XGBoost, LightGBM und CatBoost sind moderne Gradient-Boosting-Bibliotheken und dominieren tabellarische Daten; Random Forests: Breiman (2001). Feature Importance und Code: Vertiefungs- und SHAP-Seiten.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wie senkt Bagging die Varianz?}{Bootstrap dekorreliert die Modelle: $\rho\sigma^2+\frac{1-\rho}n\sigma^2$.}{Ziel von Bagging vs.\ Boosting?}{Bagging: Varianz; Boosting: Bias (schwache Lerner, sequentiell).}{Was ist der Out-of-Bag-Fehler?}{Fehler auf den $\approx\frac13$ nicht gezogenen Punkten: gratis Validierung.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Viele schwache Meinungen, klug kombiniert, ergeben ein starkes Urteil.“
+\end{hnbanner}
+\end{hngrid}

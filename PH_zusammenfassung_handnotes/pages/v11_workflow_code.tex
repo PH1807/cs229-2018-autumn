@@ -1,0 +1,21 @@
+\hnheader[Data Leakage in Zahlen und Nested CV mit Pipeline -- der Code hinter Feature Engineering, Tuning und Workflow.][Vorverarbeitung gehört \emph{in} die Pipeline!]{Feature Engineering, Tuning \& Workflow:}{Vertiefung}{Code und Lesart}
+\hnsrc{hand-notes/ML Notes.pdf (Feature Engineering, Cross-Validation, End-to-End-Workflow); Beispiele selbst erstellt; Code: code/sk\_leakage.py, sk\_pipeline.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\hnsnip[hnred]{sk_leakage}{Data Leakage: Feature-Auswahl außerhalb vs.\ innerhalb der Kreuzvalidierung}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{1}{Lesart der Ausgabe: Data Leakage im Zahlenbeispiel}
+Die Daten sind \emph{reines Rauschen} (Labels zufällig): ehrlich erreichbar sind $\approx0.5$. Wählt man die $20$ ``besten'' von $1000$ Features auf dem \emph{gesamten} Datensatz, findet man Features, die zufällig mit $y$ korrelieren -- die Kreuzvalidierung meldet trügerische $0.88$. Steht die Auswahl in der Pipeline, wird sie in jedem Fold nur auf den Trainingsdaten gelernt: $0.57\approx$ Zufall. Je mehr Features und je weniger Beispiele, desto größer der Leakage-Effekt. Zweites Snippet: Nested CV über Pipeline und Hyperparameter (Kapitel Validierung \& Tuning).
+\end{hnp}
+%
+\hnsnip[hnteal]{sk_pipeline}{ColumnTransformer + Pipeline + Nested Cross-Validation}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum sind $0.88$ im Leakage-Beispiel trügerisch?}{Die Feature-Auswahl sah alle Labels; bei Rauschen ist ehrlich nur $\approx0.5$ erreichbar.}{Was tut die Pipeline?}{Sie lernt Imputer, Skalierer und Selektor in jedem Fold nur auf dem Trainingsteil.}{Wozu Nested CV?}{Tuning und Bewertung trennen, damit der Score nicht optimistisch verzerrt ist.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Was in der Pipeline steht, kann nicht ins Testset lecken.“
+\end{hnbanner}
+\end{hngrid}

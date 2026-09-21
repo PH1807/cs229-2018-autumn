@@ -1,0 +1,4 @@
+step    0  Mittel 0.03  Std 0.20
+step 1000  Mittel 2.86  Std 0.66
+step 2000  Mittel 3.01  Std 0.68
+step 3000  Mittel 3.02  Std 0.68

@@ -1,0 +1,4 @@
+k = 1  CV-Acc: 0.947
+k = 5  CV-Acc: 0.96
+k = 15  CV-Acc: 0.94
+k = 45  CV-Acc: 0.873

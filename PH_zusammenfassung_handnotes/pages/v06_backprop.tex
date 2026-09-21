@@ -1,0 +1,58 @@
+\hnheader[Kettenregel rückwärts: wie Gradienten durch ein Netz fließen -- mit Autograd-Check.][$\delta_{\ell-1}=(W_\ell\T\delta_\ell)\odot\sigma'(z_{\ell-1})$]{Backpropagation:}{Vertiefung}{Herleitung der Rückwärtsrekursion}
+\hnsrc{main\_notes.pdf Kap.\ 7.4--7.5, notes/cs229-notes-backprop.pdf; Schritte und Zahlenbeispiel ergänzt; Code: code/torch\_autograd.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Kettenregel im Skalarfall}
+\hnleg{$x$ Eingabe, $y$ Ziel, $\hat y$ Vorhersage, $w_1,w_2$ Gewichte, $z$ Vorstufe, $a$ Aktivierung, $\mathrm{ReLU}(z)=\max(0,z)$, $J$ Verlust.}
+$J=\frac12(\hat y-y)^2$, $\hat y=w_2a$, $a=\mathrm{ReLU}(z)$, $z=w_1x$:
+\begin{align*}
+\tfrac{\partial J}{\partial\hat y}&=\hat y-y\\
+\tfrac{\partial J}{\partial w_2}&=\tfrac{\partial J}{\partial\hat y}\,a,\qquad\tfrac{\partial J}{\partial a}=\tfrac{\partial J}{\partial\hat y}\,w_2\\
+\tfrac{\partial J}{\partial z}&=\tfrac{\partial J}{\partial a}\,\mathrm{ReLU}'(z),\qquad\tfrac{\partial J}{\partial w_1}=\tfrac{\partial J}{\partial z}\,x
+\end{align*}
+Jeder Schritt multipliziert die Ableitung des nächsten Moduls -- \emph{rückwärts} von $J$ zu den Parametern.
+\hnwords{Backprop ist die Kettenregel: Wie stark $J$ auf $w_1$ reagiert, ist das Produkt der lokalen Steigungen entlang des Wegs.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Matrixform im MLP}
+$z_\ell=W_\ell a_{\ell-1}+b_\ell$, $a_\ell=\sigma(z_\ell)$; $\delta_\ell:=\partial J/\partial z_\ell$.
+\hnleg{$\ell$ Schichtindex, $W_\ell,b_\ell$ Gewichte und Bias, $a_\ell$ Aktivierung, $z_\ell$ Vorstufe, $\sigma$ Aktivierungsfunktion, $\delta_\ell$ Fehlersignal, $\odot$ elementweises Produkt.}
+\begin{align*}
+\tfrac{\partial J}{\partial W_\ell}&=\delta_\ell\,a_{\ell-1}\T,\qquad\tfrac{\partial J}{\partial b_\ell}=\delta_\ell&&\why{$z_\ell$ linear in $W_\ell,b_\ell$}\\
+\tfrac{\partial J}{\partial a_{\ell-1}}&=W_\ell\T\delta_\ell&&\why{$z_\ell$ linear in $a_{\ell-1}$}\\
+\delta_{\ell-1}&=\bigl(W_\ell\T\delta_\ell\bigr)\odot\sigma'(z_{\ell-1})&&\why{Kettenregel durch $\sigma$}
+\end{align*}
+\hnwords{$\delta_\ell$ sagt, wie stark $J$ auf $z_\ell$ reagiert. Es wandert mit $W\T$ eine Schicht zurück und wird an jedem Neuron mit $\sigma'$ gedämpft.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Softmax $+$ Cross-Entropy: $\delta_L=p-y$}
+Ausgabe $z_L$, $p=\mathrm{softmax}(z_L)$, $J=-\sum_ky_k\log p_k$ ($y$ one-hot):
+\hnleg{$z_L$ Scores der letzten Schicht, $p_k$ Klassenwahrscheinlichkeit, $y_k$ wahre Klasse (one-hot: eine 1, sonst 0), $\I_{kj}$ Kronecker-Delta (1 für $k{=}j$, sonst 0).}
+\begin{align*}
+\tfrac{\partial J}{\partial z_j}&=-\sum_ky_k\tfrac1{p_k}\tfrac{\partial p_k}{\partial z_j}=-\sum_ky_k\tfrac1{p_k}p_k(\I_{kj}-p_j)&&\why{Softmax-Jacobi}\\
+&=-y_j+p_j\textstyle\sum_ky_k=p_j-y_j
+\end{align*}
+Sehr einfacher Startwert für die Rückwärtsrekursion: Vorhersage minus Wahrheit.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{4}{Warum $O(N)$?}
+\hnleg{$N$ Anzahl Module/Parameter, $B$ Batchgröße, $A_\ell$ Aktivierungen des Batchs als Spalten.}
+Forward: pro Modul eine Auswertung; Backward: pro Modul \emph{eine} Matrix-Vektor-Multiplikation ($W\T\delta$) plus ein äußeres Produkt ($\delta a\T$) -- dieselbe Größenordnung wie vorwärts. Zwischenwerte $z_\ell,a_\ell$ werden gespeichert und wiederverwendet (kein erneutes Ausrechnen von Teilgradienten). \hlt{Vektorisierung}: mit Batch-Matrizen $A_{\ell}=[a^{(1)}\cdots a^{(B)}]$ wird $\delta_\ell A_{\ell-1}\T$ zu einer einzigen Matrixmultiplikation.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{5}{Vanishing / Exploding Gradients}
+\hnleg{$L$ Anzahl Schichten, $\mathrm{diag}(\cdot)$ Diagonalmatrix, $\sigma'$ Ableitung der Aktivierung.}
+Durch $L$ Schichten: $\delta_1=\Bigl(\prod_{\ell=2}^{L}\mathrm{diag}(\sigma'(z_{\ell-1}))\,W_\ell\T\Bigr)\delta_L$. Sigmoid: $\sigma'\le\frac14$ $\Rightarrow$ Faktor $\le(\frac14)^{L}$ verschwindet; große $\|W\|$ $\Rightarrow$ explodiert.\\
+\emph{In Worten:} ein Produkt vieler Faktoren $<1$ schrumpft auf null, $>1$ wächst ins Unendliche.\\
+Abhilfe: ReLU ($\sigma'=1$ für $z>0$), ResNet-Skip (additiver Pfad, Ableitung $+I$), Normalisierung, passende Initialisierung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{6}{Gradient-Check}
+Backprop-Gradient gegen zentralen Differenzenquotienten prüfen ($\theta_j$: ein Parameter, $e_j$: Einheitsvektor dazu, $\varepsilon$: winziger Schritt):
+\[ \frac{\partial J}{\partial\theta_j}\approx\frac{J(\theta+\varepsilon e_j)-J(\theta-\varepsilon e_j)}{2\varepsilon},\;\;\varepsilon\approx10^{-5} \]
+Relativer Fehler $\lesssim10^{-6}$ $\Rightarrow$ korrekt. Frameworks (Autograd) machen den Rückwärtslauf automatisch -- das Prinzip bleibt dasselbe (Code: unten).
+\hnwords{Einen Parameter minimal verschieben und messen, wie sich $J$ ändert: die numerische Steigung.}
+\end{hnp}
+%
+\end{hngrid}

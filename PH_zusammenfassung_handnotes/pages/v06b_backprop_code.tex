@@ -1,0 +1,23 @@
+\hnheader[Backprop einmal komplett durchgerechnet und mit Autograd geprüft.][Von Hand rechnen, dann vom Framework bestätigen lassen]{Backpropagation:}{Praxis}{Rechenbeispiel und Autograd-Code}
+\hnsrc{main\_notes.pdf Kap.\ 7.4--7.5, notes/cs229-notes-backprop.pdf; Schritte und Zahlenbeispiel ergänzt; Code: code/torch\_autograd.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: komplettes Backprop im 2-2-1-Netz (vgl.\ Kapitel Neuronale Netze)}
+Legende: $W_1,b_1$ und $W_2,b_2$ Gewichte der zwei Schichten, $z_1$, $a_1$ Vorstufe und Aktivierung der ersten Schicht. $x=(1,2)$, $W_1=\begin{psmallmatrix}1&-1\\0.5&1\end{psmallmatrix}$, $b_1=0$, ReLU, $W_2=(1,2)$, $b_2=-1$, $y=3$. Forward: $z_1=(-1,2.5)$, $a_1=(0,2.5)$, $\hat y=4$, $J=\frac12(4-3)^2=0.5$.\\
+\hnsol\ $\delta_2=\hat y-y=1$. $\;\partial J/\partial W_2=\delta_2a_1\T=(0,\;2.5)$, $\partial J/\partial b_2=1$.\\
+$\delta_1=(W_2\T\delta_2)\odot\mathrm{ReLU}'(z_1)=(1,2)\odot(0,1)=\ora{(0,\,2)}$ (das erste Neuron ist ``tot'': $z<0$).\\
+$\partial J/\partial W_1=\delta_1x\T=\begin{psmallmatrix}0&0\\2&4\end{psmallmatrix}$ \hlm{(maschinell nachgerechnet)}.
+\end{hnex}
+%
+\hnsnip[hnorange]{torch_autograd}{Autograd: das Backprop-Beispiel von Hand nachgerechnet}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum $\delta_L=p-y$ bei Softmax + Cross-Entropy?}{Softmax-Jacobi $\partial p_k/\partial z_j=p_k(\I_{kj}-p_j)$ und $\sum_ky_k=1$ heben sich zu $p_j-y_j$ auf.}{Woher kommt $W\T\delta$?}{$z=Wa+b$ ist linear in $a$: $\partial J/\partial a=W\T\,\partial J/\partial z$.}{Warum verschwinden Gradienten bei Sigmoid?}{$\sigma'\le0.25$, Produkt über viele Schichten $\to0$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Backprop ist keine Magie -- nur die Kettenregel mit gutem Buchhalter.“
+\end{hnbanner}
+%
+\end{hngrid}

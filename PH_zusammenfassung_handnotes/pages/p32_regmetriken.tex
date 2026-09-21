@@ -1,0 +1,97 @@
+\hnheader[Wie gut ist ein Regressionsmodell wirklich? Fehlermaße und Varianzerklärung.][MSE $\leftrightarrow$ Gauß-Rauschen, MAE $\leftrightarrow$ Laplace-Rauschen]{Regressions-}{metriken}{MAE, MSE, RMSE, $R^2$ und Adjusted $R^2$}
+\hnsrc{hand-notes/ML Notes.pdf (Regression Metrics); Rechenbeispiel dort korrigiert ($R^2=0.874$, nicht $0.884$: $\mathrm{SST}=12.30$); Bezug zu MLE aus dem Kursstoff}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Notation}
+$y_i$ wahr, $\hat y_i$ vorhergesagt, $\bar y$ Mittel der wahren Werte, $n$ Beispiele, $p$ Prädiktoren, Residuum $e_i=y_i-\hat y_i$.\\
+Ziel: kleine Fehler \emph{und} Generalisierung (auf dem Testset messen!).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Fehlerbasierte Metriken}
+\begin{align*}
+\mathrm{MAE}&=\tfrac1n\textstyle\sum|y_i-\hat y_i|\\
+\mathrm{MSE}&=\tfrac1n\textstyle\sum(y_i-\hat y_i)^2\\
+\mathrm{RMSE}&=\sqrt{\mathrm{MSE}}
+\end{align*}
+Kleiner ist besser. RMSE hat die Einheit von $y$; MSE/RMSE bestrafen große Fehler stärker.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: gut vs.\ schlecht}
+\centering
+\begin{tikzpicture}[scale=.8]
+  \begin{scope}
+    \draw[hnnavy] (0,0) rectangle (1.9,1.9); \draw[gray,dashed] (0,0)--(1.9,1.9);
+    \foreach \x/\y in {.3/.35,.6/.55,.9/.95,1.2/1.15,1.5/1.6,1.7/1.75}{\fill[hngreen] (\x,\y) circle(.05);}
+    \node[font=\tiny] at (.95,-.25) {gut: nahe an $y=\hat y$};
+  \end{scope}
+  \begin{scope}[shift={(2.6,0)}]
+    \draw[hnnavy] (0,0) rectangle (1.9,1.9); \draw[gray,dashed] (0,0)--(1.9,1.9);
+    \foreach \x/\y in {.3/1.4,.6/.3,.9/1.7,1.2/.5,1.5/1.2,1.7/.2}{\fill[hnred] (\x,\y) circle(.05);}
+    \node[font=\tiny] at (.95,-.25) {schlecht: weit weg};
+  \end{scope}
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{$R^2$ und Adjusted $R^2$}
+\[ R^2=1-\frac{\mathrm{SSE}}{\mathrm{SST}}=1-\frac{\sum(y_i-\hat y_i)^2}{\sum(y_i-\bar y)^2} \]
+$R^2=1$: perfekt; $R^2=0$: nicht besser als der Mittelwert; $R^2<0$: schlechter als der Mittelwert.
+\[ R^2_{\mathrm{adj}}=1-(1-R^2)\frac{n-1}{n-p-1} \]
+Adjusted bestraft zusätzliche Prädiktoren $\Rightarrow$ fairer Vergleich bei verschiedener Featureanzahl.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Welche Metrik wann?}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{1.9cm}p{6.4cm}@{}}
+\hline
+\textbf{Metrik}&\textbf{Einsatz}\\\hline
+MAE&robust gegenüber Ausreißern, leicht interpretierbar\\
+MSE / RMSE&große Fehler sind besonders schlimm\\
+$R^2$&Anteil erklärter Varianz, skalenfrei\\
+Adj.\ $R^2$&Modelle mit verschiedener Featurezahl vergleichen\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 5 Hauspreise (in 100\,k\$)}
+$y=(5.0,6.0,7.5,8.0,9.5)$, $\hat y=(4.6,5.5,8.0,7.2,10.0)$, Fehler $(0.4,0.5,-0.5,0.8,-0.5)$.\\
+\hnsol\ MAE $=\frac{0.4+0.5+0.5+0.8+0.5}{5}=\ora{0.54}$; MSE $=\frac{1.55}{5}=0.31$; RMSE $=0.557$.\\
+$\bar y=7.2$, SST $=4.84+1.44+0.09+0.64+5.29=12.30$, SSE $=1.55$:\\
+$R^2=1-\frac{1.55}{12.30}=\ora{0.874}$ \hlm{(maschinell nachgerechnet)}.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Warum genau diese Fehler? (MLE)}
+Gauß-Rauschen $\Rightarrow$ MLE $=$ \emph{MSE} minimieren (Least Squares). Laplace-Rauschen $\Rightarrow$ \emph{MAE} (robust). \textbf{Huber-Verlust}: quadratisch für kleine, linear für große Fehler -- Kompromiss. Metrik und Trainingsverlust sollten zum Anwendungsziel passen (\ora{Kapitel Fehleranalyse}: Zielfunktion vs.\ Metrik).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{7}{Fallstricke}
+\begin{hncon}
+\item nur eine Metrik betrachten
+\item $R^2$ auf Trainingsdaten (steigt immer)
+\item verschiedene Skalen vergleichen (MSE)
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Weitere Metriken (Web)}
+\begin{itemize}
+\item MAPE (prozentual, Problem bei $y{\approx}0$)
+\item Median AE (sehr robust)
+\item Quantil-/Pinball-Verlust
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item MAE, MSE, RMSE, $R^2$
+\item $R^2=1-\mathrm{SSE}/\mathrm{SST}$
+\item Metrik zum Ziel passend wählen
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was bedeutet $R^2=0$?}{Das Modell ist nicht besser als die Vorhersage des Mittelwerts $\bar y$.}{Wann MAE statt MSE?}{Bei Ausreißern; MSE quadriert große Fehler.}{Warum Adjusted $R^2$?}{$R^2$ steigt mit jedem Feature; Adjusted bestraft überflüssige Prädiktoren.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Keine einzelne Zahl erzählt die ganze Geschichte -- lies mehrere Metriken zusammen.“
+\end{hnbanner}
+\end{hngrid}

@@ -1,0 +1,102 @@
+\hnheader[Ein Modell kann im Mittel gut sein und trotzdem bestimmte Gruppen systematisch benachteiligen.][Gleiche Accuracy $\ne$ gleiche Behandlung]{Fairness-}{Analyse}{Gruppenmetriken: Demographic Parity, Equalized Odds \& Co.}
+\hnsrc{materials/critiques-ml-aut19.pdf (Ethische Fragen); Definitionen nach Hardt et al.\ 2016, Chouldechova 2017, Kleinberg et al.\ 2016 sowie fairlearn als Web-Zusatz markiert; Rechenbeispiel selbst erstellt und maschinell geprüft}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Woher kommt Unfairness?}
+\begin{itemize}
+\item \textbf{Historischer Bias} in Daten (frühere Entscheidungen)
+\item \textbf{Stichprobenbias}: Gruppen unterrepräsentiert
+\item \textbf{Label-Bias}: Ziel misst Ersatzgröße (Festnahme statt Straftat)
+\item \textbf{Proxies}: PLZ korreliert mit Herkunft
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Setup}
+$A$ sensibles Merkmal (Geschlecht, Herkunft, Alter), $Y$ wahres Label, $\hat Y$ Vorhersage, $S$ Score. Fairness heißt: eine \emph{Statistik von $\hat Y$} soll sich zwischen den Gruppen $A=a$ und $A=b$ nicht (zu stark) unterscheiden. \hlt{Merkmal einfach weglassen genügt nicht} (Proxies).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Konfusionsmatrix je Gruppe}
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}c|cc|cc@{}}
+&\multicolumn{2}{c|}{\textbf{Gruppe A}}&\multicolumn{2}{c}{\textbf{Gruppe B}}\\
+&$Y{=}1$&$Y{=}0$&$Y{=}1$&$Y{=}0$\\\hline
+$\hat Y{=}1$&\cellcolor{hnmint}6&\cellcolor{hnpink}2&\cellcolor{hnmint}1&\cellcolor{hnpink}1\\
+$\hat Y{=}0$&\cellcolor{hnpink}2&\cellcolor{hnmint}10&\cellcolor{hnpink}3&\cellcolor{hnmint}15\\
+\end{tabular}\\[1pt]
+{\tiny Accuracy beide $0.80$!}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Gruppenmetriken (Definitionen)}
+\begin{align*}
+\text{Demographic Parity:}&\;P(\hat Y{=}1|A{=}a)=P(\hat Y{=}1|A{=}b)\\
+\text{Equal Opportunity:}&\;P(\hat Y{=}1|Y{=}1,a)=P(\hat Y{=}1|Y{=}1,b)\;(\mathrm{TPR})\\
+\text{Equalized Odds:}&\;\text{TPR \emph{und} FPR gleich}\\
+\text{Predictive Parity:}&\;P(Y{=}1|\hat Y{=}1,a)=\ldots\,b\;(\mathrm{PPV})\\
+\text{Kalibrierung:}&\;P(Y{=}1|S{=}s,a)=s\;\forall a
+\end{align*}
+\emph{Disparate Impact}: $\frac{P(\hat Y=1|b)}{P(\hat Y=1|a)}$, \hlt{80\,\%-Regel}: Verhältnis $<0.8$ gilt als Warnsignal.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Was welche Metrik verlangt}
+\begin{itemize}
+\item \textbf{Demographic Parity}: gleiche \emph{Auswahlrate}, ignoriert das Label -- passt, wenn Unterschiede in $Y$ selbst Folge von Diskriminierung sind.
+\item \textbf{Equal Opportunity}: Qualifizierte haben \emph{gleiche Chance} (TPR), z.\,B.\ Kreditvergabe.
+\item \textbf{Equalized Odds}: zusätzlich gleiche Fehlalarme (FPR).
+\item \textbf{Predictive Parity/Kalibrierung}: ein positives Ergebnis \emph{bedeutet} in jeder Gruppe dasselbe.
+\item \textbf{Individuelle Fairness}: ähnliche Personen $\to$ ähnliche Ergebnisse.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: Kreditmodell mit 40 Anträgen (je 20 pro Gruppe; Zahlen aus der Konfusionsmatrix oben)}
+\hnsol\ \textbf{Auswahlrate}: A $=\frac{8}{20}=0.40$, B $=\frac{2}{20}=0.10$ $\Rightarrow$ Disparate Impact $=\frac{0.10}{0.40}=\ora{0.25}<0.8$ \hlp{verletzt}. \textbf{TPR}: A $=\frac68=0.75$, B $=\frac14=0.25$ (Differenz $\ora{0.50}$). \textbf{FPR}: A $=\frac2{12}=0.17$, B $=\frac1{16}=0.06$. \textbf{PPV}: A $=0.75$, B $=0.50$. \textbf{Accuracy}: beide $\frac{16}{20}=\ora{0.80}$.\\
+Das Modell erkennt kreditwürdige Antragsteller in Gruppe B nur zu $25\%$ -- die Gesamtgenauigkeit verrät das nicht (Kapitel Klassifikationsmetriken: Accuracy täuscht).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Unmöglichkeit (Kurzfassung)}
+Unterscheiden sich die \emph{Basisraten} $p=P(Y{=}1)$ (hier $0.40$ vs.\ $0.20$), können \emph{Kalibrierung/PPV} und \emph{gleiche FPR und FNR} nicht gleichzeitig gelten -- außer der Klassifikator ist perfekt. Fairness ist deshalb \hlt{eine Wertentscheidung}: welches Kriterium passt zum Kontext (rechtlich, ethisch)? Herleitung: nächste Seite.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Gegenmaßnahmen}
+\textbf{Pre-Processing}: Daten reparieren (Reweighing, Resampling). \textbf{In-Processing}: Nebenbedingung oder Strafterm im Training, adversariales Debiasing. \textbf{Post-Processing}: gruppenspezifische Schwellwerte nach dem Training (Hardt et al.). Jede Maßnahme kostet oft etwas Gesamtleistung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{8}{Einordnung: Fairness, Feature Importance und Leistungsmetriken}
+\setlength{\tabcolsep}{2.4pt}\renewcommand{\arraystretch}{1.3}\fontsize{\hntabsz}{\hntablead}\selectfont
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.6cm}@{}}
+\rowcolor{hnteal!12}&\textbf{Leistungsmetriken}&\textbf{Feature Importance / SHAP}&\textbf{Fairness-Metriken}\\
+Frage&\emph{Wie gut} ist das Modell?&\emph{Warum} sagt es das?&\emph{Für wen} und wie \emph{gleich} gut?\\
+Vergleicht&Vorhersage mit Label&Vorhersage mit Eingaben&Metrik zwischen Gruppen\\
+Braucht $A$?&nein&nein (Proxy-Suche mit SHAP)&ja\\
+Zusammenspiel&Gesamtwert versteckt Gruppen&zeigt, ob $A$/Proxies das Modell treiben&Metrik \emph{je Gruppe} statt Mittel\\
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{9}{Praxis-Workflow}
+\begin{enumerate}
+\item Kontext und Schaden klären, Kriterium wählen
+\item Metriken \emph{pro Gruppe} berechnen (nicht nur global)
+\item mit SHAP prüfen, ob $A$/Proxies stark wirken
+\item Gegenmaßnahme wählen, Leistungsverlust messen
+\item dokumentieren (Model Card), nach dem Deployment überwachen
+\end{enumerate}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Gruppenmetriken vergleichen \emph{Statistiken zwischen Gruppen}
+\item Accuracy allein verbirgt Ungleichbehandlung
+\item Kriterien widersprechen sich bei ungleichen Basisraten
+\item Vertiefung mit Herleitung und Code: nächste Seite
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was ist der Unterschied zwischen Demographic Parity und Equal Opportunity?}{DP gleicht die Auswahlrate an (ohne Label); Equal Opportunity die TPR unter den tatsächlich Positiven.}{Warum reicht es nicht, das sensible Merkmal zu entfernen?}{Proxies (z.\,B.\ PLZ) tragen dieselbe Information.}{Was besagt die 80\,\%-Regel?}{Verhältnis der Auswahlraten $<0.8$ deutet auf nachteilige Wirkung.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Fairness ist keine Zahl, sondern eine begründete Entscheidung.“
+\end{hnbanner}
+\end{hngrid}

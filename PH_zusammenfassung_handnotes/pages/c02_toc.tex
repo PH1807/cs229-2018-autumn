@@ -1,0 +1,71 @@
+\hnheader[Weiter: unüberwachtes und bestärkendes Lernen, Spickzettel und die Landkarte des Kurses.][Modell wählen $\to$ Verlust $\to$ optimieren $\to$ prüfen!]{Inhalt \&}{Landkarte}{Teil IV--V, Anhang, roter Faden}
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnrose]{IV}{Unüberwachtes Lernen}
+\tocl{29}{p19_kmeans}{K-Means}\hfill\tocl{34}{p23_pca}{PCA}\\[3pt]
+\tocl{30}{p31_hierarchisch}{Hierarchisches Clustering}\hfill\tocl{35}{p24_ica}{ICA}\\[3pt]
+\tocv{v12_clustering}{Vertiefung: K-Means \& Clustering}\hfill\tocv{v14_pca_ica}{Vertiefung: PCA \& ICA}\\[3pt]
+\tocl{31}{p20_em}{EM-Algorithmus}\hfill\tocl{36}{p38_vae_gan}{Generative Modelle: VAE, GAN}\\[3pt]
+\tocv{v13_em}{Vertiefung: EM-Algorithmus}\hfill\tocv{v15_vae_gan}{Vertiefung: VAE \& GAN}\\[3pt]
+\tocl{32}{p21_fa}{Faktorenanalyse}\hfill\tocl{37}{p26_kritik}{Kritische Perspektiven}\\[3pt]
+\tocl{33}{p22_hmm}{Hidden Markov Models}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{V}{Bestärkendes Lernen}
+\tocw{38}{p27_mdp}{MDPs \& Value Iteration}
+\vspace{2pt}
+\tocw{39}{p28_lqr}{LQR, DDP \& LQG}
+\vspace{2pt}
+\tocw{40}{p29_policygradient}{Policy Gradient}
+\vspace{2pt}
+\tocvw{v16_rl}{Vertiefung: Bestärkendes Lernen}
+\vspace{2pt}
+\tocvw{v16b_rl_lqr}{Vertiefung: LQR-Riccati \& Tricks}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{A}{Anhang: Spickzettel}
+\tocw{S1}{s01_algotabelle}{Algorithmen-Tabelle}
+\vspace{2pt}
+\tocw{S2}{s02_formeln}{Formel-Spickzettel}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnnavy]{$\star$}{Der ML-Workflow (roter Faden)}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=2pt,font=\scriptsize,align=center,inner sep=3.5pt,minimum height=9mm,minimum width=2.1cm}]
+  \node[fill=hnorange!20] (a) at (0,0) {1 Problem\\definieren};
+  \node[fill=hnmint] (b) at (2.5,0) {2 Daten\\sammeln};
+  \node[fill=hnyellow] (c) at (5,0) {3 Modell \&\\Verlust wählen};
+  \node[fill=hnblue] (d) at (7.5,0) {4 Optimieren\\(GD, EM, \dots)};
+  \node[fill=hnpink] (e) at (10,0) {5 Bewerten\\(Metriken, CV)};
+  \node[fill=hnlilac] (f) at (12.5,0) {6 Verbessern\\(Bias/Varianz)};
+  \foreach \p/\q in {a/b,b/c,c/d,d/e,e/f}{\draw[->,thick,hnorange] (\p)--(\q);}
+  \draw[->,thick,hnorange,dashed] (f.south) -- ++(0,-.6) -| (c.south);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{$\star$}{Drei Lernparadigmen}
+\begin{itemize}
+\item \textbf{Überwacht} $(x,y)$: Vorhersage lernen (Regression, Klassifikation).
+\item \textbf{Unüberwacht} $x$: Struktur finden (Cluster, Dimensionsreduktion, Sequenzen, Generative Modelle).
+\item \textbf{Bestärkend}: Aktionen wählen, um Belohnung zu maximieren.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{$\star$}{So liest du diese Notizen}
+\begin{itemize}
+\item \colorbox{hnmint}{Beispiel} mit Rechnung \& \hnsol{} (alle Zahlen maschinell geprüft)
+\item \colorbox{hnblue}{Pseudo-Code}, \colorbox{hnyellow}{Merke-Zettel}, Key Takeaways, \colorbox{hnlilac}{Selbsttest}
+\item \textbf{+ Vertiefung}: Herleitung Schritt für Schritt und getesteter Code direkt hinter dem Thema
+\item \colorbox{hnorange!20}{Zusatzinfo (Internet)} = nicht aus den Notes; \emph{Quelle:} unter jedem Titel
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnnavy]{$\Sigma$}{Notation: was die Symbole überall bedeuten}
+\hnsmall\raggedright
+$n$ Anzahl Beispiele, $d$ Anzahl Merkmale, $x^{(i)}\in\R^d$ Merkmalsvektor, $y^{(i)}$ Label des $i$-ten Beispiels, $X\in\R^{n\times d}$ Design-Matrix (eine Zeile pro Beispiel), $\theta$ Modellparameter, $h_\theta(x)$ bzw.\ $\hat y$ Vorhersage, $J(\theta)$ Kosten (zu minimieren), $\ell(\theta)$ Log-Likelihood (zu maximieren), $\alpha$ Lernrate, $\lambda$ Regularisierungsstärke, $\nabla$ Gradient (Vektor der Ableitungen), $\E$ Erwartungswert, $\N(\mu,\Sigma)$ Normalverteilung, $\I\{\cdot\}$ Indikator (1, wenn wahr), $\sigma$ Sigmoid bzw.\ Standardabweichung (je nach Kontext), $A\T$ transponiert, $\|\cdot\|$ Länge (Norm), $\odot$ elementweises Produkt, $\mathcal H$ Hypothesenraum, $K$ Anzahl Klassen bzw.\ Cluster. Wird ein Symbol lokal anders benutzt, steht eine \emph{Legende} direkt im Panel.
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Modell, Verlust, Optimierung -- die drei Fragen hinter jedem Algorithmus dieser Vorlesung.“
+\end{hnbanner}
+\end{hngrid}

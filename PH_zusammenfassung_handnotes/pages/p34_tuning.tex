@@ -1,0 +1,101 @@
+\hnheader[Gute Modelle brauchen gute Validierung und die richtigen Hyperparameter.][Testset nur \emph{einmal} am Ende benutzen!]{Validierung \&}{Hyperparameter-Tuning}{Cross-Validation, Grid/Random Search, Nested CV}
+\hnsrc{hand-notes/ML Notes.pdf (Cross-Validation \& Hyperparameter Tuning), notes/cs229-notes5.pdf (Model selection)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Warum Kreuzvalidierung?}
+Ein einzelner Train/Test-Split liefert eine \emph{verrauschte} Schätzung des Generalisierungsfehlers. CV nutzt mehrere Splits und mittelt $\Rightarrow$ stabilere Schätzung, bessere Datennutzung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{$K$-Fold}
+Daten in $K$ Teile; jeder Teil ist einmal Validierung, der Rest Training:
+\[ \mathrm{CV}=\frac1K\sum_{k=1}^{K}\mathrm{Score}_k \]
+Üblich $K=5$ oder $10$. Danach: mit dem besten Hyperparameter auf \emph{allen} Daten neu trainieren.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: 5 Folds}
+\centering
+\begin{tikzpicture}[every node/.style={minimum width=.62cm,minimum height=.32cm,inner sep=0,font=\tiny,draw=hnnavy}]
+  \foreach \r in {0,1,2,3,4}{\foreach \c in {0,1,2,3,4}{\ifnum\r=\c\node[fill=hnpink] at (\c*.62,-\r*.4) {Test};\else\node[fill=hnblue!60] at (\c*.62,-\r*.4) {Train};\fi}}
+  \foreach \r in {0,1,2,3,4}{\node[draw=none,anchor=east,minimum width=0] at (-.4,-\r*.4) {\the\numexpr\r+1\relax};}
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{CV-Varianten}
+\begin{itemize}
+\item \textbf{Stratified $K$-Fold}: Klassenanteile pro Fold erhalten (Ungleichgewicht).
+\item \textbf{Leave-One-Out}: $K=n$, fast unverzerrt, sehr teuer.
+\item \textbf{Repeated $K$-Fold}: mit neuen Zufallssplits wiederholen.
+\item \textbf{Zeitreihen-CV} (Walk-Forward): Training immer \emph{vor} der Validierung, nie in die Zukunft blicken.
+\item \textbf{Group-CV}: zusammengehörige Beispiele nie über Folds verteilen.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Parameter vs.\ Hyperparameter}
+\textbf{Parameter} werden \emph{gelernt} (Gewichte $\theta$, $W$). \textbf{Hyperparameter} legt man \emph{vorher} fest und tunt sie (Lernrate, $\lambda$, $C$, $\gamma$, $k$, Baumtiefe, $K$ bei K-Means, Netzgröße).\\
+Gute Hyperparameter $\Rightarrow$ besseres Modell; sie nie mit dem Testset wählen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Grid vs.\ Random Search}
+\begin{pcode}[Random Search mit CV]
+\kw{repeat} $T$ mal:\\
+\hii ziehe Kombination $h$ zufällig aus dem Suchraum\\
+\hii $s(h)\leftarrow$ CV-Score von Modell$(h)$\\
+wähle $h^*=\arg\max_hs(h)$; trainiere neu auf allen Daten
+\end{pcode}
+Grid: alle Kombinationen (exponentiell viele). Random: oft effizienter, weil meist nur wenige Hyperparameter wirklich zählen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Nested Cross-Validation}
+Wird der \emph{selbe} CV-Score zum Tunen und zum Berichten genutzt, ist er optimistisch verzerrt. Lösung:
+\begin{pcode}[Nested CV]
+\kw{for} äußerer Fold $k=1..K$:\\
+\hii Trainingsteil $\to$ innere CV: wähle $h^*$\\
+\hii trainiere mit $h^*$ auf dem ganzen Trainingsteil\\
+\hii bewerte auf dem äußeren Testfold $\to s_k$\\
+Bericht: $\frac1K\sum_ks_k$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Auswertung \& Rechenaufwand}
+5-Fold-Scores $(0.82,0.85,0.80,0.84,0.83)$.\\
+\hnsol\ Mittel $=\ora{0.828}$, Standardabweichung $s\approx0.019$ $\Rightarrow$ ``$0.83\pm0.02$''.\\
+Random Forest, Gitter $3\times2=6$ Kombinationen, 5-Fold: $6\cdot5=30$ Fits (+1 Refit).\\
+Nested (5 außen, 3 innen): $5\cdot(3\cdot6+1)=95$ Fits -- deshalb bei großen Modellen Random Search.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{8}{Tuning-Workflow}
+\begin{enumerate}
+\item Suchraum und Metrik festlegen
+\item Suchstrategie (Grid/Random/Bayes)
+\item CV-Score je Kombination
+\item beste Kombination wählen
+\item auf allen Trainingsdaten neu trainieren
+\item \emph{einmal} auf dem Testset bewerten
+\end{enumerate}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnred]{9}{Fallstricke}
+\begin{hncon}
+\item Testset zum Tunen benutzen
+\item Vorverarbeitung vor dem Split (Leakage) $\to$ Pipeline
+\item ungeeignete CV für Zeitreihen/Gruppen
+\item zu große Suche $\Rightarrow$ Overfitting auf den Validierungsfolds
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Mehr Splits $\Rightarrow$ stabilere Schätzung; Stratified bei Ungleichgewicht, Walk-Forward bei Zeitreihen
+\item Random Search $\ge$ Grid bei vielen Hyperparametern; Nested CV für ehrliche Bewertung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wozu Nested CV?}{Tuning und Bewertung trennen: sonst ist der CV-Score optimistisch.}{Warum Walk-Forward bei Zeitreihen?}{Zufällige Folds würden Zukunftsdaten ins Training mischen (Leakage).}{Warum am Ende neu auf allen Daten trainieren?}{CV dient nur der Auswahl; das finale Modell soll alle Trainingsdaten nutzen.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Validiere klug, tune weise, teste nur einmal.“
+\end{hnbanner}
+\end{hngrid}

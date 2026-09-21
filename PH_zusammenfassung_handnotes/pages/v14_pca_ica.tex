@@ -1,0 +1,34 @@
+\hnheader[PCA als Eigenwertproblem und ICA-Dichte per Variablenwechsel -- mit PCA-Code.][Lagrange mit $u\T u=1$ führt auf $\hat\Sigma u=\lambda u$]{PCA \& ICA:}{Vertiefung}{Herleitung und Code}
+\hnsrc{main\_notes.pdf Kap.\ 12--13 (PCA, ICA), notes/cs229-notes10.pdf, cs229-notes11.pdf; hand-notes/ML Notes.pdf (PCA); Schritte ergänzt; Code: code/sk\_pca.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{1}{PCA: Varianz maximieren}
+\hnleg{$x_i$ zentrierter Datenpunkt, $u$ Richtung (Länge 1), $\hat\Sigma=\frac1n\sum x_ix_i\T$ Kovarianzmatrix, $\lambda$ Lagrange-Multiplikator und zugleich Eigenwert.}
+Erste Hauptkomponente: $\max_u\frac1n\sum(u\T x_i)^2=u\T\hat\Sigma u$ s.t.\ $u\T u=1$.
+\begin{align*}
+\mathcal L&=u\T\hat\Sigma u-\lambda(u\T u-1)\\
+\nabla_u\mathcal L&=2\hat\Sigma u-2\lambda u=0\;\Rightarrow\;\hat\Sigma u=\lambda u
+\end{align*}
+$u$ ist Eigenvektor; Zielwert $u\T\hat\Sigma u=\lambda$ $\Rightarrow$ wähle den \emph{größten} Eigenwert. Weitere Komponenten: orthogonal dazu (nächste Eigenvektoren).
+\hnwords{Gesucht ist die Richtung, in der die projizierten Daten am stärksten streuen. Die Streuung entlang $u$ ist $u\T\hat\Sigma u$; das Maximum liefert der Eigenvektor zum größten Eigenwert.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{2}{ICA: Dichte unter $s=Wx$}
+\hnleg{$s$ unabhängige Quellen, $x=As$ beobachtete Mischung, $A$ Mischmatrix, $W=A^{-1}$ Entmischmatrix, $w_j$ $j$-te Zeile von $W$, $g$ Sigmoid als angenommene Quellen-Verteilungsfunktion, $\alpha$ Lernrate.}
+Quellen unabhängig, $p_s(s)=\prod_jp_s(s_j)$, $x=As$, $W=A^{-1}$. Variablenwechsel (Jacobi-Determinante):
+\[ p_x(x)=p_s(Wx)\,|\det W|=\Bigl(\prod_jp_s(w_j\T x)\Bigr)|W| \]
+Log-Likelihood: $\sum_i\bigl[\sum_j\log g'(w_j\T x_i)+\log|W|\bigr]$ mit $\nabla_W\log|W|=(W\T)^{-1}$ $\Rightarrow$ Update $W\leftarrow W+\alpha\bigl((1-2g(Wx))x\T+(W\T)^{-1}\bigr)$.
+\hnwords{Aus der Dichte der unabhängigen Quellen folgt die Dichte der Mischung; $|\det W|$ korrigiert, wie $W$ Volumen streckt. Dann Gradientenanstieg auf der Log-Likelihood.}
+\end{hnp}
+%
+\hnsnip[hnorange]{sk_pca}{PCA mit Standardisierung: erklärte Varianz}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum führt PCA auf ein Eigenwertproblem?}{Lagrange mit $u\T u=1$: $\hat\Sigma u=\lambda u$; die Varianz ist $\lambda$.}{Woher kommt $|\det W|$ in der ICA-Dichte?}{Variablenwechsel $s=Wx$: die Jacobi-Determinante korrigiert das Volumen.}{Warum vor PCA skalieren?}{Sonst dominiert das Feature mit der größten Skala die Varianz.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Behalte die Richtungen, in denen die Daten etwas zu erzählen haben.“
+\end{hnbanner}
+\end{hngrid}

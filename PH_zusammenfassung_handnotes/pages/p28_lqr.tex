@@ -1,0 +1,102 @@
+\hnheader[Lineare Dynamik plus quadratische Kosten ergibt eine exakte, analytische Lösung.][Die optimale Regel ist linear: $u_t=-K_tx_t$]{LQR, DDP}{\& LQG}{Regelung kontinuierlicher Systeme}
+\hnsrc{main\_notes.pdf (LQR, DDP, LQG), notes/cs229-notes13.pdf (D.\ Boneh \& A.\ Ng)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{LQR-Setup}
+\begin{align*}
+x_{t+1}&=Ax_t+Bu_t+w_t\\
+c_t&=x_t\T Qx_t+u_t\T Ru_t
+\end{align*}
+Lineare Dynamik, quadratische Kosten ($Q\succeq0$, $R\succ0$), Rauschen $w_t\sim\N(0,\Sigma_w)$. Ziel: Zustand nahe 0 mit wenig Stellenergie.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Riccati-Rekursion}
+Wertfunktion quadratisch: $V_t(x)=x\T P_tx+q_t$. \hnleg{$x_t$ Zustand, $u_t$ Steuerung, $A,B$ Dynamikmatrizen, $Q,R$ Kostenmatrizen, $P_t$ Kostenmatrix der Wertfunktion, $K_t$ Reglerverstärkung, $T$ Horizont.}
+\begin{align*}
+P_T&=Q\\
+P_t&=Q+A\T P_{t+1}A\\&\quad-A\T P_{t+1}B\,K_t\\
+K_t&=(R+B\T P_{t+1}B)^{-1}B\T P_{t+1}A
+\end{align*}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Regelkreis}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=2pt,font=\scriptsize,inner sep=4pt}]
+  \node[fill=hnyellow] (k) at (0,0) {Regler $-K_t$};
+  \node[fill=hnmint] (s) at (3,0) {System $A,B$};
+  \draw[->,hnorange,thick] (k) -- node[draw=none,above,font=\tiny]{$u_t$} (s);
+  \draw[->,hnnavy,thick] (s.south) -- ++(0,-.6) -| node[draw=none,near start,below,font=\tiny]{$x_t$} (k.south);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{LQR-Algorithmus}
+\begin{pcode}[Finite-Horizon LQR]
+$P_T\leftarrow Q$\\
+\kw{for} $t=T{-}1..0$: \ \cm{\# rückwärts}\\
+\hii $K_t\leftarrow(R+B^{\top}P_{t+1}B)^{-1}B^{\top}P_{t+1}A$\\
+\hii $P_t\leftarrow Q+A^{\top}P_{t+1}A-A^{\top}P_{t+1}B\,K_t$\\
+\kw{for} $t=0..T{-}1$: \ \cm{\# vorwärts}\\
+\hii $u_t\leftarrow-K_tx_t$;\;\; $x_{t+1}\leftarrow Ax_t+Bu_t$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{DDP: nichtlineare Systeme}
+$x_{t+1}=f(x_t,u_t)$: linearisiere um eine Referenztrajektorie $(\bar x_t,\bar u_t)$:
+\[ f(x,u)\approx f(\bar x,\bar u)+F_x(x-\bar x)+F_u(u-\bar u) \]
+\begin{pcode}[DDP / iterative LQR]
+\kw{repeat} bis Konvergenz:\\
+\hii linearisiere $f$, quadratisiere Kosten\\
+\hii Backward: LQR $\to K_t$\\
+\hii Forward: Politik anwenden $\to$ neue Trajektorie
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: skalares LQR}
+$x_{t+1}=x_t+u_t$, $Q=R=1$, $P_T=1$.\\
+\hnsol\ $K=\frac{P}{1+P}$: $P_T=1\Rightarrow K=0.5$; $P=1+1-\frac{1}{2}=\ora{1.5}$; dann $K=0.6$, $P=1.6$\dots\\
+Fixpunkt: $P^2-P-1=0\Rightarrow P^*=\ora{1.618}$, $K^*=0.618$.\\
+Start $x_0=1$: $u_0=-0.618$, $x_1=\ora{0.382}$ \hlm{Zustand schrumpft.}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{LQG: nicht beobachtbarer Zustand}
+Messung $y_t=Cx_t+v_t$, $v_t\sim\N(0,\Sigma_v)$. \textbf{Separationsprinzip}: Kalman-Filter und LQR-Regler unabhängig entwerfen.
+\begin{pcode}[LQG]
+\kw{for} jeden Schritt:\\
+\hii $\hat x_t\leftarrow$ Kalman-Filter$(y_{1..t})$\\
+\hii $u_t\leftarrow-K_t\hat x_t$ \ \cm{\# LQR mit Schätzung}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item analytisch, effizient
+\item lineare optimale Regel
+\item DDP: nichtlinear nutzbar
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item nur lineare/lokal linearisierte Dynamik
+\item quadratische Kosten
+\item DDP: lokale Lösung
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Riccati rückwärts, Regelung vorwärts
+\item $u_t=-K_tx_t$
+\item LQG: Kalman + LQR
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Form der optimalen Policy?}{$u_t=-K_tx_t$ (linear im Zustand).}{Was liefert die Riccati-Rekursion?}{$P_t$ rückwärts (quadratische Wertfunktion) und damit $K_t$.}{Separationsprinzip?}{Kalman-Filter und LQR unabhängig entwerfen; $\hat x$ statt $x$ nutzen.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wenn die Welt linear ist und die Kosten quadratisch, gibt es eine Formel statt einer Suche.“
+\end{hnbanner}
+\end{hngrid}

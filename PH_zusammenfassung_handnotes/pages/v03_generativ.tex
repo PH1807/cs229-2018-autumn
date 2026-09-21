@@ -1,0 +1,40 @@
+\hnheader[MLE-Schätzer von Naive Bayes und GDA -- und warum GDA auf eine logistische Form führt.][Der quadratische Term kürzt sich, weil beide Klassen dasselbe $\Sigma$ haben]{Generative Modelle:}{Vertiefung}{Herleitung und Code}
+\hnsrc{main\_notes.pdf Kap.\ 4 (GDA, Naive Bayes); Herleitungen ausformuliert; Code: code/sk\_nb.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{1}{MLE für Naive Bayes \& GDA}
+\hnleg{$\phi_{j|k}=P(x_j{=}1|y{=}k)$, $x_{ij}$ Merkmal $j$ von Beispiel $i$, $\I\{\cdot\}$ Indikator, $\mu_k$ Klassenmittel, $\Sigma$ Kovarianzmatrix, $\#\{\cdot\}$ Anzahl.}
+\textbf{Bernoulli-NB}: $\ell=\sum_i\bigl[\I\{y_i{=}k,x_{ij}{=}1\}\log\phi_{j|k}+\I\{y_i{=}k,x_{ij}{=}0\}\log(1-\phi_{j|k})\bigr]$; Ableiten und Nullsetzen wie bei der Bernoulli-MLE ($\hat\phi=k/n$): $\hat\phi_{j|k}=\frac{\#\{x_j{=}1,y{=}k\}}{\#\{y{=}k\}}$.\\
+\textbf{GDA}: $\nabla_{\mu_k}\sum_{i:y_i=k}-\frac12(x_i-\mu_k)\T\Sigma^{-1}(x_i-\mu_k)=0\Rightarrow\hat\mu_k=$ Klassenmittel; $\hat\Sigma$ $=$ gemittelte Streumatrix über alle Klassen.
+\hnwords{MLE heißt hier einfach zählen und mitteln: Anteil der Klasse-$k$-Beispiele mit Merkmal $j$, bzw.\ Klassenmittel und mittlere Streuung.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{2}{GDA $\Rightarrow$ logistische Form}
+Gleiches $\Sigma$, Prior $\phi=P(y{=}1)$. Log-Odds per Bayes und Gauß-Dichten:
+\hnleg{$p(y{=}1|x)$ Posterior, $p(x|k)$ Gauß-Dichte der Klasse $k$, $\phi$ Prior, $\sigma$ Sigmoid, $\Sigma^{-1}$ inverse Kovarianz, $\theta_0$ Achsenabschnitt.}
+\begin{align*}
+\log\tfrac{p(y{=}1|x)}{p(y{=}0|x)}&=\log\tfrac{p(x|1)}{p(x|0)}+\log\tfrac{\phi}{1-\phi}\\
+\log\tfrac{p(x|1)}{p(x|0)}&=-\tfrac12(x{-}\mu_1)\T\Sigma^{-1}(x{-}\mu_1)+\tfrac12(x{-}\mu_0)\T\Sigma^{-1}(x{-}\mu_0)\\
+&=(\mu_1{-}\mu_0)\T\Sigma^{-1}x-\tfrac12\bigl(\mu_1\T\Sigma^{-1}\mu_1-\mu_0\T\Sigma^{-1}\mu_0\bigr)
+\end{align*}
+Der quadratische Term $x\T\Sigma^{-1}x$ \emph{kürzt sich} (gleiches $\Sigma$). Also $p(y{=}1|x)=\sigma(\theta\T x+\theta_0)$ mit $\theta=\Sigma^{-1}(\mu_1-\mu_0)$.
+\hnwords{Log-Odds $=$ Dichteverhältnis $+$ Prior-Verhältnis (Bayes). Setzt man die Gauß-Dichten ein, fällt der Quadratterm heraus, übrig bleibt eine lineare Funktion.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: GDA-Posterior nachgerechnet}
+$\mu_0=(0,0)$, $\mu_1=(2,1)$, $\Sigma=\begin{psmallmatrix}1&0.3\\0.3&1\end{psmallmatrix}$, $\phi=0.4$, $x=(1.5,1)$.\\
+\hnsol\ $\theta=\Sigma^{-1}(\mu_1-\mu_0)=(1.868,\,0.440)$, $\theta_0=-2.493$.\\
+$z=\theta\T x+\theta_0=\ora{0.748}\Rightarrow p(y{=}1|x)=\sigma(0.748)=\ora{0.679}$ \hlm{(maschinell geprüft: direkte Bayes-Rechnung liefert dasselbe)}.
+\end{hnex}
+%
+\hnsnip[hnteal]{sk_nb}{Multinomial Naive Bayes für Text mit Laplace-Glättung}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Wie lautet der MLE-Schätzer bei Bernoulli-Naive-Bayes?}{$\hat\phi_{j|k}=\#\{x_j{=}1,y{=}k\}/\#\{y{=}k\}$ (Bernoulli-MLE $k/n$ je Klasse).}{Warum ist der GDA-Posterior logistisch?}{Bei gleichem $\Sigma$ kürzt sich $x\T\Sigma^{-1}x$; die Log-Odds sind linear in $x$.}{Wozu die Laplace-Glättung?}{Verhindert $P=0$ bei ungesehenen Kombinationen ($+1$ im Zähler, $+2$ im Nenner).}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Generativ modelliert, diskriminativ entschieden: bei Gauß-Klassen führen beide zur selben Grenze.“
+\end{hnbanner}
+\end{hngrid}

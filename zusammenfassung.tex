@@ -1,0 +1,2296 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{mdframed}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usepackage{bbm}
+
+\geometry{left=2.8cm, right=2.8cm, top=3cm, bottom=3cm}
+
+% ------------------------------------------------------------------
+% Farben (angelehnt an das Skript)
+% ------------------------------------------------------------------
+\definecolor{mainblue}{RGB}{0, 83, 156}
+\definecolor{lightblue}{RGB}{230, 242, 255}
+\definecolor{algbg}{RGB}{245, 248, 255}
+\definecolor{defbg}{RGB}{255, 252, 235}
+\definecolor{thmbg}{RGB}{240, 255, 240}
+\definecolor{webbg}{RGB}{255, 244, 230}
+\definecolor{srcbg}{RGB}{240, 240, 240}
+
+% ------------------------------------------------------------------
+% Theorem-Umgebungen
+% ------------------------------------------------------------------
+\newtheoremstyle{csthm}{}{}{\itshape}{}{\bfseries\color{mainblue}}{.}{ }{}
+\theoremstyle{csthm}
+\newtheorem{theorem}{Satz}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Korollar}
+
+\newtheoremstyle{csdef}{}{}{}{}{\bfseries\color{mainblue}}{.}{ }{}
+\theoremstyle{csdef}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Bemerkung}
+
+% ------------------------------------------------------------------
+% Algorithmus-Box
+% ------------------------------------------------------------------
+\tcbset{
+  algostyle/.style={
+    enhanced, colback=algbg, colframe=mainblue!60,
+    fonttitle=\bfseries\color{mainblue},
+    title={Algorithmus}, breakable, top=3mm, bottom=3mm,
+  },
+  defstyle/.style={
+    enhanced, colback=defbg, colframe=mainblue!40,
+    breakable, top=2mm, bottom=2mm, left=4mm,
+  },
+  thmstyle/.style={
+    enhanced, colback=thmbg, colframe=mainblue!50,
+    breakable, top=2mm, bottom=2mm, left=4mm,
+  },
+  webstyle/.style={
+    enhanced, colback=webbg, colframe=mainblue!30!orange,
+    fonttitle=\bfseries\color{mainblue!30!orange!80!black},
+    title={Zusatzinfo (Internet)}, breakable, top=2mm, bottom=2mm, left=4mm,
+  },
+  srcstyle/.style={
+    enhanced, colback=srcbg, colframe=gray!60,
+    fonttitle=\bfseries\itshape\color{gray!60!black},
+    title={Quelle}, breakable, top=1mm, bottom=1mm, left=3mm, boxrule=0.4pt,
+    fontupper=\small\itshape,
+  }
+}
+
+% ------------------------------------------------------------------
+% Makros
+% ------------------------------------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\I}{\mathbbm{1}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\thetahat}{\hat{\theta}}
+\newcommand{\htheta}{h_\theta}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\T}{^\top}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+\hypersetup{colorlinks=true, linkcolor=mainblue, urlcolor=mainblue, citecolor=mainblue}
+
+% ------------------------------------------------------------------
+% Titelseite
+% ------------------------------------------------------------------
+\title{%
+  \vspace{-1cm}
+  {\Large CS229: Machine Learning}\\[6pt]
+  {\LARGE\bfseries\color{mainblue} Vorlesungsskript -- Zusammenfassung}\\[6pt]
+  {\large Andrew Ng \& Tengyu Ma}
+}
+\author{Stanford University}
+\date{Ausgabe 2023 -- Deutsche Zusammenfassung}
+
+% ==================================================================
+\begin{document}
+% ==================================================================
+% ngerman/babel macht " zu einem aktiven Kürzel-Zeichen (z.B. "a -> ä,
+% "s -> ß). Da " im Text auch als normales Anführungszeichen genutzt wird,
+% deaktivieren wir dieses Shorthand global, um Fehlsubstitutionen zu vermeiden.
+\shorthandoff{"}
+\maketitle
+\tableofcontents
+\newpage
+
+% ==================================================================
+\section*{Vorwort}
+% ==================================================================
+
+Diese Zusammenfassung begleitet die CS229-Vorlesungsreihe -- basierend auf
+dem Skript \texttt{main\_notes.pdf}, sämtlichen ergänzenden Lecture Notes im
+Ordner \texttt{notes/} und \texttt{extra-notes/} (Decision Trees, Ensembling,
+Perceptron, Faktorenanalyse, Fehleranalyse sowie John Duchis Supplemental
+Notes zu Hoeffdings Ungleichung, Verlustfunktionen und dem
+Representer-Theorem) sowie zusätzlichem Material aus \texttt{materials/} und
+\texttt{section/} (Andrew Ngs ML-Advice-Folien, Konvexe Optimierung/KKT,
+SMO-Pseudocode, Gaussian Processes, Hidden Markov Models, Evaluationsmetriken
+sowie kritische Perspektiven auf ML). Ziel ist es, die wesentlichen Konzepte,
+Algorithmen und mathematischen Grundlagen aller 27 Kapitel kompakt
+darzustellen -- mit Herleitungen, Intuition und Querverweisen zwischen den
+Themen. Zwei Arten von Boxen kennzeichnen Material außerhalb des
+main\_notes-Kerntexts: graue \textbf{Quelle}-Boxen verweisen auf zusätzliche,
+aber offizielle CS229-Materialien (Section Notes, Handouts) aus diesem
+Repository; orange \textbf{Zusatzinfo (Internet)}-Boxen enthalten recherchiertes
+Material, das nicht aus CS229-Unterlagen stammt.
+
+Das Skript ist in fünf Teile gegliedert:
+\begin{enumerate}
+  \item \textbf{Überwachtes Lernen} (Kap.~1--10): Regression, Klassifikation,
+        generative Modelle, Kernel-Methoden, SVMs, Perceptron, Decision
+        Trees, Ensemble-Methoden, Verlustfunktionen
+  \item \textbf{Deep Learning} (Kap.~11): Neuronale Netze und Backpropagation
+  \item \textbf{Generalisierung \& Regularisierung} (Kap.~12--16):
+        Bias-Varianz, Double Descent, Modellauswahl, Gaussian Processes,
+        praktische Fehleranalyse, Evaluationsmetriken
+  \item \textbf{Unüberwachtes Lernen} (Kap.~17--24): Clustering, EM,
+        Faktorenanalyse, Hidden Markov Models, PCA, ICA, Foundation Models,
+        kritische Perspektiven auf ML
+  \item \textbf{Bestärkendes Lernen} (Kap.~25--27): MDPs, LQR, Policy
+        Gradient
+\end{enumerate}
+
+\noindent\textbf{Notation.} Vektoren und Matrizen werden fett geschrieben
+($\bm{x}, \bm{W}$). Skalare kursiv ($x, \theta$). Zufallsgrößen mit
+Großbuchstaben ($X, Y$). Trainingsdaten $\{(x^{(i)}, y^{(i)})\}_{i=1}^n$ mit
+$n$ Beispielen.
+
+\newpage
+
+% ==================================================================
+\part{Überwachtes Lernen}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\section{Lineare Regression}
+% ------------------------------------------------------------------
+
+\subsection{Aufgabenstellung}
+
+Beim überwachten Lernen sei ein Datensatz
+$\{(x^{(i)}, y^{(i)})\}_{i=1}^n$ mit $x^{(i)} \in \R^d$ und
+$y^{(i)} \in \R$ gegeben. Ziel ist es, eine Hypothesenfunktion
+$h : \R^d \to \R$ zu lernen, die für neue Eingaben $x$ gute
+Vorhersagen $h(x) \approx y$ liefert.
+
+Bei der \textbf{linearen Regression} wird angesetzt:
+\begin{equation}
+  \htheta(x) = \theta\T x = \sum_{j=0}^{d} \theta_j x_j,
+  \qquad x_0 := 1 \text{ (Bias-Term).}
+\end{equation}
+
+\subsection{Kostenfunktion und Gradientenverfahren}
+
+Die \textbf{mittlere quadratische Abweichung} (MSE) dient als Verlustfunktion:
+\begin{equation}
+  J(\theta) = \frac{1}{2n} \sum_{i=1}^{n}
+    \bigl(\htheta(x^{(i)}) - y^{(i)}\bigr)^2.
+\end{equation}
+
+Batch Gradient Descent minimiert $J$ durch iterative Updates:
+\begin{equation}
+  \theta_j \leftarrow \theta_j
+    - \alpha \frac{\partial J}{\partial \theta_j}
+  = \theta_j + \frac{\alpha}{n}
+    \sum_{i=1}^{n} \bigl(y^{(i)} - \htheta(x^{(i)})\bigr)\, x_j^{(i)}.
+\end{equation}
+
+\noindent\textbf{Stochastisches Gradientenverfahren (SGD).} Bei großen
+Datensätzen ist ein vollständiger Batch-Update teuer. SGD wählt in jedem
+Schritt ein einzelnes (oder eine kleine Gruppe von) Beispiel(en) und
+approximiert den Gradienten:
+\begin{equation}
+  \theta_j \leftarrow \theta_j
+    + \alpha \bigl(y^{(i)} - \htheta(x^{(i)})\bigr)\, x_j^{(i)}.
+\end{equation}
+
+\subsection{Normalgleichungen (Geschlossene Lösung)}
+
+Die \textbf{Design-Matrix} $X \in \R^{n \times d}$ enthält die
+Trainingsvektoren zeilenweise. Dann lässt sich der Verlust kompakt
+schreiben als
+\begin{equation}
+  J(\theta) = \tfrac{1}{2n}\, \norm{X\theta - \bm{y}}^2.
+\end{equation}
+Ableiten und Null setzen ergibt die \textbf{Normalgleichungen}:
+\begin{equation}
+  \boxed{\thetahat = (X\T X)^{-1} X\T \bm{y}.}
+\end{equation}
+Diese geschlossene Lösung ist für kleine bis mittlere $d$ effizient; für
+sehr große $d$ oder schlecht konditioniertes $X\T X$ wird das iterative
+Verfahren bevorzugt.
+
+\subsection{Probabilistische Interpretation}
+
+Annahme: $y^{(i)} = \theta\T x^{(i)} + \varepsilon^{(i)}$ mit iid
+$\varepsilon^{(i)} \sim \N(0, \sigma^2)$. Dann ist die Likelihood
+\[
+  L(\theta) = \prod_{i=1}^n p(y^{(i)} \mid x^{(i)}; \theta)
+  = \prod_{i=1}^n \frac{1}{\sqrt{2\pi}\,\sigma}
+    \exp\!\Bigl(-\frac{(y^{(i)} - \theta\T x^{(i)})^2}{2\sigma^2}\Bigr).
+\]
+Maximierung der Log-Likelihood ist äquivalent zur Minimierung von $J(\theta)$
+-- die Least-Squares-Methode ist somit der Maximum-Likelihood-Schätzer (MLE)
+unter der Gauß-Annahme.
+
+\subsection{Lokal gewichtete lineare Regression}
+
+Bei der \textbf{lokal gewichteten Regression} (LWLR) werden die
+Trainingspunkte je nach Nähe zur Anfrage $x$ unterschiedlich gewichtet:
+\begin{equation}
+  w^{(i)}(x) = \exp\!\Bigl(-\frac{\norm{x^{(i)} - x}^2}{2\tau^2}\Bigr),
+\end{equation}
+und der gewichtete Verlust $J(\theta) = \sum_i w^{(i)}(x)(y^{(i)} -
+\theta\T x^{(i)})^2$ wird minimiert. LWLR ist ein
+\textbf{nichtparametrisches} Verfahren: die Lösung hängt stets von den
+Trainingsdaten ab.
+
+% ------------------------------------------------------------------
+\section{Klassifikation und Logistische Regression}
+% ------------------------------------------------------------------
+
+\subsection{Logistische Regression}
+
+Bei binärer Klassifikation ($y \in \{0,1\}$) ist ein lineares Modell
+ungeeignet, da $\theta\T x \notin [0,1]$. Stattdessen setzt man die
+\textbf{Sigmoid-Funktion} ein:
+\begin{equation}
+  g(z) = \frac{1}{1 + e^{-z}}, \qquad
+  \htheta(x) = g(\theta\T x) = \frac{1}{1 + e^{-\theta\T x}}.
+\end{equation}
+
+Das stochastische Modell lautet:
+\begin{align}
+  P(y = 1 \mid x;\,\theta) &= \htheta(x), \\
+  P(y = 0 \mid x;\,\theta) &= 1 - \htheta(x).
+\end{align}
+
+Die Log-Likelihood über den Datensatz ist
+\begin{equation}
+  \ell(\theta) = \sum_{i=1}^n
+    \Bigl[y^{(i)}\log \htheta(x^{(i)})
+      + (1 - y^{(i)})\log\bigl(1 - \htheta(x^{(i)})\bigr)\Bigr].
+\end{equation}
+Maximierung via Stochastic Gradient Ascent führt auf die Update-Regel
+\begin{equation}
+  \theta_j \leftarrow \theta_j
+    + \alpha\bigl(y^{(i)} - \htheta(x^{(i)})\bigr)\, x_j^{(i)},
+\end{equation}
+die formal identisch mit der LMS-Regel aussieht -- ein bemerkenswertes
+Ergebnis, obwohl $h$ eine völlig andere Funktion ist.
+
+\subsection{Newton-Verfahren (Fisher Scoring)}
+
+Das Newton-Raphson-Verfahren konvergiert deutlich schneller als
+Gradientenverfahren, weil es Krümmungsinformation nutzt:
+\begin{equation}
+  \theta \leftarrow \theta - H^{-1} \nabla_\theta \ell(\theta),
+\end{equation}
+wobei die \textbf{Hesse-Matrix} $H_{jk} = \partial^2\ell / (\partial\theta_j
+\partial\theta_k)$ für logistische Regression lautet:
+\begin{equation}
+  H = -\frac{1}{n} X\T S\, X, \qquad
+  S = \operatorname{diag}\bigl(\htheta(x^{(1)})(1-\htheta(x^{(1)})),\ldots\bigr).
+\end{equation}
+Newton-Schritt heißt hier auch \textbf{Fisher Scoring} und konvergiert
+quadratisch -- ein Schritt entspricht grob $O(d)$ Gradientenschritten.
+
+\subsection{Mehrklassen-Klassifikation und Softmax}
+
+Für $K$ Klassen parametrisiert man für jede Klasse $k$ einen Vektor
+$\theta_k \in \R^d$ und nutzt die \textbf{Softmax}-Funktion:
+\begin{equation}
+  P(y = k \mid x;\,\Theta)
+  = \frac{\exp(\theta_k\T x)}{\sum_{j=1}^K \exp(\theta_j\T x)}.
+\end{equation}
+Die zugehörige Verlustfunktion ist der \textbf{Cross-Entropy-Verlust}:
+\begin{equation}
+  \ell_\mathrm{CE}(\hat{y}, y)
+  = -\log P(y \mid x;\,\Theta)
+  = -\theta_y\T x + \log\sum_{j=1}^K \exp(\theta_j\T x).
+\end{equation}
+
+% ------------------------------------------------------------------
+\section{Generalisierte Lineare Modelle (GLMs)}
+% ------------------------------------------------------------------
+
+\subsection{Die Exponentialfamilie}
+
+Viele Standardverteilungen lassen sich in der \textbf{Exponentialfamilien}-
+Form schreiben:
+\begin{equation}
+  p(y;\,\eta) = b(y)\exp\!\bigl(\eta\T T(y) - a(\eta)\bigr),
+\end{equation}
+mit natürlichem Parameter $\eta$, hinreichender Statistik $T(y)$,
+Log-Partitionsfunktion $a(\eta)$ und Basismaß $b(y)$.
+
+\begin{tcolorbox}[defstyle]
+\textbf{Bernoulli-Verteilung:} $p(y;\phi) = \phi^y(1-\phi)^{1-y}$,
+$y\in\{0,1\}$. Schreibweise als Exponentialfamilie mit
+$\eta = \log\frac{\phi}{1-\phi}$, also $\phi = 1/(1+e^{-\eta})$ -- dies
+\emph{ist} genau die Sigmoid-Funktion.
+
+\medskip
+\textbf{Gauß-Verteilung:} $\N(\mu, \sigma^2)$ mit $\eta = \mu$, $T(y) = y$,
+$a(\eta) = \eta^2/2$, $b(y) = (2\pi)^{-1/2}e^{-y^2/2}$.
+\end{tcolorbox}
+
+\subsection{GLM-Konstruktion}
+
+Ein \textbf{Generalisiertes Lineares Modell} (GLM) basiert auf drei Annahmen:
+\begin{enumerate}
+  \item $y \mid x;\,\theta \sim \text{ExponentialFamily}(\eta)$.
+  \item Hypothese: $h(x) = \E[T(y) \mid x;\,\theta]$.
+  \item Lineare Verbindung: $\eta = \theta\T x$.
+\end{enumerate}
+
+Die kanonische \textbf{Responsefunktion} $g(\eta) = \E[T(y);\,\eta]$
+verbindet natürlichen Parameter und Erwartungswert. Ihre Inverse ist die
+\textbf{Linkfunktion}.
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Verteilung & Responsefunktion & Modell & Anwendung \\
+\midrule
+Gauß & Identität & Lineare Regression & Regressionsaufgaben \\
+Bernoulli & Sigmoid & Logistische Regression & Binäre Klassifikation \\
+Multinomial & Softmax & Softmax-Regression & Mehrklassenprobleme \\
+Poisson & $e^\eta$ & Poisson-Regression & Zähldaten \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ------------------------------------------------------------------
+\section{Generative Lernalgorithmen}
+% ------------------------------------------------------------------
+
+\subsection{Diskriminativ vs. Generativ}
+
+\textbf{Diskriminative} Modelle (z.\,B. logistische Regression) modellieren
+$p(y \mid x)$ direkt. \textbf{Generative} Modelle lernen $p(x \mid y)$ und
+$p(y)$ und nutzen den Satz von Bayes:
+\begin{equation}
+  p(y \mid x) = \frac{p(x \mid y)\,p(y)}{p(x)},
+  \qquad p(x) = \sum_y p(x \mid y)\,p(y).
+\end{equation}
+
+\subsection{Gaussian Discriminant Analysis (GDA)}
+
+GDA modelliert $x \mid y$ als multivariate Normalverteilung:
+\begin{align}
+  y &\sim \operatorname{Bernoulli}(\phi), \\
+  x \mid y=0 &\sim \N(\mu_0, \Sigma), \\
+  x \mid y=1 &\sim \N(\mu_1, \Sigma).
+\end{align}
+Die \textbf{multivariate Normalverteilung} lautet:
+\begin{equation}
+  p(x;\,\mu,\Sigma)
+  = \frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}}
+    \exp\!\Bigl(-\tfrac{1}{2}(x-\mu)\T\Sigma^{-1}(x-\mu)\Bigr).
+\end{equation}
+
+Die MLE-Schätzer sind:
+\begin{align}
+  \hat\phi &= \frac{1}{n}\sum_{i=1}^n \I\{y^{(i)}=1\}, \\
+  \hat\mu_k &= \frac{\sum_i \I\{y^{(i)}=k\}\,x^{(i)}}
+                    {\sum_i \I\{y^{(i)}=k\}},
+  \quad k \in \{0,1\}, \\
+  \hat\Sigma &= \frac{1}{n}\sum_{i=1}^n
+    (x^{(i)} - \hat\mu_{y^{(i)}})(x^{(i)} - \hat\mu_{y^{(i)}})\T.
+\end{align}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{GDA und logistische Regression.}
+Wenn $p(x \mid y)$ tatsächlich Gauß-verteilt ist, hat die Posterior
+$p(y=1 \mid x)$ stets die logistische Form $1/(1+e^{-\theta\T x})$.
+GDA macht \emph{stärkere} Annahmen und ist asymptotisch effizienter, wenn
+diese zutreffen. Logistische Regression ist robuster, wenn die
+Gauß-Annahme verletzt ist.
+\end{tcolorbox}
+
+\subsection{Naive Bayes}
+
+Naive Bayes setzt \textbf{bedingte Unabhängigkeit} der Features voraus:
+\begin{equation}
+  p(x \mid y) = \prod_{j=1}^d p(x_j \mid y).
+\end{equation}
+Dies vereinfacht die Schätzung erheblich. Für Textklassifikation mit
+Binärfeatures:
+\begin{equation}
+  \hat\phi_{j\mid y=k}
+  = \frac{\sum_i \I\{x_j^{(i)}=1,\, y^{(i)}=k\}}
+         {\sum_i \I\{y^{(i)}=k\}}.
+\end{equation}
+
+\textbf{Laplace-Glättung} verhindert Nullwahrscheinlichkeiten für
+ungesehene Features:
+\begin{equation}
+  \hat\phi_{j\mid y=k}
+  = \frac{1 + \sum_i \I\{x_j^{(i)}=1,\, y^{(i)}=k\}}
+         {2 + \sum_i \I\{y^{(i)}=k\}}.
+\end{equation}
+
+% ------------------------------------------------------------------
+\section{Kernel-Methoden}
+% ------------------------------------------------------------------
+
+\subsection{Feature Maps und das Kernel-Trick}
+
+Sei $\phi : \R^d \to \R^p$ eine Feature-Abbildung (z.\,B. Polynom-Features).
+Das LMS-Update in Feature-Raum lautet:
+\[
+  \theta \leftarrow \theta
+    + \alpha\sum_{i=1}^n \bigl(y^{(i)} - \theta\T\phi(x^{(i)})\bigr)\phi(x^{(i)}).
+\]
+Da $\theta$ stets als Linearkombination der $\phi(x^{(i)})$ geschrieben werden
+kann ($\theta = \sum_i \beta_i \phi(x^{(i)})$), reduziert sich die Vorhersage
+auf Skalarprodukte:
+\begin{equation}
+  h(x) = \theta\T\phi(x) = \sum_{i=1}^n \beta_i\,\phi(x^{(i)})\T\phi(x)
+        = \sum_{i=1}^n \beta_i\, K(x^{(i)}, x).
+\end{equation}
+
+\begin{definition}
+  Eine Funktion $K : \R^d \times \R^d \to \R$ heißt \textbf{Kernel}, wenn
+  $K(x, z) = \phi(x)\T\phi(z)$ für eine Feature-Abbildung $\phi$.
+\end{definition}
+
+Der entscheidende Vorteil: $K(x,z)$ kann in $O(d)$ Zeit berechnet werden,
+obwohl $\phi(x)$ möglicherweise sehr hochdimensional (oder unendlich-dimensional)
+ist. Beispiel: Polynom-Kernel $K(x,z) = (x\T z + c)^k$ entspricht einem
+$O(d^k)$-dimensionalen Feature-Raum.
+
+\subsection{Wichtige Kernels}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Kernel & $K(x, z)$ & Feature-Raum \\
+\midrule
+Linear & $x\T z$ & Original-Raum $\R^d$ \\
+Polynom (Grad $k$) & $(x\T z + c)^k$ & $O(d^k)$-dimensional \\
+Gauß (RBF) & $\exp\!\bigl(-\frac{\norm{x-z}^2}{2\sigma^2}\bigr)$ & $\infty$-dimensional \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Mercers Satz}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Mercers Satz.}
+Eine Funktion $K : \R^d \times \R^d \to \R$ ist genau dann ein gültiger
+Kernel (d.\,h. $K(x,z) = \phi(x)\T\phi(z)$ für ein $\phi$), wenn für beliebige
+Punkte $x^{(1)},\ldots,x^{(n)}$ die \textbf{Gram-Matrix}
+$[K]_{ij} = K(x^{(i)}, x^{(j)})$ symmetrisch und positiv semidefinit ist.
+\end{tcolorbox}
+
+Kernels sind unter Addition, positiver Skalierung und (elementweisem) Produkt
+abgeschlossen -- diese Rechenregeln ermöglichen den systematischen Aufbau
+komplexer Kernels aus einfachen.
+
+\subsection{Representer-Theorem}
+
+Warum genügt es, $\theta$ stets als Linearkombination der Trainingsbeispiele
+anzusetzen? Für einen regularisierten empirischen Risiko-Ansatz
+\begin{equation}
+  J_\lambda(\theta) = \frac{1}{n}\sum_{i=1}^n L(\theta\T x^{(i)}, y^{(i)})
+    + \frac{\lambda}{2}\norm{\theta}^2,
+\end{equation}
+mit einem in $z$ konvexen Verlust $L(z,y)$ (z.\,B.\ quadratischer, logistischer
+oder Hinge-Verlust) und $\lambda \geq 0$ gilt:
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Representer-Theorem.} Es existiert ein Minimierer von $J_\lambda$,
+der sich als Linearkombination der Trainingsbeispiele schreiben lässt:
+\begin{equation}
+  \theta = \sum_{i=1}^n \alpha_i\, x^{(i)}
+\end{equation}
+für reelle Koeffizienten $\alpha_1,\ldots,\alpha_n$.
+\end{tcolorbox}
+
+\textbf{Beweisidee} (differenzierbarer Fall, $\lambda>0$): Am Minimum
+verschwindet der Gradient,
+\[
+  \nabla J_\lambda(\theta) = \frac1n\sum_{i=1}^n L'(\theta\T x^{(i)},y^{(i)})\,x^{(i)}
+    + \lambda\theta = 0.
+\]
+Auflösen nach $\theta$ liefert direkt
+$\theta = -\frac{1}{n\lambda}\sum_i L'(\theta\T x^{(i)},y^{(i)})\,x^{(i)}
+=: \sum_i \alpha_i x^{(i)}$.
+Dies rechtfertigt im Nachhinein den Kernel-Trick aus Abschnitt~5.1: Da die
+Lösung stets in der von den Daten aufgespannten Linearkombination liegt,
+genügen zur Auswertung der Hypothese stets nur Skalarprodukte
+$\phi(x^{(i)})\T\phi(x^{(j)}) = K(x^{(i)}, x^{(j)})$ -- eine explizite
+Darstellung von $\theta$ im (ggf.\ unendlich-dimensionalen) Feature-Raum ist
+nie nötig.
+
+% ------------------------------------------------------------------
+\section{Support Vector Machines (SVMs)}
+% ------------------------------------------------------------------
+
+\subsection{Margins und Intuition}
+
+Eine Hyperebene $\{x : w\T x + b = 0\}$ klassifiziert Punkt $x^{(i)}$
+korrekt, wenn $y^{(i)}(w\T x^{(i)} + b) > 0$. Der \textbf{funktionale
+Margin} misst diese Konfidenz:
+\begin{equation}
+  \hat\gamma^{(i)} = y^{(i)}(w\T x^{(i)} + b),
+\end{equation}
+und der \textbf{geometrische Margin} (abstandsbasiert) ist
+\begin{equation}
+  \gamma^{(i)} = \frac{y^{(i)}(w\T x^{(i)} + b)}{\norm{w}}.
+\end{equation}
+Das SVM-Ziel: finde die Hyperebene, die alle Punkte korrekt klassifiziert
+und deren \emph{minimaler geometrischer Margin} maximal ist.
+
+\subsection{Primal-Problem (linear trennbar)}
+
+Mit der Normierung $\min_i \hat\gamma^{(i)} = 1$ wird das
+\textbf{Optimale-Margin-Klassifikatorproblem}:
+\begin{equation}
+  \min_{w,b}\; \tfrac{1}{2}\norm{w}^2 \quad
+  \text{s.t.}\quad y^{(i)}(w\T x^{(i)} + b) \geq 1, \quad i=1,\ldots,n.
+\end{equation}
+Dies ist ein konvexes quadratisches Programm.
+
+\subsection{Lagrange-Dualität und Dual-Form}
+
+Der Lagrangian ist
+\[
+  \mathcal{L}(w,b,\alpha)
+  = \tfrac{1}{2}\norm{w}^2 - \sum_{i=1}^n \alpha_i
+    \bigl[y^{(i)}(w\T x^{(i)} + b) - 1\bigr].
+\]
+Aus den KKT-Stationaritätsbedingungen folgt $w = \sum_i \alpha_i y^{(i)} x^{(i)}$.
+Einsetzen ergibt das \textbf{Dual-Problem}:
+\begin{equation}
+  \max_\alpha\; W(\alpha) = \sum_{i=1}^n \alpha_i
+    - \tfrac{1}{2}\sum_{i,j} \alpha_i\alpha_j y^{(i)} y^{(j)} \langle x^{(i)}, x^{(j)}\rangle
+\end{equation}
+s.t.\ $\alpha_i \geq 0$ und $\sum_i \alpha_i y^{(i)} = 0$.
+
+Die Vorhersage hängt damit nur noch von Skalarprodukten ab -- und lässt sich
+mit einem Kernel verallgemeinern: $\langle x^{(i)}, x^{(j)}\rangle \to K(x^{(i)}, x^{(j)})$.
+
+\textbf{Support Vectors} sind die Punkte mit $\alpha_i > 0$; nur sie
+definieren die Entscheidungsgrenze.
+
+Die "KKT-Stationaritätsbedingungen", die oben zur Herleitung von $w$ genutzt
+wurden, sind ein Spezialfall eines allgemeinen Satzes der konvexen
+Optimierung, der Optimalität für \emph{jedes} Primal-Dual-Paar
+charakterisiert:
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Karush-Kuhn-Tucker(KKT)-Theorem.} Für ein konvexes Problem
+$\min_x f(x)$ s.\,t.\ $g_i(x)\leq 0\;(i=1,\ldots,m)$, $h_i(x)=0\;(i=1,\ldots,p)$
+mit Lagrangian $\mathcal L(x,\alpha,\beta) = f(x) + \sum_i \alpha_i g_i(x) +
+\sum_i \beta_i h_i(x)$ gilt: $x^*$ ist primal-optimal und $(\alpha^*,\beta^*)$
+dual-optimal genau dann, wenn (bei starker Dualität) die folgenden vier
+Bedingungen erfüllt sind:
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+  \item \textbf{Primale Zulässigkeit}: $g_i(x^*)\leq 0$, $h_i(x^*)=0$.
+  \item \textbf{Duale Zulässigkeit}: $\alpha_i^* \geq 0$.
+  \item \textbf{Komplementärer Schlupf (complementary slackness)}: $\alpha_i^*\,g_i(x^*)=0$.
+  \item \textbf{Stationarität}: $\nabla_x \mathcal L(x^*,\alpha^*,\beta^*)=0$.
+\end{enumerate}
+\end{tcolorbox}
+
+Bedingung~3 erklärt direkt, warum nur Support Vectors ($\alpha_i>0$) die
+Lösung bestimmen: Für alle anderen Punkte muss die zugehörige
+Ungleichungsnebenbedingung $g_i(x^*)=0$ sein (d.\,h.\ $y^{(i)}(w\T x^{(i)}+b)=1$,
+der Punkt liegt exakt auf dem Margin) oder $\alpha_i^*=0$ (der Punkt trägt
+nicht zur Lösung bei).
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Convex Optimization Overview (cnt'd)}, Chuong B. Do (CS229
+Section Notes) -- \texttt{section/cs229-cvxopt2.pdf}, Abschnitt~1.6.
+\end{tcolorbox}
+
+\subsection{Soft-Margin SVM (nicht-trennbarer Fall)}
+
+Wenn die Daten nicht linear trennbar sind, erlaubt man Schlupfvariablen
+$\xi_i \geq 0$ (Verletzungen der Margin-Bedingung):
+\begin{equation}
+  \min_{w,b,\xi}\; \tfrac{1}{2}\norm{w}^2 + C\sum_{i=1}^n \xi_i \quad
+  \text{s.t.}\quad y^{(i)}(w\T x^{(i)} + b) \geq 1 - \xi_i,\quad \xi_i \geq 0.
+\end{equation}
+Der Hyperparameter $C > 0$ steuert den Trade-off zwischen großem Margin und
+kleinen Fehlern. Das Dual-Problem ändert sich nur in $0 \leq \alpha_i \leq C$.
+
+\subsection{SMO-Algorithmus}
+
+Der \textbf{Sequential Minimal Optimization (SMO)} Algorithmus löst das
+quadratische Programm, indem er iterativ immer zwei $\alpha_i$ simultan
+aktualisiert (da die Gleichheitsbedingung $\sum_i \alpha_i y^{(i)} = 0$ ein
+einzelnes Update verbietet). Die Konvergenz wird durch Prüfung der
+KKT-Bedingungen überwacht. Für die Soft-Margin-SVM lauten die KKT-Bedingungen
+konkret:
+\begin{equation}
+  \alpha_i = 0 \;\Rightarrow\; y^{(i)}(w\T x^{(i)}{+}b)\geq 1, \quad
+  \alpha_i = C \;\Rightarrow\; y^{(i)}(w\T x^{(i)}{+}b)\leq 1, \quad
+  0{<}\alpha_i{<}C \;\Rightarrow\; y^{(i)}(w\T x^{(i)}{+}b) = 1.
+\end{equation}
+
+\textbf{Vereinfachtes SMO} (wie in Aufgabenstellungen zu Problem Set~2
+verwendet): Statt einer aufwendigen Heuristik zur Auswahl des Paares
+$(\alpha_i,\alpha_j)$ iteriert man einfach über alle $\alpha_i$; verletzt
+$\alpha_i$ die KKT-Bedingungen, wird ein zufälliges $\alpha_j$ gewählt und
+beide gemeinsam optimiert:
+
+\begin{tcolorbox}[algostyle, title={Update-Schritt für ein Paar $(\alpha_i,\alpha_j)$}]
+\textbf{1. Grenzen bestimmen} (damit $0\leq\alpha_j\leq C$ erhalten bleibt):
+\[
+  y^{(i)}\neq y^{(j)}:\; L=\max(0,\alpha_j{-}\alpha_i),\; H=\min(C,C{+}\alpha_j{-}\alpha_i)
+  \qquad
+  y^{(i)}=y^{(j)}:\; L=\max(0,\alpha_i{+}\alpha_j{-}C),\; H=\min(C,\alpha_i{+}\alpha_j)
+\]
+\textbf{2. Unbeschränktes Optimum und Clipping} mit
+$E_k = f(x^{(k)}) - y^{(k)}$ (Vorhersagefehler) und
+$\eta = 2K(x^{(i)},x^{(j)}) - K(x^{(i)},x^{(i)}) - K(x^{(j)},x^{(j)})$:
+\[
+  \alpha_j \leftarrow \alpha_j - \frac{y^{(j)}(E_i-E_j)}{\eta}, \qquad
+  \alpha_j \leftarrow \operatorname{clip}(\alpha_j,\,L,\,H).
+\]
+\textbf{3. Update von $\alpha_i$}:
+$\alpha_i \leftarrow \alpha_i + y^{(i)}y^{(j)}(\alpha_j^{\text{alt}}-\alpha_j)$.
+
+\textbf{4. Bias $b$ neu setzen} so, dass die KKT-Bedingungen für $i,j$ erfüllt
+bleiben (Mittelwert der beiden Randfälle, falls beide $\alpha$ im Inneren
+$(0,C)$ liegen).
+\end{tcolorbox}
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{CS229 Simplified SMO Algorithm}, CS229 Autumn 2009 (basierend
+auf J. Platts Originalarbeit) -- \texttt{materials/smo.pdf}.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Perceptron und Online Learning}
+% ------------------------------------------------------------------
+
+\subsection{Online Learning}
+
+Im Gegensatz zum \textbf{Batch Learning} (Trainingsdaten vollständig vorab
+verfügbar) erhält der Lernalgorithmus beim \textbf{Online Learning} eine
+Sequenz von Beispielen $(x^{(1)},y^{(1)}), (x^{(2)},y^{(2)}),\ldots$
+nacheinander: für jedes $x^{(i)}$ wird zunächst eine Vorhersage getroffen,
+bevor das wahre Label $y^{(i)}$ offengelegt wird (und ggf.\ für weiteres
+Lernen genutzt werden kann). Von Interesse ist die \textbf{Gesamtzahl der
+Fehler}, die der Algorithmus während dieses Prozesses macht.
+
+\subsection{Der Perceptron-Algorithmus}
+
+Mit Labels $y \in \{-1,+1\}$ und Parametern $\theta \in \R^{d+1}$ lautet die
+Hypothese
+\begin{equation}
+  \htheta(x) = g(\theta\T x), \qquad
+  g(z) = \begin{cases} 1 & z \geq 0 \\ -1 & z < 0. \end{cases}
+\end{equation}
+Bei korrekter Klassifikation bleibt $\theta$ unverändert; bei einem Fehler
+($\htheta(x)\neq y$ für Beispiel $(x,y)$) erfolgt das Update
+\begin{equation}
+  \theta \leftarrow \theta + y\, x.
+\end{equation}
+Anders als bei LMS oder logistischer Regression modelliert der Perceptron
+keine Wahrscheinlichkeit -- er ist ein rein diskriminatives
+Entscheidungsverfahren, das nur bei Fehlern reagiert.
+
+\subsection{Mistake-Bound-Theorem}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Satz (Block 1962, Novikoff 1962).}
+Sei eine Sequenz $(x^{(1)},y^{(1)}),\ldots,(x^{(m)},y^{(m)})$ gegeben mit
+$\norm{x^{(i)}} \leq D$ für alle $i$, und es existiere ein Einheitsvektor $u$
+($\norm{u}=1$) mit $y^{(i)}(u\T x^{(i)}) \geq \gamma$ für alle $i$ (d.\,h.\
+$u$ trennt die Daten mit Margin $\gamma$). Dann macht der
+Perceptron-Algorithmus höchstens $(D/\gamma)^2$ Fehler auf dieser Sequenz.
+\end{tcolorbox}
+
+Bemerkenswert: Die Schranke hängt \emph{weder} von der Anzahl der Beispiele
+$m$ noch von der Dimension $d$ ab -- nur vom (normierten) Margin $\gamma$ und
+dem Datenradius $D$. \textbf{Beweisidee:} Sei $\theta^{(k)}$ der Parameter
+beim $k$-ten Fehler ($\theta^{(1)}=\vec 0$). Einerseits wächst
+$(\theta^{(k+1)})\T u \geq k\gamma$ (jedes Update erhöht die Projektion auf
+$u$ um mind.\ $\gamma$), andererseits wächst $\norm{\theta^{(k+1)}}^2 \leq
+kD^2$ (da bei einem Fehler $y^{(i)}(x^{(i)})\T\theta^{(k)} \leq 0$ gilt, folgt
+$\norm{\theta^{(k+1)}}^2 \leq \norm{\theta^{(k)}}^2 + D^2$). Mit
+Cauchy-Schwarz ($\norm{\theta^{(k+1)}}\geq(\theta^{(k+1)})\T u$, da $u$
+Einheitsvektor) folgt $\sqrt{k}D \geq k\gamma$, also $k \leq (D/\gamma)^2$.
+
+% ------------------------------------------------------------------
+\section{Decision Trees}
+% ------------------------------------------------------------------
+
+\subsection{Nichtlineare, regionsbasierte Klassifikation}
+
+Decision Trees sind die ersten genuin \textbf{nichtlinearen} Verfahren in
+dieser Zusammenfassung: Sie partitionieren den Eingaberaum $\X$ rekursiv in
+disjunkte Regionen, $\X = \bigcup_i R_i$ mit $R_i \cap R_j = \emptyset$ für
+$i\neq j$, und sagen pro Region einen konstanten Wert voraus (Mehrheitsklasse
+bei Klassifikation, Mittelwert bei Regression).
+
+\subsection{Rekursive Partitionierung}
+
+Da optimale Regionen im Allgemeinen intraktabel zu bestimmen sind, wählen
+Decision Trees einen \textbf{gierigen, Top-Down}-Ansatz: Gegeben eine
+Elternregion $R_p$, Feature-Index $j$ und Schwellwert $t$:
+\begin{equation}
+  R_1 = \{x \in R_p : x_j < t\}, \qquad R_2 = \{x \in R_p : x_j \geq t\}.
+\end{equation}
+Bei jedem Schritt werden Blattregion, Feature und Schwelle so gewählt, dass
+der \emph{Rückgang} des kardinalitätsgewichteten Verlusts maximal wird:
+\begin{equation}
+  \max_{R_p,\,j,\,t} \; L(R_p) - \frac{|R_1|\,L(R_1) + |R_2|\,L(R_2)}{|R_1|+|R_2|}.
+\end{equation}
+
+\subsection{Verlustfunktionen für Splits}
+
+Für Klassifikation mit Klassenanteil $\hat p_c$ (Anteil der Beispiele der
+Klasse $c$) in Region $R$:
+\begin{align}
+  \text{Missklassifikationsverlust:} &\quad L_\text{misclass}(R) = 1 - \max_c \hat p_c, \\
+  \text{Cross-Entropy:} &\quad L_\text{cross}(R) = -\sum_c \hat p_c \log_2 \hat p_c.
+\end{align}
+
+\begin{tcolorbox}[defstyle]
+\textbf{Warum Cross-Entropy statt Missklassifikationsverlust?} Der
+Missklassifikationsverlust ist nicht \emph{strikt konkav} -- ein Split kann
+daher den gewichteten Verlust exakt unverändert lassen, obwohl er informativ
+ist (Beispiel: Elternregion $400{+}/100{-}$; Split A in $150{+}/100{-}$ und
+$250{+}/0{-}$ hat denselben gewichteten Missklassifikationsverlust wie ein
+uninformativer Split B). Cross-Entropy (und Gini-Loss) sind strikt konkav:
+Solange $\hat p_1 \neq \hat p_2$ in nicht-leeren Kindern, sinkt der
+gewichtete Verlust garantiert gegenüber dem Elternknoten. Der Rückgang heißt
+\textbf{Information Gain}.
+\end{tcolorbox}
+
+Für Regression wird pro Blatt der Mittelwert
+$\hat y = \tfrac{1}{|R|}\sum_{i\in R} y_i$ vorhergesagt, und der quadratische
+Verlust $L_\text{squared}(R) = \tfrac{1}{|R|}\sum_{i \in R}(y_i-\hat y)^2$
+steuert die Split-Wahl.
+
+\subsection{Regularisierung und Eigenschaften}
+
+Ein voll ausgewachsener Baum (ein Trainingspunkt pro Blatt) hat niedrigen
+Bias, aber hohe Varianz. Übliche Stop- und Pruning-Heuristiken:
+\begin{itemize}
+  \item Mindestgröße pro Blatt, maximale Tiefe, maximale Blattzahl.
+  \item \textbf{Pruning}: Baum zunächst voll wachsen lassen, dann Knoten
+        entfernen, die den Validierungsfehler minimal erhöhen -- robuster
+        als ein Mindest-Loss-Rückgang pro Split, da sonst Interaktionseffekte
+        höherer Ordnung (die erst nach mehreren Splits sichtbar werden)
+        übersehen würden.
+\end{itemize}
+Laufzeit: $O(d)$ zur Vorhersage (Baumtiefe $d$), $O(nfd)$ zum Training
+($n$ Beispiele, $f$ Features). \textbf{Vorteile}: interpretierbar,
+verarbeitet kategoriale Features nativ (Splits über Teilmengen), schnell.
+\textbf{Nachteile}: hohe Varianz, kann additive Struktur (z.\,B.\ eine
+Grenze der Form $x_1+x_2=c$) nur durch viele Splits approximieren, obwohl
+ein lineares Modell sie direkt abbilden könnte.
+
+% ------------------------------------------------------------------
+\section{Ensemble-Methoden}
+% ------------------------------------------------------------------
+
+\subsection{Varianzreduktion durch Mittelung}
+
+Für $n$ identisch verteilte, paarweise korrelierte Zufallsvariablen (z.\,B.\
+die Fehler einzelner Modelle) mit Varianz $\sigma^2$ und Korrelation $\rho$
+gilt für den Mittelwert:
+\begin{equation}
+  \operatorname{Var}(\bar X) = \rho\sigma^2 + \frac{1-\rho}{n}\sigma^2.
+\end{equation}
+Mehr Modelle ($n\uparrow$) lässt den zweiten Term verschwinden; geringere
+Korrelation zwischen den Modellen ($\rho\downarrow$) senkt beide Terme.
+Ensembling zielt daher darauf ab, \textbf{viele, wenig korrelierte} Modelle
+zu kombinieren.
+
+\subsection{Bagging (Bootstrap Aggregation)}
+
+\textbf{Bootstrap}: Ziehe aus dem Trainingsset $S$ ($|S|=n$) wiederholt $M$
+Stichproben $Z_1,\ldots,Z_M$ \emph{mit Zurücklegen} (je Größe $n$). Trainiere
+je ein Modell $G_m$ auf $Z_m$ und mittle:
+\begin{equation}
+  G(x) = \frac{1}{M}\sum_{m=1}^M G_m(x).
+\end{equation}
+Bagging senkt $\rho$ (Modelle sehen unterschiedliche Stichproben) und damit
+die Varianz; der Bias steigt leicht (jede Bootstrap-Stichprobe enthält im
+Schnitt nur $\approx 63\,\%$ der eindeutigen Trainingspunkte), was in der
+Praxis meist durch den Varianzgewinn aufgewogen wird. Mehr Modelle können
+\emph{nicht} zu mehr Overfitting führen, da $\rho$ unabhängig von $M$ ist.
+\textbf{Out-of-Bag-Schätzung}: Das im Schnitt $\approx 1/3$ nicht gezogene
+Restdrittel jeder Stichprobe dient als kostenlose Validierungsmenge -- im
+Grenzwert $M\to\infty$ äquivalent zu Leave-One-Out Cross-Validation.
+
+\begin{tcolorbox}[defstyle]
+\textbf{Random Forests.} Bagging von Decision Trees, wobei an jedem Split
+zusätzlich nur eine \emph{zufällige Teilmenge} der Features zur Auswahl
+steht. Dies dekorreliert die Bäume weiter (ein einzelner starker Prädiktor
+dominiert nicht mehr jeden Baum) und erlaubt robusteren Umgang mit fehlenden
+Features, da nicht jeder Baum von jedem Feature abhängt.
+\end{tcolorbox}
+
+\subsection{Boosting}
+
+Während Bagging Varianz reduziert, reduziert \textbf{Boosting} den
+\textbf{Bias}: Es kombiniert viele \textbf{schwache Lerner} (hoher Bias,
+niedrige Varianz -- z.\,B.\ Decision Stumps, Bäume der Tiefe~1) sequentiell,
+wobei jeder neue Lerner sich verstärkt auf die Fehler der bisherigen
+Ensemble-Vorhersage konzentriert.
+
+\begin{tcolorbox}[algostyle, title={AdaBoost}]
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item Initialisiere Gewichte $w_i \leftarrow 1/N$ für alle $i=1,\ldots,N$.
+  \item Für $m = 1,\ldots,M$:
+  \begin{enumerate}[label=(\alph*)]
+    \item Trainiere schwachen Klassifikator $G_m$ auf den gewichteten Daten.
+    \item Gewichteter Fehler: $\text{err}_m = \dfrac{\sum_i w_i \I\{y_i \neq G_m(x_i)\}}{\sum_i w_i}$.
+    \item Klassifikatorgewicht: $\alpha_m = \log\!\bigl(\tfrac{1-\text{err}_m}{\text{err}_m}\bigr)$.
+    \item Update: $w_i \leftarrow w_i \exp\bigl(\alpha_m \I\{y_i\neq G_m(x_i)\}\bigr)$.
+  \end{enumerate}
+  \item Ausgabe: $f(x) = \operatorname{sign}\bigl(\sum_{m=1}^M \alpha_m G_m(x)\bigr)$.
+\end{enumerate}
+\end{tcolorbox}
+
+Falsch klassifizierte Beispiele erhalten höheres Gewicht -- nachfolgende
+Lerner konzentrieren sich auf die "schwierigen" Fälle. Da spätere Lerner von
+früheren abhängen (im Gegensatz zur Unabhängigkeit bei Bagging), steigt mit
+wachsendem $M$ das Overfitting-Risiko.
+
+\subsection{Forward Stagewise Additive Modeling}
+
+AdaBoost ist ein Spezialfall des allgemeineren Schemas: Baue
+$f_m(x) = f_{m-1}(x) + \beta_m G(x;\gamma_m)$ iterativ auf, wobei bei jedem
+Schritt
+\begin{equation}
+  (\beta_m,\gamma_m) = \arg\min_{\beta,\gamma} \sum_{i=1}^N
+    L\bigl(y_i,\, f_{m-1}(x_i) + \beta\,G(x_i;\gamma)\bigr)
+\end{equation}
+gelöst wird. Für quadratischen Verlust entspricht dies dem Fitten auf die
+Residuen $y_i - f_{m-1}(x_i)$; für binäre Klassifikation mit
+\textbf{exponentiellem Verlust} $L(y,\hat y) = \exp(-y\hat y)$ ergibt sich
+exakt AdaBoost. \textbf{Gradient Boosting} verallgemeinert dies auf beliebige
+differenzierbare Verluste: Bei jedem Schritt wird ein neuer schwacher Lerner
+an den negativen Gradienten $g_i = -\partial L(y_i,f(x_i))/\partial f(x_i)$
+angepasst (Regression von $G(x_i;\gamma)$ auf $g_i$ per Least Squares).
+
+\begin{tcolorbox}[webstyle]
+Moderne Gradient-Boosting-Implementierungen -- \textbf{XGBoost} (Chen \&
+Guestrin, 2016), \textbf{LightGBM} und \textbf{CatBoost} -- dominieren bis
+heute Kaggle-Wettbewerbe und produktive ML-Systeme auf strukturierten/
+tabellarischen Daten (Betrugserkennung, Kreditrisiko, Nachfrageprognosen);
+laut mehreren Quellen stecken sie hinter der Mehrzahl der Gewinnerlösungen
+für tabellarische Aufgaben. Sie erweitern das hier vorgestellte
+Gradient-Boosting-Schema um explizite Regularisierung, effizientes
+histogrammbasiertes Splitting sowie native Unterstützung fehlender bzw.\
+kategorialer Werte. Random Forests (Breiman, 2001) selbst bauen auf Bagging
+(Breiman, 1996) und zufälliger Feature-Auswahl bei Splits (Ho, 1995/1998;
+Amit \& Geman, 1997) auf.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Verlustfunktionen: Konvexe Ersatzverluste}
+% ------------------------------------------------------------------
+
+\subsection{Margin-basierte Verlustfunktionen}
+
+Für binäre Klassifikation mit $y \in \{-1,+1\}$ heißt $z = y\,\theta\T x$ der
+\textbf{Margin} eines Beispiels: $z>0$ bedeutet korrekte Klassifikation. Der
+naheliegende Zielverlust wäre der \textbf{0/1-Verlust}
+$\phi_{01}(z) = \I\{z\leq 0\}$ -- er ist jedoch unstetig, nicht konvex und
+NP-hart zu minimieren. Man verwendet daher \textbf{konvexe Ersatzverluste}
+(surrogate losses) $\phi(z)$ mit $\phi(z)\to 0$ für $z\to\infty$ und
+$\phi(z)\to\infty$ für $z\to -\infty$:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Verlust & $\phi(z)$ & Zugehörige Methode \\
+\midrule
+Logistisch & $\log(1+e^{-z})$ & Logistische Regression (Abschnitt~2) \\
+Hinge & $\max(1-z,\,0)$ & Support Vector Machine (Abschnitt~6) \\
+Exponentiell & $e^{-z}$ & AdaBoost (Abschnitt~9) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Verbindendes Prinzip.} Logistische Regression, SVMs und Boosting
+lösen scheinbar verschiedene Probleme -- tatsächlich minimieren alle drei
+Verfahren $\frac{1}{n}\sum_i \phi\bigl(y^{(i)}\theta\T x^{(i)}\bigr)$ für
+dieselbe Größe (den Margin), nur mit unterschiedlichem $\phi$. Alle drei
+Verluste sind konvexe obere Schranken an den 0/1-Verlust und daher effizient
+optimierbar, während sie dessen Zielrichtung (Vorzeichen des Margins)
+approximieren.
+\end{tcolorbox}
+
+% ==================================================================
+\newpage
+\part{Deep Learning}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\section{Deep Learning}
+% ------------------------------------------------------------------
+
+\subsection{Nichtlineare Modelle und neuronale Netze}
+
+\textbf{Lineare Modelle haben beschränkte Ausdruckskraft.} Durch Komposition
+nichtlinearer Schichten kann ein neuronales Netz beliebig komplexe Funktionen
+approximieren. Ein \textbf{Fully-Connected Netz} mit $r$ Schichten ist
+rekursiv definiert:
+\begin{align}
+  a^{[0]} &= x, \\
+  z^{[\ell]} &= W^{[\ell]}\, a^{[\ell-1]} + b^{[\ell]}, \\
+  a^{[\ell]} &= \sigma\!\bigl(z^{[\ell]}\bigr), \quad \ell = 1,\ldots,r-1,\\
+  \hat y &= W^{[r]}\, a^{[r-1]} + b^{[r]}.
+\end{align}
+
+Ohne nichtlineare Aktivierungsfunktion $\sigma$ kollabiert das Netz zu einem
+linearen Modell: $W^{[r]}\cdots W^{[1]}x = \tilde W x$.
+
+\subsection{Aktivierungsfunktionen}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Name & Formel & Typischer Einsatz \\
+\midrule
+Sigmoid & $\sigma(z) = 1/(1+e^{-z})$ & Ausgabeschicht (binäre Klassifikation) \\
+Tanh & $(e^z - e^{-z})/(e^z + e^{-z})$ & Veraltete versteckte Schichten \\
+ReLU & $\max(z, 0)$ & Versteckte Schichten (Standard) \\
+Leaky ReLU & $\max(z, \gamma z)$, $\gamma \in (0,1)$ & Verhindert ``Dying ReLU'' \\
+GELU & $z \cdot \Phi(z)$ & Transformer-Modelle \\
+Softmax & $e^{z_k}/\sum_j e^{z_j}$ & Ausgabeschicht (Mehrklassen) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Moderne Architekturbausteine}
+
+\subsubsection*{Residualverbindungen (ResNets)}
+
+Um den \textbf{Vanishing-Gradient}-Effekt in tiefen Netzen zu bekämpfen,
+addiert ResNet den Eingabewert direkt zur Ausgabe eines Blocks:
+\begin{equation}
+  \text{Res}(z) = z + \sigma\!\bigl(W_2\,\sigma(W_1 z + b_1) + b_2\bigr).
+\end{equation}
+Der Gradient kann so ungehindert durch viele Schichten fließen.
+
+\subsubsection*{Layer-Normalisierung}
+
+\begin{equation}
+  \mathrm{LN}(z) = \gamma \odot \frac{z - \hat\mu}{\hat\sigma} + \beta,
+\end{equation}
+wobei $\hat\mu, \hat\sigma$ Mittelwert und Standardabweichung der Einträge
+von $z$ sind. Wichtige Eigenschaft: Skaleninvarianz bezüglich der
+Gewichtsmatrizen.
+
+\subsubsection*{Faltungsschichten (CNNs)}
+
+Eine 1D-Faltungsschicht mit Filter $w \in \R^k$ und Stride $s$ berechnet:
+\begin{equation}
+  \mathrm{Conv}(z)_i = \sum_{j=1}^k w_j \, z_{i \cdot s - \ell + (j-1)}.
+\end{equation}
+Parameter-Sharing reduziert die Parameterzahl von $O(m^2)$ auf $O(km)$.
+
+\subsection{Backpropagation}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Theorem (Backpropagation).}
+Lässt sich ein Rechenausdruck der Größe $N$ für den Verlust in einem Forward
+Pass auswerten, so lässt sich der vollständige Gradient $\nabla_\theta J$
+ebenfalls in $O(N)$ Zeit berechnen.
+\end{tcolorbox}
+
+\textbf{Algorithmisch.} Sei der Forward Pass:
+\[
+  u^{[0]} = x, \quad u^{[\ell]} = M_\ell(u^{[\ell-1]};\,\theta^{[\ell]}),
+  \quad J = u^{[L]}.
+\]
+Der Backward Pass berechnet rückwärts:
+\begin{align}
+  \frac{\partial J}{\partial u^{[L]}} &= 1, \\
+  \frac{\partial J}{\partial u^{[\ell-1]}}
+    &= \underbrace{B\bigl[M_\ell,\, u^{[\ell-1]}\bigr]}_{\text{Backward-Funktion}}
+       \!\Bigl(\frac{\partial J}{\partial u^{[\ell]}}\Bigr), \\
+  \frac{\partial J}{\partial \theta^{[\ell]}}
+    &= B_\theta\bigl[M_\ell,\, \theta^{[\ell]}\bigr]
+       \!\Bigl(\frac{\partial J}{\partial u^{[\ell]}}\Bigr).
+\end{align}
+
+\subsection{Optimierungsverfahren}
+
+\begin{tcolorbox}[algostyle, title={Mini-Batch SGD}]
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+  \item Initialisiere $\theta$ (z.\,B. zufällig)
+  \item Wiederhole bis Konvergenz:
+    \begin{enumerate}[label=(\alph*)]
+      \item Sample Batch $\mathcal{B} \subset \{1,\ldots,n\}$, $|\mathcal{B}| = B$
+      \item $g \leftarrow \frac{1}{B}\sum_{i \in \mathcal{B}} \nabla_\theta J^{(i)}(\theta)$
+      \item $\theta \leftarrow \theta - \alpha\, g$
+    \end{enumerate}
+\end{enumerate}
+\end{tcolorbox}
+
+% ==================================================================
+\newpage
+\part{Generalisierung und Regularisierung}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\section{Generalisierung}
+% ------------------------------------------------------------------
+
+\subsection{Trainings- und Testfehler}
+
+Das eigentliche Ziel beim maschinellen Lernen ist die Minimierung des
+\textbf{Testfehlers} (auch: generalization error):
+\begin{equation}
+  L(\theta) = \E_{(x,y) \sim \mathcal{D}}\bigl[(y - h_\theta(x))^2\bigr].
+\end{equation}
+Der \textbf{Trainingsfehler} $J(\theta) = \frac{1}{n}\sum_i (y^{(i)} -
+h_\theta(x^{(i)}))^2$ ist lediglich eine Approximation.
+
+\begin{itemize}
+  \item \textbf{Overfitting:} $J(\theta) \ll L(\theta)$ -- Modell zu komplex.
+  \item \textbf{Underfitting:} $J(\theta) \approx L(\theta)$ groß -- Modell
+        zu einfach.
+\end{itemize}
+
+\subsection{Bias-Varianz-Zerlegung}
+
+\subsubsection*{Intuition: Was bedeuten Bias und Varianz?}
+
+Betrachtet man denselben Datensatz $\{(x^{(i)},y^{(i)})\}$ und passt sowohl
+ein lineares als auch ein Grad-5-Polynom an, zeigt sich ein charakteristischer
+Unterschied im Fehlverhalten: Das lineare Modell liegt \emph{systematisch}
+daneben -- selbst mit beliebig viel Trainingsdaten würde eine Gerade die
+zugrunde liegende (nichtlineare) Struktur nicht erfassen können. Das
+Grad-5-Polynom hingegen trifft die Trainingspunkte fast perfekt, aber die
+konkrete Kurvenform hängt stark davon ab, \emph{welche} zufällige
+Stichprobe man gerade gezogen hat -- ein neuer, gleich großer Datensatz aus
+derselben Verteilung würde zu einer sichtbar anderen Kurve führen.
+
+\begin{itemize}
+  \item \textbf{Bias} = der Fehler, der \emph{übrig bliebe, selbst wenn man
+        unendlich viele Trainingsdaten hätte}. Er entsteht rein dadurch, dass
+        die gewählte Hypothesenklasse (z.\,B.\ "alle Geraden") die wahre
+        Funktion $h^*$ grundsätzlich nicht abbilden kann -- ein
+        Ausdrucksstärke-Problem, kein Datenmengenproblem. Mehr Daten helfen
+        hier \emph{nicht}.
+  \item \textbf{Varianz} = wie stark das gelernte Modell $h_S$ schwankt, wenn
+        man den Trainingsdatensatz $S$ (fester Größe) wiederholt neu zieht.
+        Sie entsteht dadurch, dass ein zu flexibles Modell "zufällige"
+        Muster im jeweiligen Rauschen $\xi^{(i)}$ mitlernt, statt nur das
+        eigentliche Signal. Mehr Daten \emph{reduzieren} die Varianz, da
+        einzelne Rauschausschläge im Mittel weniger Gewicht bekommen.
+\end{itemize}
+
+\subsubsection*{Im Parameterraum betrachtet}
+
+Dieselbe Intuition lässt sich direkt im Parameterraum $\theta$ visualisieren.
+Sei $\theta^*$ der Parameter des \emph{bestmöglichen} Modells innerhalb der
+gewählten Hypothesenklasse (also der Grenzwert von $\hat\theta_S$ bei
+unendlich großem Trainingsset). Zieht man stattdessen $k$ verschiedene,
+endlich große Trainingssets $S_1,\ldots,S_k$ derselben Größe und trainiert
+jeweils separat, erhält man $k$ Schätzungen $\hat\theta_{S_1},\ldots,
+\hat\theta_{S_k}$ -- eine "Punktwolke" um $\theta^*$:
+
+\begin{center}
+\begin{tabular}{cc}
+\begin{tikzpicture}[scale=1.05]
+  \draw[gray!35] (-1,-1) rectangle (1,1);
+  \foreach \x/\y in {0.05/0.03,-0.08/0.06,0.03/-0.09,-0.06/-0.04,
+                     0.09/-0.02,-0.03/0.08,0.06/-0.07,-0.05/-0.06}{
+    \fill[red!70!black] (\x,\y) circle (0.045);
+  }
+  \fill[mainblue] (0,0) circle (0.05);
+  \node[mainblue, right] at (0.1,0.12) {\scriptsize $\theta^*$};
+  \node[below] at (0,-1.15) {\footnotesize niedriger Bias, niedrige Varianz};
+\end{tikzpicture}
+&
+\begin{tikzpicture}[scale=1.05]
+  \draw[gray!35] (-1,-1) rectangle (1,1);
+  \foreach \x/\y in {0.4/0.3,-0.6/0.5,0.3/-0.7,-0.5/-0.3,
+                     0.75/-0.2,-0.3/0.65,0.5/-0.5,-0.4/-0.55}{
+    \fill[red!70!black] (\x,\y) circle (0.045);
+  }
+  \fill[mainblue] (0,0) circle (0.05);
+  \node[mainblue, right] at (0.1,0.12) {\scriptsize $\theta^*$};
+  \node[below] at (0,-1.15) {\footnotesize niedriger Bias, hohe Varianz};
+\end{tikzpicture}
+\\[1.4cm]
+\begin{tikzpicture}[scale=1.05]
+  \draw[gray!35] (-1,-1) rectangle (1,1);
+  \foreach \x/\y in {0.55/0.43,0.42/0.46,0.5/0.31,0.44/0.34,
+                     0.53/0.38,0.4/0.4,0.46/0.45,0.5/0.35}{
+    \fill[red!70!black] (\x,\y) circle (0.045);
+  }
+  \fill[mainblue] (0,0) circle (0.05);
+  \node[mainblue, left] at (-0.05,-0.12) {\scriptsize $\theta^*$};
+  \node[below] at (0,-1.15) {\footnotesize hoher Bias, niedrige Varianz};
+\end{tikzpicture}
+&
+\begin{tikzpicture}[scale=1.05]
+  \draw[gray!35] (-1,-1) rectangle (1,1);
+  \foreach \x/\y in {0.6/0.7,0.3/0.9,0.8/0.3,0.15/0.5,
+                     0.85/0.6,0.35/0.15,0.7/0.85,0.25/0.3}{
+    \fill[red!70!black] (\x,\y) circle (0.045);
+  }
+  \fill[mainblue] (0,0) circle (0.05);
+  \node[mainblue, left] at (-0.05,-0.12) {\scriptsize $\theta^*$};
+  \node[below] at (0,-1.15) {\footnotesize hoher Bias, hohe Varianz};
+\end{tikzpicture}
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[defstyle]
+Jeder rote Punkt ist die Parameterschätzung $\hat\theta_{S_i}$ aus
+\emph{einem} zufällig gezogenen Trainingsdatensatz; der blaue Punkt markiert
+$\theta^*$. \textbf{Bias} ist der Abstand zwischen $\theta^*$ und dem
+\emph{Zentrum} der Punktwolke ($\E_S[\hat\theta_S]$) -- eine systematische
+Verschiebung, die auch bei unendlich vielen Wiederholungen bestehen bliebe.
+\textbf{Varianz} ist die \emph{Streuung} der Punktwolke um ihr eigenes
+Zentrum -- unabhängig davon, ob dieses Zentrum überhaupt nahe an $\theta^*$
+liegt.
+\end{tcolorbox}
+
+Die Verbindung zur Modellkomplexität: Ein \textbf{einfaches Modell} (z.\,B.\
+lineare Regression) hat einen kleinen, stark eingeschränkten Parameterraum
+-- unterschiedliche Trainingssets führen daher zu sehr ähnlichen Schätzungen
+$\hat\theta_S$ (\textbf{niedrige Varianz}), aber falls die wahre Funktion
+außerhalb dieses eingeschränkten Raums liegt, sitzt auch das Zentrum der
+Punktwolke systematisch daneben (\textbf{hoher Bias}) -- typischerweise der
+untere linke Fall oben. Ein \textbf{komplexes Modell} (z.\,B.\ Grad-5-
+Polynom) hat einen großen, flexiblen Parameterraum, der $\theta^*$ im Mittel
+gut treffen kann (\textbf{niedriger Bias}), aber jede einzelne Schätzung
+"jagt" das Rauschen der jeweiligen Stichprobe und landet daher an sehr
+unterschiedlichen Stellen (\textbf{hohe Varianz}) -- der obere rechte Fall.
+
+\subsubsection*{Formale Zerlegung}
+
+Für das Regressionsproblem lässt sich der erwartete MSE an einem
+Punkt $x$ zerlegen:
+\begin{equation}
+  \E\bigl[(y - h_S(x))^2\bigr]
+  = \underbrace{\sigma^2}_{\text{irreduzibles Rauschen}}
+  + \underbrace{\bigl(h^*(x) - \bar h(x)\bigr)^2}_{\text{Bias}^2}
+  + \underbrace{\E\bigl[(\bar h(x) - h_S(x))^2\bigr]}_{\text{Varianz}},
+\end{equation}
+wobei $h^*$ die wahre Funktion, $\bar h = \E_S[h_S]$ der Erwartungswert des
+gelernten Modells über zufällige Trainingsdatensätze $S$ ist -- im
+Parameterraum-Bild oben entspricht $\bar h$ also gerade dem Zentrum der
+Punktwolke.
+
+\begin{itemize}
+  \item Einfache Modelle ($h$ wenig ausdrucksstark) $\Rightarrow$ hoher Bias.
+  \item Komplexe Modelle (viele Parameter) $\Rightarrow$ hohe Varianz.
+  \item Optimale Modellkomplexität balanciert beides.
+\end{itemize}
+
+\subsection{Double Descent}
+
+Das klassische Bild (Testfehler fällt, dann steigt er bei Überanpassung) gilt
+nur im \emph{classical regime} ($n \gg d$). Im modernen Deep-Learning-Regime
+$d \gg n$ tritt ein zweites Absinken auf:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=12cm, height=5.5cm,
+  xlabel={Modellkomplexität ($d$)},
+  ylabel={Testfehler},
+  xmin=0, xmax=10, ymin=0, ymax=3,
+  xtick={5}, xticklabels={$n \approx d$},
+  ytick=\empty,
+  grid=both, grid style={line width=0.3pt, draw=gray!30},
+  axis lines=left, tick label style={font=\small},
+  label style={font=\small},
+]
+  \addplot[mainblue, very thick, domain=0:4.8, samples=80]
+    {0.8 + 0.5*exp(-x) + 0.3*x^0.5};
+  \addplot[mainblue, very thick, domain=4.8:5.1, samples=10]
+    {0.8 + 0.5*exp(-x) + 0.3*x^0.5 + 8*(x-4.8)};
+  \addplot[mainblue, very thick, domain=5.1:10, samples=80]
+    {3.5*exp(-0.6*(x-5.1)) + 0.5};
+  \draw[dotted, gray!70] (axis cs:5,0) -- (axis cs:5,3);
+  \node[font=\scriptsize, above] at (axis cs:2.5, 1.4) {klassisch};
+  \node[font=\scriptsize, above] at (axis cs:7.5, 1.2) {modern (überparametrisiert)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+Der Peak tritt auf, wenn $n \approx d$ -- das Modell interpoliert die
+Trainingsdaten, verhält sich aber schlecht bei unregelmäßiger Interpolation.
+Im überparametrisierten Regime wählt Gradient Descent implizit die
+\emph{Minimum-Norm-Lösung}, die generell gut generalisiert.
+
+\subsection{Konzentrationsungleichungen}
+
+Grundlage der Stichprobenkomplexität ist die Frage: Wie nah liegt der
+Trainingsfehler $J(\theta)$ am wahren Testfehler $L(\theta)$? Antwort liefern
+\textbf{Konzentrationsungleichungen} -- eine Kette zunehmend schärferer
+Abschätzungen (Markov $\to$ Chebyshev $\to$ Chernoff), deren wichtigster
+Spezialfall für beschränkte Zufallsvariablen die Hoeffdingsche Ungleichung
+ist.
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Hoeffdingsche Ungleichung.} Seien $Z_1,\ldots,Z_n$ unabhängige,
+beschränkte Zufallsvariablen mit $Z_i \in [a,b]$. Dann gilt für alle
+$t\geq 0$:
+\begin{equation}
+  P\Bigl(\Bigl|\frac1n\sum_{i=1}^n (Z_i - \E[Z_i])\Bigr| \geq t\Bigr)
+  \leq 2\exp\!\Bigl(-\frac{2nt^2}{(b-a)^2}\Bigr).
+\end{equation}
+\end{tcolorbox}
+
+Für den Trainingsfehler einer \emph{festen} Hypothese $h$ mit
+$Z_i = \I\{h(x^{(i)}) \neq y^{(i)}\} \in \{0,1\}$ liefert dies ($a=0,\,b=1$):
+\begin{equation}
+  P\bigl(|J(h) - L(h)| \geq t\bigr) \leq 2\exp(-2nt^2).
+\end{equation}
+Diese Schranke gilt jedoch nur für eine im Voraus fixierte Hypothese. Da
+$\hat h$ erst \emph{nach} Betrachten der Trainingsdaten aus $\mathcal H$
+ausgewählt wird, benötigt man eine \textbf{gleichmäßige Konvergenz}
+("uniform convergence") über \emph{alle} $h\in\mathcal H$ simultan -- per
+Union Bound über $|\mathcal H|=k$ Hypothesen ergibt sich (Auflösen von
+$\delta = 2k\exp(-2nt^2)$ nach $t$) genau die Schranke der folgenden
+Stichprobenkomplexität.
+
+\subsection{Stichprobenkomplexität}
+
+Für eine endliche Hypothesenklasse $\mathcal{H}$ mit $|\mathcal{H}| = k$
+gilt mit Wahrscheinlichkeit $\geq 1-\delta$:
+\begin{equation}
+  L(\hat\theta) \leq J(\hat\theta) + \sqrt{\frac{\log(k/\delta)}{2n}}.
+\end{equation}
+Die Generalisierungslücke schrumpft mit $1/\sqrt{n}$ und wächst logarithmisch
+mit $|\mathcal{H}|$. Für unendliche $\mathcal{H}$ (z.\,B.\ alle linearen
+Klassifikatoren) übernimmt die \textbf{VC-Dimension} die Rolle von
+$\log |\mathcal H|$.
+
+\begin{tcolorbox}[defstyle]
+\textbf{VC-Dimension (Vapnik--Chervonenkis).} Die VC-Dimension
+$\mathrm{VC}(\mathcal H)$ einer Hypothesenklasse ist die Größe der größten
+Punktmenge, die $\mathcal H$ in \emph{jeder} möglichen Beschriftung korrekt
+klassifizieren kann ("shattern"). Für lineare Klassifikatoren in $\R^d$ gilt
+$\mathrm{VC}(\mathcal H) = d+1$. Mit Wahrscheinlichkeit $\geq 1-\delta$ gilt
+dann für \emph{alle} $h \in \mathcal H$ gleichzeitig:
+\begin{equation}
+  L(h) \leq J(h) + O\!\left(\sqrt{\frac{\mathrm{VC}(\mathcal H)}{n}
+    \log\frac{n}{\mathrm{VC}(\mathcal H)} + \frac1n\log\frac1\delta}\right).
+\end{equation}
+Die für eine $\varepsilon$-genaue Schätzung benötigte Stichprobengröße wächst
+linear mit $\mathrm{VC}(\mathcal H)$ -- bei linearen Modellen also linear mit
+der Parameteranzahl $d$. Für Modellklassen ohne endliche VC-Dimension
+(z.\,B.\ manche Kernel- oder Deep-Learning-Modelle) versagt diese klassische
+Theorie -- ein Grund, warum das Double-Descent-Phänomen (vorheriger
+Abschnitt) lange Zeit überraschend war.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Regularisierung und Modellauswahl}
+% ------------------------------------------------------------------
+
+\subsection{Regularisierung}
+
+\textbf{Regularisierung} fügt der Verlustfunktion einen Strafterm hinzu, der
+große Gewichte bestraft:
+\begin{align}
+  \text{L2 (Ridge):} &\quad J_\lambda(\theta) = J(\theta) + \tfrac{\lambda}{2}\norm{\theta}^2, \\
+  \text{L1 (Lasso):} &\quad J_\lambda(\theta) = J(\theta) + \lambda\norm{\theta}_1.
+\end{align}
+
+L2-Regularisierung fördert gleichmäßig kleine Gewichte. L1 fördert
+\textbf{Sparsität} (viele Gewichte exakt 0), weil die $|\theta_j|$-Strafe
+eine Unstetigkeit im Subgradienten bei $\theta_j = 0$ erzeugt.
+
+\subsection{Bayesianische Interpretation}
+
+\begin{tcolorbox}[defstyle]
+Aus Bayesianischer Sicht entspricht L2-Regularisierung einem
+\textbf{Gauß-Prior} $\theta_j \sim \N(0, \tau^2)$:
+\[
+  \theta_\mathrm{MAP}
+  = \arg\max_\theta \bigl[\log p(y \mid X,\theta) + \log p(\theta)\bigr]
+  = \arg\min_\theta \bigl[\text{NLL}(\theta) + \tfrac{1}{2\tau^2}\norm{\theta}^2\bigr].
+\]
+L1-Regularisierung entspricht einem \textbf{Laplace-Prior}
+$p(\theta_j) \propto e^{-|\theta_j|/b}$.
+\end{tcolorbox}
+
+Für lineare Regression mit Gauß-Prior gibt es eine geschlossene Lösung:
+\begin{equation}
+  \theta_\mathrm{MAP} = (X\T X + 2\lambda\sigma^2 I)^{-1} X\T \bm{y}.
+\end{equation}
+Der Regularisierungsterm $2\lambda\sigma^2 I$ stellt sicher, dass die Matrix
+stets invertierbar ist.
+
+\subsection{Implizite Regularisierung}
+
+Auch ohne expliziten Regularisierungsterm wirkt Gradient Descent als
+impliziter Regularisierer: Im überparametrisierten Regime (mehr Parameter
+als Datenpunkte) wählt SGD unter allen Interpolatoren bevorzugt denjenigen
+mit minimaler Norm -- was einer L2-Regularisierung ähnelt.
+
+\subsection{Kreuzvalidierung (Cross-Validation)}
+
+Zur Auswahl von Hyperparametern (z.\,B.\ $\lambda$, Lernrate, Netzgröße)
+wird \textbf{K-Fold Cross-Validation} eingesetzt:
+\begin{enumerate}
+  \item Teile Trainingsdaten in $K$ gleich große Teile.
+  \item Trainiere $K$-mal, je einmal auf $K-1$ Teilen.
+  \item Validierungsfehler auf dem ausgelassenen Teil messen.
+  \item Mittelwert über alle $K$ Durchläufe als Schätzer des Testfehlers.
+\end{enumerate}
+Wähle den Hyperparameter mit kleinstem mittleren Validierungsfehler, dann
+trainiere auf dem \emph{gesamten} Trainingsdatensatz neu.
+
+% ------------------------------------------------------------------
+\section{Gaussian Processes}
+% ------------------------------------------------------------------
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Gaussian processes}, Chuong B. Do (aktualisiert von Honglak
+Lee), CS229 Section Notes -- \texttt{section/cs229-gaussian\_processes.pdf}.
+\end{tcolorbox}
+
+\subsection{Bayessche Sichtweise auf Regression}
+
+Klassische Verfahren (lineare Regression, SVM) liefern einen einzelnen
+"Best-Fit"-Parametervektor $\theta$ bzw.\ eine Punktschätzung $h(x)$.
+\textbf{Bayessche Methoden} liefern stattdessen eine
+\textbf{Posterior-Verteilung} über Modelle -- und damit direkt ein Maß für
+die Unsicherheit einer Vorhersage. \textbf{Gaussian-Process-Regression} ist
+ein kernelbasiertes, voll bayessches Regressionsverfahren, das die
+probabilistische lineare Regression (Abschnitt~1.4), die Bayesianische
+Interpretation der Regularisierung (Abschnitt~13.2) und Kernels
+(Abschnitt~5) zusammenführt.
+
+\subsection{Verteilungen über Funktionen}
+
+Ein \textbf{Gaussian Process (GP)} ist ein stochastischer Prozess
+$\{f(x) : x\in\X\}$, sodass jede endliche Teilkollektion
+$f(x^{(1)}),\ldots,f(x^{(m)})$ gemeinsam multivariat gaußverteilt ist. Er
+wird vollständig durch eine Mittelwertfunktion $m(\cdot)$ und eine
+Kovarianzfunktion -- genau den bekannten \textbf{Kernel} $k(\cdot,\cdot)$! --
+festgelegt:
+\begin{equation}
+  f(\cdot) \sim \mathcal{GP}(m(\cdot),\,k(\cdot,\cdot)),
+\end{equation}
+sodass für beliebige Punkte $x^{(1)},\ldots,x^{(m)}$ gilt
+\begin{equation}
+  \begin{pmatrix} f(x^{(1)}) \\ \vdots \\ f(x^{(m)}) \end{pmatrix}
+  \sim \N\!\left(
+    \begin{pmatrix} m(x^{(1)}) \\ \vdots \\ m(x^{(m)}) \end{pmatrix},\;
+    \begin{pmatrix}
+      k(x^{(1)},x^{(1)}) & \cdots & k(x^{(1)},x^{(m)}) \\
+      \vdots & \ddots & \vdots \\
+      k(x^{(m)},x^{(1)}) & \cdots & k(x^{(m)},x^{(m)})
+    \end{pmatrix}
+  \right).
+\end{equation}
+Mit dem \textbf{Squared-Exponential-Kernel}
+$k(x,x') = \exp\bigl(-\norm{x-x'}^2/(2\tau^2)\bigr)$ (identisch zum
+Gauß-/RBF-Kernel aus Abschnitt~5.2) sind Funktionswerte nahe beieinander
+liegender Punkte stark korreliert -- Stichproben aus dem GP-Prior sind
+"lokal glatt", und die Korrelation fällt mit dem Abstand im Eingaberaum ab.
+
+\subsection{GP-Regression: Vorhersage}
+
+Modell: $y^{(i)} = f(x^{(i)}) + \varepsilon^{(i)}$ mit
+$\varepsilon^{(i)} \overset{\text{iid}}{\sim} \N(0,\sigma^2)$ und
+Nullmittel-GP-Prior $f(\cdot)\sim\mathcal{GP}(0,k(\cdot,\cdot))$. Für
+Trainingsdaten $X$ (Ausgaben $\vec y$) und Testpunkte $X_*$ sind $\vec y$ und
+die gesuchten Funktionswerte $\vec f_*$ am Testpunkt gemeinsam gaußverteilt:
+\begin{equation}
+  \begin{pmatrix}\vec y \\ \vec f_*\end{pmatrix}
+  \sim \N\!\left(\vec 0,\;
+    \begin{pmatrix} K(X,X)+\sigma^2 I & K(X,X_*) \\ K(X_*,X) & K(X_*,X_*)\end{pmatrix}
+  \right),
+\end{equation}
+wobei $(K(X,X))_{ij} = k(x^{(i)},x^{(j)})$ die \textbf{Gram-Matrix} ist
+(vgl.\ Mercers Satz, Abschnitt~5.3).
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Posterior Predictive Distribution.} Durch Konditionierung der
+gemeinsamen Gauß-Verteilung (Formeln aus dem Faktorenanalyse-Abschnitt)
+ergibt sich in geschlossener Form:
+\begin{align}
+  \vec f_* \mid \vec y, X, X_* &\sim \N(\mu_*,\,\Sigma_*), \\
+  \mu_* &= K(X_*,X)\bigl(K(X,X)+\sigma^2 I\bigr)^{-1}\vec y, \\
+  \Sigma_* &= K(X_*,X_*) - K(X_*,X)\bigl(K(X,X)+\sigma^2 I\bigr)^{-1}K(X,X_*).
+\end{align}
+\end{tcolorbox}
+
+Bemerkenswert: Trotz der scheinbaren Komplexität von "Verteilungen über
+Funktionen" ist die Vorhersage nur eine Anwendung der
+Konditionierungsformel für multivariate Gauß-Verteilungen. $\mu_*$ liefert
+die Punktschätzung, $\Sigma_*$ ein kalibriertes Unsicherheitsmaß
+(Konfidenzband), das klassische (nicht-bayessche) Kernel-Regression nicht
+liefert -- der zentrale praktische Vorteil von GPs.
+
+\begin{tcolorbox}[defstyle]
+\textbf{Bezug zur Bayesianischen Regularisierung.} Bayessche lineare
+Regression mit Gauß-Prior (Abschnitt~13.2) liefert, korrekt "kernelisiert",
+exakt dieselbe Vorhersageverteilung wie GP-Regression -- die GP-Sichtweise
+("Prior direkt über Funktionen statt über Parameter $\theta$") liefert dafür
+aber eine deutlich einfachere Herleitung.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Praktische Fehleranalyse}
+% ------------------------------------------------------------------
+
+Theoretische Bias-Varianz-Analyse beantwortet \emph{ob} ein Modell zu einfach
+oder zu komplex ist -- in der Praxis muss man bei mehrstufigen Systemen oft
+zusätzlich herausfinden, \emph{welche Komponente} für einen hohen Fehler
+verantwortlich ist, um die eigene Arbeitszeit sinnvoll zu priorisieren.
+
+\subsection{Fehleranalyse (Error Analysis)}
+
+Bei einer Pipeline aus mehreren Komponenten (Beispiel Gesichtserkennung:
+Preprocessing $\to$ Gesichtsdetektion $\to$ Augen-/Nase-/Mund-Erkennung
+$\to$ finale Klassifikation) ersetzt man nacheinander \emph{jede} Komponente
+durch ihre \textbf{Ground-Truth-Ausgabe} (von Hand annotiert) und misst die
+resultierende Gesamtgenauigkeit:
+
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+Komponente mit perfekter (Ground-Truth-)Ausgabe & Genauigkeit \\
+\midrule
+Ausgangssystem (keine Komponente ersetzt) & 85\,\% \\
++ perfektes Preprocessing (Hintergrundentfernung) & 85.1\,\% \\
++ perfekte Gesichtsdetektion & 91\,\% \\
++ perfekte Augen-Segmentierung & 95\,\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Der Sprung bei einer Komponente zeigt, wie viel \emph{maximal} durch deren
+Verbesserung zu gewinnen ist -- ein kleiner Sprung (Preprocessing: nur
+$+0.1$ Prozentpunkte) signalisiert, dass sich weitere Arbeit an dieser
+Komponente kaum lohnt, selbst wenn sie perfektioniert würde.
+
+\subsection{Ablative Analyse}
+
+Fehleranalyse geht vom Ausgangssystem zum perfekten System; \textbf{ablative
+Analyse} geht umgekehrt vom \emph{aktuellen, bereits guten} System aus und
+entfernt schrittweise Komponenten (z.\,B.\ Features eines Spam-Klassifikators:
+Rechtschreibkorrektur, Sender-Host-Features, Header-Features, \ldots), um zu
+zeigen, wie viel jede einzelne Komponente zur finalen Performance beigetragen
+hat. Dies ist besonders nützlich, um in einer Publikation zu begründen,
+welche Modellbestandteile tatsächlich wichtig waren, statt nur die
+Gesamtgenauigkeit anzugeben.
+
+\subsection{Fehler manuell analysieren}
+
+Ergänzend: eine zufällige Stichprobe (z.\,B.\ 100) fehlklassifizierter
+Beispiele manuell inspizieren und nach Fehlerkategorien gruppieren (z.\,B.\
+"unscharfe Bilder", "Verwechslung mit ähnlicher Klasse"). Macht eine
+Kategorie $x\,\%$ der beobachteten Fehler aus, ist $x\,\%$ die \emph{obere
+Schranke} für den durch Behebung dieser Kategorie erzielbaren
+Genauigkeitsgewinn -- so lässt sich die eigene Arbeitszeit nach erwartetem
+Ertrag statt nach Bauchgefühl priorisieren.
+
+\subsection{Bias-Varianz-Diagnostik via Lernkurven}
+
+Statt planlos "irgendetwas" am Modell zu ändern (mehr Daten? andere
+Features? SVM statt logistischer Regression?), empfiehlt sich zunächst
+eine gezielte \textbf{Diagnose}: Man plottet Trainings- und Testfehler als
+Funktion der Trainingsgröße $m$ (\textbf{Lernkurve}):
+
+\begin{itemize}
+  \item \textbf{Hohe Varianz}: großer Abstand zwischen Trainings- und
+        Testfehler; Testfehler fällt mit wachsendem $m$ noch deutlich --
+        mehr Trainingsdaten helfen voraussichtlich.
+  \item \textbf{Hoher Bias}: bereits der Trainingsfehler ist inakzeptabel
+        hoch, der Abstand zum Testfehler ist klein -- mehr Daten helfen
+        \emph{nicht}, es braucht ein ausdrucksstärkeres Modell (mehr
+        Features, komplexere Hypothesenklasse).
+\end{itemize}
+
+\begin{tcolorbox}[defstyle]
+\textbf{Welche Maßnahme behebt was?} Mehr Trainingsbeispiele und ein
+kleinerer Feature-Satz reduzieren \emph{Varianz}; ein größerer Feature-Satz
+oder ein ausdrucksstärkeres Modell reduziert \emph{Bias}. Diese Zuordnung
+lässt sich aus der Lernkurve direkt ablesen, bevor man Zeit in die
+Umsetzung investiert.
+\end{tcolorbox}
+
+\subsection{Diagnostik: Optimierungsalgorithmus vs.\ Optimierungsziel}
+
+Ein zweites, subtileres Diagnose-Muster: Angenommen ein SVM erzielt bessere
+Ergebnisse als bayessche logistische Regression (BLR) bezüglich der
+eigentlich interessierenden Metrik $a(\theta)$ (z.\,B.\ gewichtete
+Genauigkeit) -- obwohl eigentlich BLR eingesetzt werden soll (z.\,B.\ aus
+Effizienzgründen). BLR optimiert dabei intern nicht $a(\theta)$, sondern die
+Log-Likelihood $J(\theta)$. Um zu verstehen, \emph{woran} es liegt, vergleicht
+man $J(\theta_\text{SVM})$ mit $J(\theta_\text{BLR})$:
+
+\begin{itemize}
+  \item $J(\theta_\text{BLR}) < J(\theta_\text{SVM})$: BLR hat sein
+        \emph{eigenes} Ziel $J$ nicht einmal erreicht $\Rightarrow$ Problem
+        liegt beim \textbf{Optimierungsalgorithmus} (Gradientenverfahren
+        nicht konvergiert). Abhilfe: mehr Iterationen, Newton-Verfahren,
+        anderer Lernrate.
+  \item $J(\theta_\text{BLR}) \geq J(\theta_\text{SVM})$: BLR hat $J$
+        erfolgreich maximiert, trotzdem schneidet es bei $a(\theta)$
+        schlechter ab als die SVM $\Rightarrow$ Problem liegt beim
+        \textbf{Optimierungsziel} selbst: $J$ ist nicht die richtige
+        Zielfunktion für das, was man eigentlich erreichen will. Abhilfe:
+        anderes $\lambda$/$C$, andere Modellklasse, gewichtete
+        Verlustfunktion.
+\end{itemize}
+
+Diese Unterscheidung verhindert, dass man z.\,B.\ stundenlang an der
+Konvergenz eines Gradientenverfahrens optimiert, obwohl in Wahrheit die
+Zielfunktion selbst falsch gewählt war (oder umgekehrt).
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Advice for applying Machine Learning}, Andrew Ng (CS229
+Vorlesungsfolien) -- \texttt{materials/ML-advice.pdf}.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Evaluationsmetriken für Klassifikation}
+% ------------------------------------------------------------------
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Evaluation Metrics}, Yining Chen (adaptiert von Folien von
+Anand Avati), CS229 Section Notes --
+\texttt{section/evaluation\_metrics\_spring2020.pdf}.
+\end{tcolorbox}
+
+\subsection{Warum Genauigkeit oft nicht genügt}
+
+Die Trainings-Kostenfunktion ist nur ein \emph{Proxy} für das eigentliche
+Geschäfts-/Anwendungsziel. Evaluationsmetriken übersetzen dieses Ziel in
+eine quantitative, vergleichbare Größe -- besonders wichtig, wenn nicht
+alle Fehlerarten gleich teuer sind (z.\,B.\ ein übersehener Krebsbefund vs.\
+ein falscher Alarm).
+
+\subsection{Konfusionsmatrix und Punkt-Metriken}
+
+Für einen score-basierten Klassifikator (z.\,B.\ $h_\theta(x)$ oder die SVM-
+Marginweite) mit Schwellwert liefert die \textbf{Konfusionsmatrix} vier
+Grundgrößen: \textbf{TP} (true positive), \textbf{TN}, \textbf{FP}
+("Fehler 1. Art"), \textbf{FN} ("Fehler 2. Art"). Daraus:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Metrik & Formel & Interpretation \\
+\midrule
+Accuracy & $\dfrac{TP+TN}{TP+TN+FP+FN}$ & Anteil korrekter Vorhersagen (= 1 -- 0/1-Verlust) \\
+Precision & $\dfrac{TP}{TP+FP}$ & Anteil echter Positiver unter den vorhergesagten Positiven \\
+Recall (Sensitivity) & $\dfrac{TP}{TP+FN}$ & Anteil gefundener echter Positiver \\
+Specificity & $\dfrac{TN}{TN+FP}$ & Anteil gefundener echter Negativer \\
+F1-Score & $\dfrac{2\cdot\text{Prec}\cdot\text{Rec}}{\text{Prec}+\text{Rec}}$ & Harmonisches Mittel aus Precision und Recall \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[defstyle]
+\textbf{Precision-Recall-Tradeoff.} Ein niedrigerer Schwellwert erhöht
+Recall (mehr werden als positiv vorhergesagt), senkt aber typischerweise
+Precision -- und umgekehrt. \emph{Triviale} $100\,\%$ Recall: alle Beispiele
+als positiv vorhersagen. \emph{Triviale} $100\,\%$ Precision: nur das
+sicherste Beispiel als positiv vorhersagen. Der F1-Score fasst diesen
+Tradeoff in einer Zahl zusammen.
+\end{tcolorbox}
+
+\subsection{Summary-Metriken: ROC- und PR-Kurven}
+
+Statt einen einzelnen Schwellwert zu fixieren, variiert man ihn über den
+gesamten Wertebereich und erhält Kurven:
+
+\begin{itemize}
+  \item \textbf{ROC-Kurve} (Receiver Operating Characteristic): Sensitivity
+        gegen $(1-\text{Specificity})$. \textbf{AUROC} = Fläche darunter =
+        $P(\text{zufälliges Positiv-Beispiel ranked höher als zufälliges
+        Negativ-Beispiel})$. Unabhängig von der Klassenprävalenz.
+  \item \textbf{PR-Kurve} (Precision-Recall): Precision gegen Recall.
+        \textbf{AUPRC} = erwartete Precision bei zufälligem Schwellwert;
+        bei starkem Klassenungleichgewicht aussagekräftiger als AUROC.
+\end{itemize}
+
+\begin{tcolorbox}[defstyle]
+\textbf{Klassenungleichgewicht (Prävalenz $<5\,\%$).} Accuracy wird trivial
+hoch, indem stets die Mehrheitsklasse vorhergesagt wird (Baseline =
+Prävalenz). AUROC bleibt leicht hoch haltbar, indem die meisten Negativen
+sehr niedrig gescort werden. AUPRC ist robuster gegen dieses Verhalten,
+aber nicht immun. Faustregel: $\text{Accuracy} \prec \text{AUROC} \prec
+\text{AUPRC}$ in Robustheit gegenüber starkem Klassenungleichgewicht.
+\end{tcolorbox}
+
+\textbf{Log-Loss} (siehe Kreuzentropie, Abschnitt~2.3) und der eng verwandte
+\textbf{Brier-Score} $\frac1n\sum_i(\hat p_i - y_i)^2$ bestrafen -- anders
+als Accuracy/AUROC/AUPRC, die nur auf dem \emph{Ranking} beruhen -- explizit
+schlecht kalibrierte, übermäßig selbstbewusste Fehlvorhersagen und sind
+\emph{proper scoring rules}: minimal genau dann, wenn die vorhergesagten
+Wahrscheinlichkeiten den wahren entsprechen.
+
+% ==================================================================
+\newpage
+\part{Unüberwachtes Lernen}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\section{K-Means-Clustering}
+% ------------------------------------------------------------------
+
+K-Means partitioniert $n$ Datenpunkte in $K$ Cluster durch Minimierung der
+quadratischen Intra-Cluster-Distanz:
+\begin{equation}
+  J(c, \mu) = \sum_{i=1}^n \norm{x^{(i)} - \mu_{c^{(i)}}}^2.
+\end{equation}
+
+\begin{tcolorbox}[algostyle, title={K-Means Algorithmus}]
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item Initialisiere $K$ Zentroide $\mu_1,\ldots,\mu_K$ (z.\,B.\ zufällig).
+  \item Wiederhole bis Konvergenz:
+    \begin{enumerate}[label=(\alph*)]
+      \item \textbf{Assignment}: $c^{(i)} \leftarrow \arg\min_k \norm{x^{(i)}-\mu_k}^2$
+      \item \textbf{Update}: $\mu_k \leftarrow \frac{\sum_i \I\{c^{(i)}=k\}\,x^{(i)}}
+              {\sum_i \I\{c^{(i)}=k\}}$
+    \end{enumerate}
+\end{enumerate}
+\end{tcolorbox}
+
+Jede Iteration verringert $J$; der Algorithmus konvergiert zu einem
+(möglicherweise lokalen) Minimum. \textbf{K-Means++}-Initialisierung
+(proportional zu $\norm{x - \mu_\text{nächster}}^2$) verbessert die
+Lösungsqualität systematisch.
+
+% ------------------------------------------------------------------
+\section{EM-Algorithmus}
+% ------------------------------------------------------------------
+
+\subsection{Mixture of Gaussians (MoG)}
+
+Ein Gaußsches Gemischmodell nimmt an, dass jeder Datenpunkt $x^{(i)}$ von
+einem der $K$ Gaußschmischkomponenten erzeugt wurde:
+\begin{equation}
+  p(x^{(i)}) = \sum_{k=1}^K \phi_k\,\N(x^{(i)};\,\mu_k, \Sigma_k),
+\end{equation}
+wobei $\phi_k \geq 0$, $\sum_k \phi_k = 1$. Durch latente Variablen $z^{(i)}
+\in \{1,\ldots,K\}$ (Clusterzugehörigkeit) wird das Modell:
+$z^{(i)} \sim \text{Multinomial}(\phi)$, $x^{(i)} \mid z^{(i)}=k \sim
+\N(\mu_k, \Sigma_k)$.
+
+\subsection{Jensens Ungleichung}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Jensens Ungleichung.}
+Für eine konkave Funktion $f$ und eine Zufallsvariable $X$:
+$\E[f(X)] \leq f(\E[X])$.
+Für konvexes $f$: $\E[f(X)] \geq f(\E[X])$.
+\end{tcolorbox}
+
+Dies ist die Basis für die ELBO-Schranke: mit $Q$ als beliebiger Verteilung
+über $z$:
+\begin{equation}
+  \log p(x;\,\theta)
+  \geq \sum_z Q(z)\log\frac{p(x,z;\,\theta)}{Q(z)}
+  =: \mathrm{ELBO}(Q, \theta).
+\end{equation}
+
+\subsection{Allgemeiner EM-Algorithmus}
+
+\begin{tcolorbox}[algostyle, title={Expectation-Maximization (EM)}]
+Wiederhole bis Konvergenz:
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{E-Schritt}: $Q_i(z^{(i)}) \leftarrow p(z^{(i)} \mid x^{(i)};\,\theta)$
+  \item \textbf{M-Schritt}:
+    $\theta \leftarrow \arg\max_\theta \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log\frac{p(x^{(i)}, z^{(i)};\,\theta)}{Q_i(z^{(i)})}$
+\end{itemize}
+\end{tcolorbox}
+
+\textbf{Konvergenz}: Jede Iteration erhöht $\log p(x;\,\theta)$ oder lässt
+es gleich. Die ELBO-Schranke ist beim E-Schritt scharf (Gleichheit in
+Jensens Ungleichung).
+
+\subsection{EM für Gauß-Gemische}
+
+\textbf{E-Schritt}: Berechne Zugehörigkeitswahrscheinlichkeiten
+(\emph{responsibilities}):
+\begin{equation}
+  \gamma_{ik} = Q_i(z^{(i)}=k)
+  = \frac{\phi_k\,\N(x^{(i)};\,\mu_k,\Sigma_k)}
+         {\sum_{j=1}^K \phi_j\,\N(x^{(i)};\,\mu_j,\Sigma_j)}.
+\end{equation}
+
+\textbf{M-Schritt}: Update der Parameter:
+\begin{align}
+  \hat\phi_k &= \frac{1}{n}\sum_i \gamma_{ik}, \\
+  \hat\mu_k  &= \frac{\sum_i \gamma_{ik}\, x^{(i)}}{\sum_i \gamma_{ik}}, \\
+  \hat\Sigma_k &= \frac{\sum_i \gamma_{ik}(x^{(i)}-\hat\mu_k)(x^{(i)}-\hat\mu_k)\T}
+                       {\sum_i \gamma_{ik}}.
+\end{align}
+
+% ------------------------------------------------------------------
+\section{Faktorenanalyse}
+% ------------------------------------------------------------------
+
+\subsection{Motivation: Wenn $n \gg m$}
+
+Bei hochdimensionalen Daten ($n \gg m$, mehr Features als Trainingsbeispiele)
+ist die MLE-Kovarianzschätzung
+$\hat\Sigma = \tfrac1m\sum_i (x^{(i)}-\hat\mu)(x^{(i)}-\hat\mu)\T$ singulär
+(Rang $\leq m-1 < n$), sodass $\hat\Sigma^{-1}$ nicht existiert -- die
+Gauß-Dichte ist damit für GDA oder Gauß-Gemische nicht auswertbar.
+Einschränkungen wie diagonales $\Sigma$ oder $\Sigma=\sigma^2 I$ vermeiden
+Singularität, modellieren dann aber keinerlei Korrelationen zwischen
+Features mehr. Die \textbf{Faktorenanalyse} bietet einen Kompromiss: ein
+niedrigdimensionales latentes Modell, das dennoch Korrelationsstruktur
+einfängt, ohne eine volle $n\times n$-Kovarianzmatrix zu schätzen.
+
+\subsection{Das Modell}
+
+Mit latenter Variable $z \in \R^k$ ($k \ll n$):
+\begin{equation}
+  z \sim \N(0, I), \qquad x \mid z \sim \N(\mu + \Lambda z,\, \Psi),
+\end{equation}
+äquivalent $x = \mu + \Lambda z + \varepsilon$ mit $\varepsilon\sim\N(0,\Psi)$
+und $z \indep \varepsilon$. Die Parameter sind $\mu\in\R^n$,
+$\Lambda\in\R^{n\times k}$ (Faktor-Ladungsmatrix) und die \emph{diagonale}
+Matrix $\Psi\in\R^{n\times n}$ (features-spezifisches Rauschen).
+
+Da $(z,x)$ gemeinsam Gauß-verteilt sind, ergibt sich die Randverteilung
+\begin{equation}
+  x \sim \N(\mu,\; \Lambda\Lambda\T + \Psi),
+\end{equation}
+d.\,h.\ die Kovarianz von $x$ wird durch $\Lambda\Lambda\T$ (Rang $\leq k$,
+erfasst die Korrelationen über gemeinsame latente Faktoren) plus diagonalem
+Rauschen $\Psi$ approximiert -- mit nur $O(nk)$ statt $O(n^2)$ freien
+Parametern.
+
+\subsection{EM für Faktorenanalyse}
+
+Da die Log-Likelihood in $(\mu,\Lambda,\Psi)$ nicht geschlossen maximierbar
+ist, wird EM eingesetzt (vgl.\ Abschnitt zum EM-Algorithmus).
+
+\textbf{E-Schritt}: Über die Formeln für bedingte Gauß-Verteilungen
+($\mu_{1|2} = \mu_1+\Sigma_{12}\Sigma_{22}^{-1}(x_2-\mu_2)$,
+$\Sigma_{1|2}=\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$, angewendet
+auf die Gemeinsamverteilung von $z$ und $x$) ergibt sich
+\begin{align}
+  z^{(i)} \mid x^{(i)};\,\mu,\Lambda,\Psi &\sim \N\bigl(\mu_{z^{(i)}|x^{(i)}},\, \Sigma_{z^{(i)}|x^{(i)}}\bigr), \\
+  \mu_{z^{(i)}|x^{(i)}} &= \Lambda\T(\Lambda\Lambda\T+\Psi)^{-1}(x^{(i)}-\mu), \\
+  \Sigma_{z^{(i)}|x^{(i)}} &= I - \Lambda\T(\Lambda\Lambda\T+\Psi)^{-1}\Lambda.
+\end{align}
+
+\textbf{M-Schritt}: Update von $\Lambda$ und $\Psi$ unter Nutzung der
+Momente $\E[z^{(i)}\mid x^{(i)}]$ und $\E[z^{(i)}(z^{(i)})\T\mid x^{(i)}]$ aus
+dem E-Schritt (geschlossene, aber längere Update-Formeln analog zum
+Gauß-Gemisch-Fall).
+
+\begin{tcolorbox}[defstyle]
+\textbf{Bezug zu PCA und ICA.} Faktorenanalyse, PCA (nächster Abschnitt) und
+ICA suchen alle eine niedrigdimensionale latente Repräsentation von $x$.
+Faktorenanalyse ist ein \emph{probabilistisches} generatives Modell
+(explizites Rauschen $\Psi$, EM-Schätzung); PCA entspricht dem Grenzfall
+$\Psi = \sigma^2 I$ für $\sigma^2\to 0$ und liefert dafür eine \emph{direkte},
+nicht-iterative Lösung über eine Eigenwertzerlegung.
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\section{Hidden Markov Models}
+% ------------------------------------------------------------------
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Hidden Markov Models Fundamentals}, Daniel Ramage, CS229
+Section Notes -- \texttt{section/cs229-hmm.pdf}.
+\end{tcolorbox}
+
+Faktorenanalyse modelliert eine latente Variable \emph{pro Beispiel};
+Hidden Markov Models modellieren eine latente Variable \emph{pro Zeitschritt}
+in einer Sequenz -- und werden, wie Faktorenanalyse und Gauß-Gemische, per
+EM (hier "Baum-Welch" genannt) gelernt.
+
+\subsection{Markov-Modelle}
+
+Gegeben Zustände $S=\{s_1,\ldots,s_{|S|}\}$ und eine beobachtete
+Zustandsfolge $z_1,\ldots,z_T \in S$. Zwei Annahmen machen das Problem
+handhabbar:
+\begin{itemize}
+  \item \textbf{Limited-Horizon-Annahme}: $P(z_t \mid z_{t-1},\ldots,z_1) = P(z_t\mid z_{t-1})$.
+  \item \textbf{Stationaritätsannahme}: $P(z_t\mid z_{t-1})$ ist unabhängig von $t$.
+\end{itemize}
+Mit Übergangsmatrix $A_{ij} = P(z_t{=}s_j \mid z_{t-1}{=}s_i)$ und einem
+künstlichen Startzustand $z_0$ ergibt sich die Sequenzwahrscheinlichkeit per
+Kettenregel als
+\begin{equation}
+  P(\vec z; A) = \prod_{t=1}^T P(z_t \mid z_{t-1}; A) = \prod_{t=1}^T A_{z_{t-1} z_t}.
+\end{equation}
+
+\subsection{Hidden Markov Models: Drei Fragen}
+
+Bei einem \textbf{HMM} sind die Zustände $z_1,\ldots,z_T$ \emph{nicht}
+beobachtbar -- man beobachtet nur eine Ausgabe $x_t\in V$ pro Zeitschritt,
+erzeugt gemäß der \textbf{Output-Independence-Annahme}
+$P(x_t{=}v_k\mid z_t{=}s_j) = B_{jk}$ (Emissionsmatrix $B$). Drei
+Grundfragen:
+
+\begin{enumerate}
+  \item \textbf{Likelihood}: Wie wahrscheinlich ist eine Beobachtungsfolge $\vec x$?
+  \item \textbf{Decoding}: Welche Zustandsfolge $\vec z$ erklärt $\vec x$ am besten?
+  \item \textbf{Learning}: Wie schätzt man $A,B$ aus Beobachtungen?
+\end{enumerate}
+
+\subsection{Forward-Prozedur (Frage 1)}
+
+Naiv erfordert $P(\vec x;A,B) = \sum_{\vec z} P(\vec x\mid\vec z)P(\vec z)$
+eine Summe über $|S|^T$ Zustandsfolgen. Mit der Hilfsgröße
+$\alpha_i(t) = P(x_1,\ldots,x_t,\,z_t{=}s_i;A,B)$ liefert dynamische
+Programmierung eine $O(|S|^2 T)$-Lösung:
+
+\begin{tcolorbox}[algostyle, title={Forward-Prozedur}]
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+  \item Basisfall: $\alpha_i(0) = A_{0i}$, $i=1,\ldots,|S|$.
+  \item Rekursion: $\alpha_j(t) = \sum_{i=1}^{|S|} \alpha_i(t{-}1)\,A_{ij}\,B_{j x_t}$, $j=1,\ldots,|S|$, $t=1,\ldots,T$.
+  \item $P(\vec x;A,B) = \sum_{i=1}^{|S|} \alpha_i(T)$.
+\end{enumerate}
+\end{tcolorbox}
+
+Analog liefert die \textbf{Backward-Prozedur}
+$\beta_i(t) = P(x_{t+1},\ldots,x_T \mid z_t{=}s_i;A,B)$.
+
+\subsection{Viterbi-Algorithmus (Frage 2)}
+
+Gesucht: $\arg\max_{\vec z} P(\vec z\mid \vec x;A,B) = \arg\max_{\vec z}
+P(\vec x,\vec z;A,B)$. Der \textbf{Viterbi-Algorithmus} ist strukturell
+identisch zur Forward-Prozedur, ersetzt aber die Summe $\sum_i$ durch ein
+Maximum $\max_i$ und speichert bei jedem Schritt zusätzlich den
+Vorgängerzustand -- so lässt sich am Ende die optimale Zustandsfolge per
+Backtracking rekonstruieren. Laufzeit ebenfalls $O(|S|^2 T)$.
+
+\subsection{Baum-Welch-Algorithmus (Frage 3)}
+
+Parameterlernen für HMMs ist ein Spezialfall des EM-Algorithmus
+(Abschnitt~16). Mit der Hilfsgröße
+$\gamma_t(i,j) = \alpha_i(t)\,A_{ij}\,B_{jx_{t+1}}\,\beta_j(t{+}1)$
+(proportional zur Wahrscheinlichkeit eines Übergangs $s_i\to s_j$ zur Zeit
+$t$ gegeben alle Beobachtungen):
+
+\begin{tcolorbox}[algostyle, title={Baum-Welch (Forward-Backward-EM)}]
+Wiederhole bis Konvergenz:
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+  \item \textbf{E-Schritt}: Forward/Backward laufen lassen, $\gamma_t(i,j)$ berechnen.
+  \item \textbf{M-Schritt}:
+    \[
+      A_{ij} \leftarrow \frac{\sum_{t=1}^T \gamma_t(i,j)}{\sum_{j=1}^{|S|}\sum_{t=1}^T \gamma_t(i,j)}, \qquad
+      B_{jk} \leftarrow \frac{\sum_{i=1}^{|S|}\sum_{t:\,x_t=v_k} \gamma_t(i,j)}{\sum_{i=1}^{|S|}\sum_{t=1}^T \gamma_t(i,j)}.
+    \]
+\end{itemize}
+\end{tcolorbox}
+
+Intuitiv: $A_{ij}$ = erwartete Anzahl Übergänge $s_i\to s_j$, geteilt durch
+erwartete Häufigkeit von $s_i$; $B_{jk}$ analog für Emissionen. Wie jede
+EM-Anwendung ist das Problem nicht-konvex (mehrere lokale Maxima) --
+mehrere Initialisierungen und Smoothing (keine Nullwahrscheinlichkeiten)
+sind ratsam.
+
+% ------------------------------------------------------------------
+\section{Hauptkomponentenanalyse (PCA)}
+% ------------------------------------------------------------------
+
+PCA findet die Richtungen größter Varianz in den Daten und projiziert auf
+den $k$-dimensionalen Unterraum, der die erklärte Varianz maximiert.
+
+\textbf{Algorithmus:}
+\begin{enumerate}
+  \item Zentriere Daten: $x^{(i)} \leftarrow x^{(i)} - \bar x$.
+  \item Berechne Stichproben-Kovarianzmatrix: $\hat\Sigma = \frac{1}{n}X\T X$.
+  \item Eigenwertzerlegung: $\hat\Sigma = U \Lambda U\T$ (oder SVD von $X$).
+  \item Wähle die $k$ Eigenvektoren $u_1,\ldots,u_k$ zu den größten
+        Eigenwerten.
+  \item Projektion: $z^{(i)} = U_k\T x^{(i)} \in \R^k$.
+\end{enumerate}
+
+\textbf{Interpretation:} $u_j$ ist die $j$-te Hauptkomponente.
+Der Anteil der erklärten Varianz durch $k$ Komponenten ist
+$\sum_{j=1}^k \lambda_j / \sum_{j=1}^d \lambda_j$.
+
+PCA ist die Lösung des Optimierungsproblems
+\begin{equation}
+  \max_{U\T U = I_k} \operatorname{tr}(U\T \hat\Sigma U).
+\end{equation}
+
+% ------------------------------------------------------------------
+\section{Unabhängige Komponentenanalyse (ICA)}
+% ------------------------------------------------------------------
+
+ICA löst das \textbf{Blind Source Separation}-Problem: Beobachtungen
+$x = As$ sind lineare Mischungen unabhängiger Quellen $s \in \R^d$.
+Ziel ist die Schätzung der Mischmatrix $A$ ohne Kenntnis von $s$.
+
+\subsection{ICA-Ambiguitäten}
+
+Grundlegende Nichtidentifizierbarkeiten:
+\begin{itemize}
+  \item \textbf{Skalierung}: $As = (A\,\mathrm{diag}(c))\,(\mathrm{diag}(1/c)\,s)$
+        -- Quellen können nur bis auf einen Skalierungsfaktor bestimmt werden.
+  \item \textbf{Permutation}: Reihenfolge der Quellen ist unbestimmt.
+  \item \textbf{Gaussianität}: Gaußverteilte Quellen sind \emph{nie}
+        identifizierbar (alle Richtungen äquivalent).
+\end{itemize}
+
+\subsection{ICA-Algorithmus}
+
+Sei $W = A^{-1}$ die Entmischungsmatrix. Die Likelihood der Beobachtungen ist:
+\begin{equation}
+  p_x(x) = \prod_{j=1}^d p_s(w_j\T x) \cdot |\det W|.
+\end{equation}
+Der ICA-Algorithmus maximiert die Log-Likelihood durch stochastischen
+Gradient Ascent auf $W$:
+\begin{equation}
+  W \leftarrow W + \alpha
+  \Bigl(\bigl[1 - 2\,g(Wx)\bigr]\,(Wx)\T + (W\T)^{-1}\Bigr),
+\end{equation}
+wobei $g(s) = 1/(1+e^{-s})$ die Sigmoid-Funktion ist (unter der Annahme
+einer Super-Gaußschen Quellenverteilung).
+
+% ------------------------------------------------------------------
+\section{Selbstüberwachtes Lernen und Foundation Models}
+% ------------------------------------------------------------------
+
+\subsection{Motivation}
+
+Manuelle Annotation großer Datensätze ist teuer. \textbf{Selbstüberwachtes
+Lernen} nutzt in den Daten selbst enthaltene Strukturen als Supervision
+-- ohne menschliche Labels.
+
+\subsection{Pretraining in Computer Vision}
+
+\begin{itemize}
+  \item \textbf{Kontrastives Lernen} (SimCLR, MoCo): Lernt Repräsentationen,
+        indem zwei Augmentierungen desselben Bildes als ``positiv'' und
+        verschiedene Bilder als ``negativ'' behandelt werden.
+  \item \textbf{Masked Image Modeling} (MAE): Lernt, maskierte Bildregionen
+        aus dem Kontext zu rekonstruieren.
+\end{itemize}
+
+\subsection{Large Language Models und Transformer}
+
+\textbf{Transformer-Architektur:}
+\begin{itemize}
+  \item \textbf{Self-Attention}: $\mathrm{Attn}(Q,K,V) = \mathrm{softmax}(QK\T/\sqrt{d_k})\,V$.
+        Lernt, welche Positionen im Kontext relevant sind.
+  \item \textbf{Multi-Head Attention}: Mehrere parallele Attention-Heads
+        erfassen verschiedene linguistische Aspekte.
+  \item \textbf{Feedforward-Schicht}: Positionsweise angewendetes MLP nach
+        jeder Attention-Schicht.
+  \item \textbf{Positionskodierung}: Addiert Information über die Position
+        des Tokens, da Attention permutationsinvariant ist.
+\end{itemize}
+
+\textbf{Pretraining}: Das Modell lernt, das nächste Token zu
+vorherzusagen:
+\[
+  \mathcal{L} = -\sum_t \log P(x_t \mid x_1,\ldots,x_{t-1};\,\theta).
+\]
+
+\textbf{Zero-Shot- und In-Context-Learning}: Vortrainierte LLMs können neue
+Aufgaben ohne Fine-Tuning lösen, wenn die Aufgabenbeschreibung (und ggf.\
+Beispiele) im Prompt mitgegeben werden -- ein emergentes Phänomen großer
+Modelle.
+
+% ------------------------------------------------------------------
+\section{Kritische Perspektiven auf ML}
+% ------------------------------------------------------------------
+
+\begin{tcolorbox}[srcstyle]
+Quelle: \emph{Technical and Societal Critiques of ML}, Chris Chute, Taide
+Ding, Andrey Kurenkov, CS229 Fall 2019 --
+\texttt{materials/critiques-ml-aut19.pdf} (vgl.\ auch die Vorgängerversion
+\texttt{materials/critiques-ml.pdf}).
+\end{tcolorbox}
+
+Leistungsfähige Modelle sind nicht automatisch vertrauenswürdige oder
+robuste Modelle. Drei Schwachstellen, die über reine Testfehler-Metriken
+hinausgehen:
+
+\subsection{Adversarial Examples}
+
+Neuronale Netze verletzen oft die intuitive Annahme, dass sich die
+Modellvorhersage in einer kleinen Umgebung $\norm{r}<\varepsilon$ um ein
+Trainingsbeispiel $x$ kaum ändert. Der \textbf{Fast Gradient Sign Method
+(FGSM)}-Angriff konstruiert eine minimale, für Menschen kaum wahrnehmbare
+Störung, die eine falsche Klassifikation erzwingt, indem er in Richtung des
+\emph{steigenden} Verlusts geht:
+\begin{equation}
+  x_\text{adv} = x + \varepsilon\cdot\operatorname{sign}\bigl(\nabla_x J(\theta,x,y)\bigr).
+\end{equation}
+Solche Störungen generalisieren häufig über Modellarchitekturen und
+Trainingsdatensätze hinweg und lassen sich teils sogar physisch realisieren
+(z.\,B.\ präparierte Verkehrsschilder). Verteidigungen (adversariales
+Training, Distillation) mindern das Problem, gelten aber weiterhin als
+offene Forschungsfrage.
+
+\subsection{Interpretierbarkeit}
+
+Nach Lipton ("The Mythos of Model Interpretability") lassen sich zwei
+Perspektiven unterscheiden:
+\begin{itemize}
+  \item \textbf{Algorithmische Transparenz}: Das Modell ist selbst
+        zerlegbar/verständlich (Beispiel: Koeffizienten der linearen
+        Regression). Klassische lineare Modelle und einzelne Decision Trees
+        gewinnen hier.
+  \item \textbf{Post-hoc-Erklärung}: Nachträgliche Erklärungen via
+        Visualisierung, Saliency Maps, Grad-CAM oder Attention-Gewichte.
+        Hier können auch tiefe neuronale Netze reichhaltige Erklärungen
+        liefern.
+\end{itemize}
+Die verbreitete Vereinfachung "lineare Modelle = interpretierbar, neuronale
+Netze = Blackbox" verwechselt diese beiden Perspektiven. Kernfrage hinter
+Interpretierbarkeit: Vertrauen, Kausalität, Übertragbarkeit auf neue
+Verteilungen und Fairness -- Aspekte, die reine Test-Genauigkeits- oder
+AUROC-Metriken (Abschnitt~16) nicht erfassen.
+
+\subsection{Kosten und gesellschaftliche Aspekte}
+
+Ergänzend diskutiert werden in den Folien der hohe Daten- und
+Rechenaufwand moderner Modelle sowie ethische Fragestellungen (Bias in
+Trainingsdaten, Fairness der Modellentscheidungen gegenüber
+unterrepräsentierten Gruppen) -- Themen, die bei der praktischen
+Anwendung von ML (nicht zuletzt bei Foundation Models, Abschnitt~23)
+zunehmend an Bedeutung gewinnen.
+
+% ==================================================================
+\newpage
+\part{Bestärkendes Lernen}
+% ==================================================================
+
+% ------------------------------------------------------------------
+\section{Bestärkendes Lernen}
+% ------------------------------------------------------------------
+
+\subsection{Markov-Entscheidungsprozesse}
+
+Ein \textbf{Markov-Entscheidungsprozess (MDP)} ist ein Tupel
+$(S, A, P, R, \gamma)$:
+\begin{itemize}
+  \item $S$: Zustandsraum, $A$: Aktionenraum,
+  \item $P_{sa}(s') = P(s' \mid s, a)$: Übergangsdynamik,
+  \item $R : S \times A \to \R$: Belohnungsfunktion,
+  \item $\gamma \in [0,1)$: Diskontierungsfaktor.
+\end{itemize}
+
+Ziel: Lerne eine \textbf{Policy} $\pi : S \to A$, die den erwarteten
+diskontierten Gesamtertrag maximiert:
+\begin{equation}
+  V^\pi(s) = \E\!\Bigl[\sum_{t=0}^\infty \gamma^t R(s_t, a_t)
+    \;\Big|\; s_0 = s,\, \pi\Bigr].
+\end{equation}
+
+\subsection{Bellman-Gleichungen}
+
+Die \textbf{optimale Wertfunktion} $V^*$ erfüllt die
+\textbf{Bellman-Optimalitätsgleichung}:
+\begin{equation}
+  V^*(s) = \max_a \Bigl[R(s,a) + \gamma \sum_{s'} P_{sa}(s')\,V^*(s')\Bigr].
+\end{equation}
+
+Die optimale Policy ist $\pi^*(s) = \arg\max_a [R(s,a) + \gamma \sum_{s'}
+P_{sa}(s') V^*(s')]$.
+
+\subsection{Value Iteration und Policy Iteration}
+
+\begin{tcolorbox}[algostyle, title={Value Iteration}]
+Initialisiere $V(s) = 0$. Wiederhole bis Konvergenz:
+\[
+  V(s) \leftarrow \max_a \Bigl[R(s,a) + \gamma \sum_{s'} P_{sa}(s')\,V(s')\Bigr]
+  \quad \forall s
+\]
+\end{tcolorbox}
+
+\begin{tcolorbox}[algostyle, title={Policy Iteration}]
+Initialisiere Policy $\pi$ beliebig. Wiederhole:
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+  \item \textbf{Policy Evaluation}: Löse linea\-res Gleichungssystem
+        $(I - \gamma P^\pi)V^\pi = R^\pi$ nach $V^\pi$.
+  \item \textbf{Policy Improvement}:
+        $\pi(s) \leftarrow \arg\max_a [R(s,a) + \gamma \sum_{s'} P_{sa}(s') V^\pi(s')]$
+\end{enumerate}
+Policy Iteration konvergiert in endlich vielen Schritten.
+\end{tcolorbox}
+
+\subsection{Wertfunktions-Approximation (kontinuierliche Zustände)}
+
+Bei kontinuierlichem Zustandsraum $S \subseteq \R^d$ approximiert man
+$V(s) \approx \theta\T \phi(s)$ und aktualisiert per Fitted Value Iteration:
+\begin{equation}
+  y^{(i)} = R(s^{(i)}) + \gamma \max_a \sum_{s'} P_{s^{(i)} a}(s')\,V(s'),
+  \quad \theta \leftarrow \arg\min_\theta \sum_i (\theta\T\phi(s^{(i)}) - y^{(i)})^2.
+\end{equation}
+
+% ------------------------------------------------------------------
+\section{Lineare Quadratische Regelung, DDP und LQG}
+% ------------------------------------------------------------------
+
+\subsection{Lineare Quadratische Regelung (LQR)}
+
+LQR behandelt Systeme mit \textbf{linearer Dynamik} und
+\textbf{quadratischen Kosten}:
+\begin{align}
+  x_{t+1} &= Ax_t + Bu_t + w_t, \quad w_t \sim \N(0, \Sigma_w), \\
+  \text{Kosten:} &\quad c_t(x_t, u_t) = x_t\T Q\, x_t + u_t\T R\, u_t,
+  \quad Q \succeq 0,\, R \succ 0.
+\end{align}
+
+Die optimale Wertfunktion ist quadratisch: $V_t(x) = x\T P_t x + q_t$.
+Die \textbf{Riccati-Rekursion} liefert $P_t$ rückwärts in der Zeit:
+\begin{align}
+  P_T &= Q_T, \\
+  P_t &= Q + A\T P_{t+1} A
+    - A\T P_{t+1} B(R + B\T P_{t+1} B)^{-1} B\T P_{t+1} A.
+\end{align}
+Die optimale Policy ist \textbf{linear im Zustand}:
+\begin{equation}
+  u_t^* = -K_t x_t, \qquad
+  K_t = (R + B\T P_{t+1} B)^{-1} B\T P_{t+1} A.
+\end{equation}
+
+\subsection{Differential Dynamic Programming (DDP)}
+
+DDP erweitert LQR auf \textbf{nichtlineare Systeme}
+$x_{t+1} = f(x_t, u_t)$ durch lokale Linearisierung um eine
+Referenztrajektorie $(\bar x_t, \bar u_t)$:
+\begin{equation}
+  f(x,u) \approx f(\bar x,\bar u) + F_x(x - \bar x) + F_u(u - \bar u).
+\end{equation}
+Backward Pass (wie LQR) berechnet die Feedback-Gains; Forward Pass wendet
+die Policy an und aktualisiert die Referenztrajektorie. DDP iteriert bis
+Konvergenz.
+
+\subsection{Lineares Quadratisches Gauß-Modell (LQG)}
+
+LQG kombiniert LQR mit einem \textbf{Kalman-Filter}, wenn der Zustand $x_t$
+nicht direkt beobachtbar ist:
+\begin{equation}
+  y_t = Cx_t + v_t, \quad v_t \sim \N(0, \Sigma_v).
+\end{equation}
+
+\textbf{Separationsprinzip:} Kalman-Filter und LQR-Regler können unabhängig
+voneinander entworfen werden -- der Kalman-Filter schätzt $\hat x_t = \E[x_t
+\mid y_1,\ldots,y_t]$, der LQR-Regler nutzt $\hat x_t$ als wäre es der wahre
+Zustand.
+
+% ------------------------------------------------------------------
+\section{Policy Gradient (REINFORCE)}
+% ------------------------------------------------------------------
+
+\subsection{Direkte Policy-Parametrisierung}
+
+Statt eine Wertfunktion zu lernen, parametrisiert man die Policy direkt:
+$\pi_\theta(a \mid s)$. Das Optimierungsziel ist:
+\begin{equation}
+  J(\theta) = \E_\tau\!\Bigl[\sum_{t=0}^T \gamma^t r_t\Bigr],
+  \quad \tau \sim \pi_\theta.
+\end{equation}
+
+\subsection{Policy-Gradient-Theorem}
+
+\begin{tcolorbox}[thmstyle]
+\textbf{Policy-Gradient-Theorem.}
+\[
+  \nabla_\theta J(\theta)
+  = \E_\tau\!\Bigl[\sum_{t=0}^T \nabla_\theta \log\pi_\theta(a_t \mid s_t)
+    \cdot G_t\Bigr],
+\]
+wobei $G_t = \sum_{t'=t}^T \gamma^{t'-t} r_{t'}$ der zukünftige diskontierte
+Ertrag ist.
+\end{tcolorbox}
+
+Das Ergebnis nutzt den Trick
+$\nabla_\theta \pi_\theta = \pi_\theta \nabla_\theta \log\pi_\theta$ und
+die REINFORCE-Identität.
+
+\subsection{REINFORCE-Algorithmus}
+
+\begin{tcolorbox}[algostyle, title={REINFORCE}]
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item Sampling: Führe Episode $\tau = (s_0, a_0, r_0, \ldots, s_T)$ unter
+        $\pi_\theta$ aus.
+  \item Berechne $G_t = \sum_{t'=t}^T \gamma^{t'-t} r_{t'}$.
+  \item Gradient: $g = \sum_t \nabla_\theta \log\pi_\theta(a_t \mid s_t) \cdot G_t$.
+  \item $\theta \leftarrow \theta + \alpha\, g$.
+\end{enumerate}
+\end{tcolorbox}
+
+\subsection{Varianzreduktion}
+
+REINFORCE hat hohe Varianz. \textbf{Baselines} reduzieren sie ohne den
+Erwartungswert zu verzerren:
+\begin{equation}
+  g = \sum_t \nabla_\theta \log\pi_\theta(a_t \mid s_t)
+    \cdot \bigl(G_t - b(s_t)\bigr).
+\end{equation}
+Typische Wahl: $b(s_t) = V^\pi(s_t)$. Die Differenz
+$A(s,a) = Q(s,a) - V(s)$ heißt \textbf{Vorteilsfunktion (Advantage)} und
+führt auf \textbf{Actor-Critic}-Methoden.
+
+% ==================================================================
+\newpage
+\section*{Schluss: Zusammenfassung der Schlüsselkonzepte}
+% ==================================================================
+
+\addcontentsline{toc}{section}{Schluss: Zusammenfassung der Schlüsselkonzepte}
+
+Die folgende Tabelle gibt einen Überblick über die wichtigsten Algorithmen
+und ihre Eigenschaften:
+
+\begin{center}
+\begin{tabular}{p{3.2cm} p{3cm} p{3.2cm} p{4.5cm}}
+\toprule
+\textbf{Methode} & \textbf{Aufgabe} & \textbf{Schlüsselidee} & \textbf{Stärken / Grenzen} \\
+\midrule
+Lineare Regression & Regression & Least Squares & Einfach, gut interpretierbar; linear \\
+Logist. Regression & Binäre Klassif. & Sigmoid + MLE & Probabilistisch; benötigt Linearität \\
+GDA & Klassifikation & Gauß-Modell $p(x|y)$ & Gut bei wenig Daten; Gauß-Annahme \\
+Naive Bayes & Klassifikation & Bed. Unabhängigkeit & Skalierbar, einfach; starke Annahme \\
+SVM & Klassifikation & Maximaler Margin & Kernel-fähig; teuer bei großem $n$ \\
+Perceptron & Klassifikation & Online-Update bei Fehler & Mistake-Bound $(D/\gamma)^2$; nur bei Trennbarkeit \\
+Decision Tree & Beides & Rekursive Regionssplits & Interpretierbar; hohe Varianz \\
+Random Forest & Beides & Bagging + Feature-Subsampling & Robust, wenig Tuning; weniger interpretierbar \\
+Boosting (AdaBoost) & Klassifikation & Sequentielle schwache Lerner & Reduziert Bias; overfitting-anfällig bei großem $M$ \\
+Neuronale Netze & Allgemein & Tiefe Nichtlinearität & Universell; viele Hyperparameter \\
+K-Means & Clustering & Centroid-Update & Einfach; lokale Optima, wählt $K$ \\
+EM & Dichtemodell & E/M-Schritt & Allgemein; langsam, lokale Optima \\
+Faktorenanalyse & Dim.-Reduktion & Latentes Gauß-Modell + EM & Gut bei $n \gg m$; iterativ \\
+Hidden Markov Model & Sequenzen & Forward/Viterbi/Baum-Welch & Zeitreihen mit latentem Zustand; nicht-konvex \\
+Gaussian Process & Regression & Bayes-Prior über Funktionen & Kalibrierte Unsicherheit; teuer bei großem $n$ ($O(n^3)$) \\
+PCA & Dim.-Reduktion & Eigenvektoren & Linear; verliert nichtlineare Struktur \\
+Value Iteration & RL (diskret) & Bellman-Update & Exakt; skaliert schlecht \\
+LQR & RL (kontinuierl.) & Riccati, linear & Analytisch; erfordert lineare Dynamik \\
+REINFORCE & RL (allgemein) & Policy Gradient & Flexibel; hohe Varianz \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+\noindent Diese Vorlesung führt von einfachen parametrischen Modellen über
+tiefe neuronale Netze bis hin zu bestärkendem Lernen für sequentielle
+Entscheidungen. Das verbindende Thema ist stets die Optimierung einer
+Verlust- oder Wertfunktion -- meist durch Gradientenverfahren, manchmal
+durch geschlossene Formeln oder dynamische Programmierung.
+
+\bigskip
+
+\noindent\textit{``Machine learning is the science of getting computers
+to act without being explicitly programmed.''} --- Andrew Ng
+
+\end{document}

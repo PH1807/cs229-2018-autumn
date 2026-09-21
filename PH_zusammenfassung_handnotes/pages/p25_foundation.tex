@@ -1,0 +1,92 @@
+\hnheader[Labels aus den Daten selbst erzeugen: maskierte oder nächste Teile vorhersagen.][Next-Token: $\mathcal L=-\sum_t\log P(x_t|x_{<t};\theta)$]{Foundation}{Models}{Selbstüberwachtes Lernen \& Transformer}
+\hnsrc{main\_notes.pdf (Self-supervised learning and foundation models)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Motivation}
+Annotierte Daten sind teuer. \textbf{Selbstüberwachtes Lernen}: nutze Struktur in den Daten selbst als Supervision (Pretraining auf riesigen unlabeled Daten), dann Anpassung an Zielaufgaben.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Pretraining: Vision}
+\begin{itemize}
+\item \textbf{Kontrastiv} (SimCLR, MoCo): zwei Augmentierungen \emph{desselben} Bildes $=$ positiv, andere Bilder $=$ negativ.
+\item \textbf{Masked Image Modeling} (MAE): verdeckte Bildteile aus dem Kontext rekonstruieren.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Transformer-Block}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=1.5pt,font=\tiny,inner sep=3pt,minimum width=2.6cm}]
+  \node[fill=hnmint] (in) at (0,0) {Tokens + Positionskodierung};
+  \node[fill=hnyellow] (att) at (0,.85) {Multi-Head Self-Attention};
+  \node[fill=hnblue!60] (ln1) at (0,1.5) {Add \& LayerNorm};
+  \node[fill=hnpink] (ff) at (0,2.15) {Feed-Forward (MLP)};
+  \node[fill=hnblue!60] (ln2) at (0,2.8) {Add \& LayerNorm};
+  \draw[->] (in)--(att); \draw[->] (att)--(ln1); \draw[->] (ln1)--(ff); \draw[->] (ff)--(ln2);
+  \draw[->,hnorange,thick] (1.55,0) -- (1.55,1.5) -- (1.35,1.5);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Self-Attention}
+\[ \mathrm{Attn}(Q,K,V)=\mathrm{softmax}\Bigl(\frac{QK\T}{\sqrt{d_k}}\Bigr)V \]
+Jedes Token bildet Query, Key, Value ($X$ Token-Matrix, $W_Q,W_K,W_V$ gelernte Matrizen, $d_k$ Key-Dimension; $Q=XW_Q$, $K=XW_K$, $V=XW_V$) und mittelt die Values nach Ähnlichkeit. \textbf{Multi-Head}: mehrere Attention-Köpfe parallel.
+\begin{pcode}[Self-Attention]
+$S\leftarrow QK^{\top}/\sqrt{d_k}$\\
+$P\leftarrow\mathrm{softmax}(S)$ \ \cm{\# zeilenweise}\\
+\kw{return} $P\,V$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Bausteine \& Training}
+\textbf{Feed-Forward}: positionsweises MLP nach der Attention. \textbf{Positionskodierung}: Attention ist permutationsinvariant, also Positionsinformation addieren. Residual + LayerNorm stabilisieren.\\
+\textbf{Pretraining}: Sprachmodell sagt das nächste Token voraus, $\mathcal L=-\sum_t\log P(x_t|x_1..x_{t-1})$.\\
+\textbf{Zero-Shot / In-Context}: Aufgaben lösen allein durch Prompt (mit Beispielen), ohne Fine-Tuning.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Attention mit 2 Tokens}
+$d_k=2$, $Q=K=I$, $V=\begin{psmallmatrix}1&2\\3&4\end{psmallmatrix}$.\\
+\hnsol\ $QK\T/\sqrt2=\mathrm{diag}(0.71,0.71)$. Zeile 1: $\mathrm{softmax}(0.71,0)=(0.67,\,0.33)$.\\
+Ausgabe Zeile 1: $0.67\cdot(1,2)+0.33\cdot(3,4)=\ora{(1.66,\,2.66)}$ -- Mischung, die stärker Token~1 gewichtet.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Foundation-Model-Paradigma}
+\begin{enumerate}
+\item \textbf{Pretrain} selbstüberwacht auf riesigen Daten
+\item \textbf{Adaptieren}: Fine-Tuning, Prompting, In-Context-Learning
+\item \textbf{Einsetzen} für viele Aufgaben mit wenig Labels
+\end{enumerate}
+Skalierung (Daten, Parameter, Rechenleistung) verbessert Fähigkeiten, oft \emph{emergent}. (Siehe auch Double Descent: große Modelle generalisieren trotzdem.)
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item wenige Labels nötig
+\item ein Modell für viele Aufgaben
+\item skaliert mit Daten
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item enorme Rechen-/Datenkosten
+\item schwer interpretierbar
+\item übernimmt Verzerrungen der Daten
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Supervision aus den Daten selbst
+\item Attention: softmax$(QK\T/\sqrt{d_k})V$
+\item Pretrain $\to$ Adaptieren
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was ist selbstüberwachtes Lernen?}{Labels aus den Daten selbst (nächstes Token, maskierte Teile, Augmentierungen).}{Formel der Self-Attention?}{$\mathrm{softmax}(QK\T/\sqrt{d_k})V$.}{Wozu Positionskodierung?}{Attention ist permutationsinvariant $\Rightarrow$ Position explizit addieren.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Lies das ganze Internet, sage das nächste Wort vorher -- und lerne dabei die Welt.“
+\end{hnbanner}
+\end{hngrid}

@@ -1,0 +1,4 @@
+wahre Nicht-Null-Koeff.: 4
+OLS        |w|_2   77.9  Nullen  0
+Ridge a=50 |w|_2   52.7  Nullen  0
+Lasso a=2  |w|_2   74.1  Nullen 16

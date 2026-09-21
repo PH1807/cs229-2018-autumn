@@ -1,0 +1,101 @@
+\hnheader[Sequenzen: die Zustände sind versteckt, sichtbar sind nur die Ausgaben.][Drei Fragen: Likelihood -- Decoding -- Learning]{Hidden Markov}{Models}{Zeitreihen mit latenten Zuständen}
+\hnsrc{section/cs229-hmm.pdf (Daniel Ramage, CS229 Section Notes)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Markov-Modell}
+Zwei Annahmen: \textbf{Limited Horizon} $P(z_t|z_{t-1},\dots,z_1)=P(z_t|z_{t-1})$ und \textbf{Stationarität}. Übergangsmatrix $A_{ij}=P(z_t{=}s_j|z_{t-1}{=}s_i)$; Sequenzwahrscheinlichkeit $P(\vec z)=\prod_tA_{z_{t-1}z_t}$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Hidden Markov Model}
+Zustände $z_t$ \emph{unbeobachtet}, sichtbar ist $x_t\in V$ mit \hlt{Emissionsmatrix} $B_{jk}=P(x_t{=}v_k|z_t{=}s_j)$ (Output Independence). Beispiel: Wetter (versteckt) $\to$ Eiscreme-Konsum (sichtbar).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Kette}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={circle,draw=hnnavy,minimum size=6mm,inner sep=0pt,font=\scriptsize}]
+  \foreach \i in {1,2,3,4}{
+    \node[fill=hnyellow] (z\i) at (\i*1.05,1.2) {$z_{\i}$};
+    \node[fill=hnmint] (x\i) at (\i*1.05,0) {$x_{\i}$};
+    \draw[->] (z\i)--(x\i) node[midway,right,draw=none,font=\tiny]{$B$};}
+  \foreach \i/\j in {1/2,2/3,3/4}{\draw[->,hnorange,thick] (z\i)--(z\j) node[midway,above,draw=none,font=\tiny]{$A$};}
+  \node[draw=none,font=\tiny,hnnavy] at (2.6,1.85) {versteckt};
+  \node[draw=none,font=\tiny,hnnavy] at (2.6,-.6) {beobachtet};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Forward-Prozedur (Frage 1)}
+($\pi_i$ Startwahrscheinlichkeit von Zustand $i$, $A_{ij}$ Übergang, $B_{j,x}$ Emission, $T$ Länge, $|S|$ Zustandszahl.) $\alpha_i(t)=P(x_1..x_t,z_t{=}s_i)$; statt $|S|^T$ Pfade nur $O(|S|^2T)$:
+\begin{pcode}[Forward]
+$\alpha_i(1)\leftarrow\pi_i\,B_{i,x_1}$\\
+\kw{for} $t=2..T$, \kw{for} $j$:\\
+\hii $\alpha_j(t)\leftarrow\bigl(\sum_i\alpha_i(t{-}1)A_{ij}\bigr)B_{j,x_t}$\\
+\kw{return} $P(\vec x)=\sum_i\alpha_i(T)$
+\end{pcode}
+Analog: Backward-Prozedur $\beta_i(t)$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Viterbi (Frage 2)}
+Wie Forward, aber \emph{Maximum} statt Summe; Vorgänger merken:
+\begin{pcode}[Viterbi]
+$\delta_i(1)\leftarrow\pi_iB_{i,x_1}$\\
+\kw{for} $t=2..T$, \kw{for} $j$:\\
+\hii $\delta_j(t)\leftarrow\max_i\delta_i(t{-}1)A_{ij}\cdot B_{j,x_t}$\\
+\hii $\psi_j(t)\leftarrow\arg\max_i\delta_i(t{-}1)A_{ij}$\\
+$z_T\leftarrow\arg\max_j\delta_j(T)$;\\
+\kw{for} $t=T{-}1..1$: $z_t\leftarrow\psi_{z_{t+1}}(t{+}1)$ \ \cm{\# Backtracking}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Baum-Welch (Frage 3)}
+Lernen von $A,B$ ist EM (nichtkonvex, mehrere Starts, Smoothing gegen Nullen).
+\begin{pcode}[Baum-Welch]
+\kw{repeat} bis Konvergenz:\\
+\hii \cm{\# E: Forward + Backward}\\
+\hii $\gamma_t(i,j)\propto\alpha_i(t)A_{ij}B_{j,x_{t+1}}\beta_j(t{+}1)$\\
+\hii \cm{\# M: erwartete Häufigkeiten}\\
+\hii $A_{ij}\leftarrow\frac{\sum_t\gamma_t(i,j)}{\sum_j\sum_t\gamma_t(i,j)}$\\
+\hii $B_{jk}\leftarrow\frac{\sum_i\sum_{t:x_t=v_k}\gamma_t(i,j)}{\sum_i\sum_t\gamma_t(i,j)}$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Heiß/Kalt, $x=(3,1)$ Eisportionen}
+$\pi=(0.5,0.5)$, $A=\begin{psmallmatrix}0.7&0.3\\0.4&0.6\end{psmallmatrix}$; $B_{H}(1,2,3)=(0.2,0.4,0.4)$, $B_{C}=(0.5,0.4,0.1)$.\\
+\hnsol\ \textbf{Forward:} $\alpha_H(1)=0.2$, $\alpha_C(1)=0.05$.\\
+$\alpha_H(2)=(0.2\cdot0.7+0.05\cdot0.4)\cdot0.2=0.032$, $\alpha_C(2)=(0.2\cdot0.3+0.05\cdot0.6)\cdot0.5=0.045$\\
+$P(x)=0.032+0.045=\ora{0.077}$.\\
+\textbf{Viterbi:} $\delta_C(2)=\max(0.2{\cdot}0.3,\,0.05{\cdot}0.6)\cdot0.5=0.03$ (Vorgänger H) $\Rightarrow$ Pfad $\ora{(H,C)}$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Anwendungen}
+\begin{itemize}
+\item Spracherkennung
+\item Part-of-Speech-Tagging
+\item Bioinformatik (Gene, Proteine)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item Markov-Annahme (Gedächtnis 1)
+\item lokale Optima bei EM
+\item diskrete Zustände
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Forward: Likelihood, $O(|S|^2T)$
+\item Viterbi: bester Pfad
+\item Baum-Welch: EM für $A,B$
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was leistet die Forward-Prozedur?}{$P(\vec x)$ in $O(|S|^2T)$ statt $|S|^T$ Pfaden.}{Viterbi vs.\ Forward?}{Maximum statt Summe $+$ Backtracking: wahrscheinlichste Zustandsfolge.}{Wie lernt man $A,B$?}{Baum-Welch (EM): erwartete Übergangs-/Emissionshäufigkeiten.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Aus dem, was du siehst, schließt du auf das, was verborgen bleibt.“
+\end{hnbanner}
+\end{hngrid}

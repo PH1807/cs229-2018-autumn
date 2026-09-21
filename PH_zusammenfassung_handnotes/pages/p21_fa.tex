@@ -1,0 +1,99 @@
+\hnheader[Viele Features, wenig Daten: erkläre die Korrelationen durch wenige latente Faktoren.][$x\sim\N(\mu,\Lambda\Lambda\T+\Psi)$ -- Korrelation ohne volle Kovarianzmatrix]{Faktoren-}{analyse}{Latentes Gauß-Modell für $n\gg m$}
+\hnsrc{notes/cs229-notes9.pdf (Factor Analysis), section/gaussians.pdf, section/more\_on\_gaussians.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Problem: $n\gg m$}
+Mehr Features als Beispiele: die MLE-Kovarianz $\hat\Sigma$ hat Rang $\le m-1<n$, ist \hlt{singulär}, $\hat\Sigma^{-1}$ existiert nicht $\Rightarrow$ Gauß-Dichte nicht berechenbar.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Einschränkungen von $\Sigma$}
+\textbf{Diagonal}: $\Sigma_{jj}=\frac1m\sum_i(x_j^{(i)}-\mu_j)^2$, nur Achsen-Ellipsen.\\
+\textbf{Kugel}: $\Sigma=\sigma^2I$.\\
+Beide nicht singulär, aber \emph{keine Korrelationen}. FA: Kompromiss.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Ebene + Rauschen}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \fill[hnblue!60] (0,0) -- (3.2,.6) -- (4.2,2.2) -- (1,1.6) -- cycle;
+  \draw[hnnavy] (0,0) -- (3.2,.6) -- (4.2,2.2) -- (1,1.6) -- cycle;
+  \foreach \x/\y/\d in {1.3/.6/.25,2.0/1.0/-.3,2.7/1.4/.3,1.9/1.5/-.25,3.2/1.3/.2,.9/.9/-.2}{
+    \fill[hnorange] (\x,\y+\d) circle(.06);
+    \draw[dotted,hnorange] (\x,\y) -- (\x,\y+\d);}
+  \node[font=\tiny,hnnavy] at (2.5,.15) {$\mu+\Lambda z$ (affiner Unterraum)};
+  \node[font=\tiny,hnorange] at (3.3,2.6) {$+\varepsilon$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Das Modell}
+$z\in\R^k$ latent ($k\ll n$; $n$ Merkmale, $\Lambda$ Ladungsmatrix, $\Psi$ diagonale Rauschkovarianz):
+\[ z\sim\N(0,I),\qquad x|z\sim\N(\mu+\Lambda z,\Psi) \]
+äquivalent $x=\mu+\Lambda z+\varepsilon$, $\varepsilon\sim\N(0,\Psi)$, $\Psi$ \emph{diagonal}, $z\indep\varepsilon$. Randverteilung:
+\[ x\sim\N(\mu,\;\Lambda\Lambda\T+\Psi) \]
+$\Lambda\in\R^{n\times k}$ Ladungen: $O(nk)$ statt $O(n^2)$ Parameter.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Gauß-Formeln (Marginal/Bedingt)}
+Für $x=(x_1,x_2)\sim\N(\mu,\Sigma)$ (in zwei Blöcke zerlegt; $\Sigma_{12}$ Kovarianz zwischen den Blöcken) gilt: $x_1\sim\N(\mu_1,\Sigma_{11})$ und
+\begin{align*}
+\mu_{1|2}&=\mu_1+\Sigma_{12}\Sigma_{22}^{-1}(x_2-\mu_2)\\
+\Sigma_{1|2}&=\Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}
+\end{align*}
+Diese Formeln liefern auch die GP-Vorhersage.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{EM für Faktorenanalyse}
+\begin{pcode}[EM für FA]
+\cm{\# keine geschlossene MLE $\Rightarrow$ EM}\\
+\kw{repeat}:\\
+\hii \cm{\# E: Posterior über $z$}\\
+\hii $\mu_{z|x}\leftarrow\Lambda^{\top}(\Lambda\Lambda^{\top}+\Psi)^{-1}(x_i-\mu)$\\
+\hii $\Sigma_{z|x}\leftarrow I-\Lambda^{\top}(\Lambda\Lambda^{\top}+\Psi)^{-1}\Lambda$\\
+\hii \cm{\# M: $\Lambda,\Psi,\mu$ aus $\E[z|x],\E[zz^{\top}|x]$}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 1 Faktor, 2 Features}
+$\Lambda=\begin{psmallmatrix}1\\0.5\end{psmallmatrix}$, $\Psi=\mathrm{diag}(0.1,\,0.2)$.\\
+\hnsol\ $\Sigma=\Lambda\Lambda\T+\Psi=\begin{psmallmatrix}1.1&0.5\\0.5&0.45\end{psmallmatrix}$.\\
+Korrelation $\rho=\frac{0.5}{\sqrt{1.1\cdot0.45}}\approx\ora{0.71}$ -- allein durch den gemeinsamen Faktor.\\
+\textbf{Parameterzahl}, $n=100,k=5$: volle $\Sigma$: $5050$; FA: $nk+n=\ora{600}$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{Bezug zu PCA}
+FA ist probabilistisch (Rauschen $\Psi$, EM). PCA entspricht dem Grenzfall $\Psi=\sigma^2I$, $\sigma^2\to0$ und ist eine \emph{direkte} Eigenvektor-Lösung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item funktioniert bei $n\gg m$
+\item Korrelationen modelliert
+\item probabilistisch, EM
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item Lösung nur bis auf Rotation eindeutig
+\item EM: lokale Optima
+\item $k$ muss gewählt werden
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item $x=\mu+\Lambda z+\varepsilon$, $\Sigma=\Lambda\Lambda\T+\Psi$
+\item Formeln für Marginale/Bedingte von Gauß-Verteilungen
+\item Lernen per EM (E: Posterior $z|x$)
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum Faktorenanalyse?}{Bei $n\gg m$ ist $\hat\Sigma$ singulär; FA braucht nur $nk+n$ Parameter.}{Randverteilung von $x$?}{$\N(\mu,\Lambda\Lambda\T+\Psi)$.}{FA vs.\ PCA?}{FA probabilistisch (Rauschen $\Psi$, EM); PCA $=$ Grenzfall $\Psi=\sigma^2I$, $\sigma^2\to0$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wenig Faktoren, viele Beobachtungen -- die Korrelation hat eine Ursache.“
+\end{hnbanner}
+\end{hngrid}

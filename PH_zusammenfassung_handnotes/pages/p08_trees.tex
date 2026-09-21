@@ -1,0 +1,105 @@
+\hnheader[Ja/Nein-Fragen zerlegen den Raum in Rechtecke, jedes mit eigener Vorhersage.][Zum Splitten Cross-Entropy nehmen -- nicht die Fehlerrate!]{Decision}{Trees}{Nichtlinear, interpretierbar, aber instabil}
+\hnsrc{notes/cs229-notes-dt.pdf (Decision Trees, R.\ Townshend)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Zerlege $\X$ in disjunkte Regionen $R_1,\dots,R_m$ und sage pro Region konstant voraus: Mehrheitsklasse (Klassifikation) bzw.\ Mittelwert (Regression). Erstes \hlt{genuin nichtlineares} Verfahren im Kurs.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Greedy-Split}
+Optimale Regionen zu finden ist intraktabel $\Rightarrow$ \emph{gierig, top-down}:
+$R_1=\{x\in R_p:x_j<t\}$, $R_2=\{x\in R_p:x_j\ge t\}$. \hnleg{$R_p$ Eltern-Region, $R_1,R_2$ Kinder, $j$ Feature, $t$ Schwelle, $L$ Unreinheit einer Region, $|R|$ Anzahl Beispiele.}
+Wähle $(R_p,j,t)$ mit maximalem Rückgang:
+\[ L(R_p)-\tfrac{|R_1|L(R_1)+|R_2|L(R_2)}{|R_1|+|R_2|} \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Baum \& Regionen}
+\centering
+\begin{tikzpicture}[every node/.style={font=\tiny},level distance=6mm,sibling distance=13mm]
+  \node[draw=hnnavy,fill=hnblue!50,rounded corners=1pt,inner sep=1.5pt]{Breite $<15$?}
+    child{node[draw=hnorange,fill=hnorange!20,rounded corners=1pt,inner sep=1.5pt]{$R_1$}}
+    child{node[draw=hnnavy,fill=hnblue!50,rounded corners=1pt,inner sep=1.5pt]{Zeit $<3$?}
+      child{node[draw=hnorange,fill=hnorange!20,rounded corners=1pt,inner sep=1.5pt]{$R_{21}$}}
+      child{node[draw=hnpurple,fill=hnlilac,rounded corners=1pt,inner sep=1.5pt]{$R_{22}$}}};
+  \begin{scope}[shift={(2.5,-2.2)}]
+    \draw[hnnavy] (0,0) rectangle (2,1.9);
+    \draw[hnnavy,thick] (.7,0)--(.7,1.9);
+    \draw[hnnavy,thick] (.7,.9)--(2,.9);
+    \node at (.35,.95){$R_1$}; \node at (1.35,.45){$R_{21}$}; \node at (1.35,1.4){$R_{22}$};
+  \end{scope}
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Split-Verluste}
+\begin{align*}
+L_{\mathrm{misclass}}&=1-\max_c\hat p_c\\
+L_{\mathrm{cross}}&=-\textstyle\sum_c\hat p_c\log_2\hat p_c\quad(\text{Information Gain})\\
+L_{\mathrm{Gini}}&=1-\textstyle\sum_c\hat p_c^2\\
+L_{\mathrm{squared}}&=\tfrac1{|R|}\textstyle\sum_{i\in R}(y_i-\hat y)^2\;\;(\text{Regression})
+\end{align*}
+\hnleg{$\hat p_c$ Anteil der Klasse $c$ in der Region, $\hat y$ Mittelwert der Region, $R$ Region.}
+Cross-Entropy/Gini sind \ora{strikt konkav}: jeder informative Split senkt den Verlust; die Fehlerrate nicht.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Algorithmus}
+\begin{pcode}[Baum wachsen lassen]
+\kw{grow}($R$):\\
+\hii \kw{if} Stopp($R$): \kw{return} Blatt(Mehrheit/Mittel)\\
+\hii $(j,t)\leftarrow\arg\max$ Gain über alle Features/Schwellen\\
+\hii $R_1\leftarrow\{x\in R:x_j<t\}$,\; $R_2\leftarrow\{x\in R:x_j\ge t\}$\\
+\hii \kw{return} Knoten($j,t$, \kw{grow}($R_1$), \kw{grow}($R_2$))\\
+\kw{prune}: erst voll wachsen, dann Knoten entfernen,\\
+\hii die den Validierungsfehler am wenigsten erhöhen
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: warum Cross-Entropy?}
+Eltern: $400{+}/100{-}$ ($p=0.8$). Split A: $150{+}/100{-}$ \& $250{+}/0{-}$. Split B: $300{+}/100{-}$ \& $100{+}/0{-}$.\\
+\textbf{Fehlerrate:} Eltern $0.2$; A: $\frac{250\cdot0.4+0}{500}=0.2$; B: $\frac{400\cdot0.25+0}{500}=0.2$ $\Rightarrow$ \hlp{kein Unterschied!}\\
+\textbf{Cross-Entropy:} Eltern $0.722$; A: $0.5\cdot0.971=0.485$ (Gain $\ora{0.237}$); B: $0.8\cdot0.811=0.649$ (Gain $0.073$) $\Rightarrow$ A ist besser.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Regularisierung \& Praxis}
+Voll ausgewachsen ($1$ Punkt/Blatt) $\Rightarrow$ niedriger Bias, \emph{hohe Varianz}. Stopp-Regeln: Mindest-Blattgröße, max.\ Tiefe, max.\ Blattzahl -- oder Pruning.\\
+\textbf{Kategoriale Features:} direkt per Teilmengen-Frage ($x_j\in S$); Vorsicht bei vielen Kategorien ($2^{|S|}$ Fragen).\\
+\textbf{Laufzeit:} Vorhersage $O(\text{Tiefe})$, Training $O(nf\cdot\text{Tiefe})$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item leicht erklärbar
+\item kategoriale Daten nativ
+\item schnell, keine Skalierung nötig
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item hohe Varianz (instabil)
+\item additive Struktur ($x_1{+}x_2$) nur mit vielen Splits
+\item einzeln oft geringe Genauigkeit
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Greedy, rekursive Splits
+\item Cross-Entropy/Gini statt Fehlerrate
+\item Pruning gegen Overfitting
+\item Lösung der Instabilität: Ensembles
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{+}{Information Gain \& Hyperparameter (aus den ML Notes)}
+$\mathrm{Entropy}(S)=-\sum_ip_i\log_2p_i$, \;$\mathrm{IG}(S,A)=\mathrm{Entropy}(S)-\sum_{v}\frac{|S_v|}{|S|}\mathrm{Entropy}(S_v)$ (Teilmengen $S_v$ je Wert $v$ von Feature $A$). Algorithmen: \textbf{ID3} (IG), \textbf{C4.5} (Gain Ratio, korrigiert Bias zu vielwertigen Features), \textbf{CART} (Gini, auch Regression via Varianzreduktion). Stoppkriterien: max.\ Tiefe, Mindestzahl Beispiele pro Knoten/Blatt, kein Gain mehr. sklearn: \texttt{criterion}, \texttt{max\_depth}, \texttt{min\_samples\_split}, \texttt{min\_samples\_leaf}, \texttt{max\_features}. Pruning: \emph{Pre} (früh stoppen) oder \emph{Post} (Cost-Complexity, danach zurückschneiden).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum Cross-Entropy statt Fehlerrate?}{Strikt konkav: informative Splits senken den Verlust immer; die Fehlerrate kann gleich bleiben.}{Wie regularisiert man Bäume?}{Max.\ Tiefe, Mindest-Blattgröße, Pruning per Validierungsfehler.}{Schwäche bei $x_1+x_2$?}{Additive Struktur braucht viele achsenparallele Splits.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein Baum erklärt sich selbst -- ein Wald wird genauer.“
+\end{hnbanner}
+\end{hngrid}

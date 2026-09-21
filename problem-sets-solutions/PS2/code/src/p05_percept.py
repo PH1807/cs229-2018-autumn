@@ -32,7 +32,7 @@ def predict(state, kernel, x_i):
     # *** START CODE HERE ***
     sum_ = 0
     for beta, x in state:
-    	sum_ += beta * kernel(x, x_i)
+        sum_ += beta * kernel(x, x_i)
     return sign(sum_)
     # *** END CODE HERE ***
 

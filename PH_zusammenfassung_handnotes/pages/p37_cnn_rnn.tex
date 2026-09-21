@@ -1,0 +1,94 @@
+\hnheader[Struktur nutzen: Faltungen für Bilder, Rekurrenz und Gates für Sequenzen.][Parameter-Sharing macht CNNs klein, LSTM-Gates machen RNNs lernfähig]{CNN \&}{RNN / LSTM}{Faltungsnetze und rekurrente Netze}
+\hnsrc{main\_notes.pdf (Modules in modern neural networks: Faltungsschichten); RNN/LSTM, Größenformeln und Pooling als Web-Ergänzung (markiert), Code: Vertiefungsseite}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Faltung}
+Ein kleiner \emph{Filter} $w$ gleitet über die Eingabe $z$ (1D-Notes; $k$ Filterbreite, $s$ Schrittweite (Stride), $\ell$ Startversatz, $i$ Ausgabeposition):
+\[ \mathrm{Conv}(z)_i=\sum_{j=1}^{k}w_j\,z_{is-\ell+(j-1)} \]
+Parameter-Sharing: $O(km)$ statt $O(m^2)$ Parameter. Ausgabegröße: $\lfloor\frac{n+2p-k}{s}\rfloor+1$ ($n$ Eingabelänge, Padding $p$, Stride $s$, $k$ Filterbreite).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Aufbau eines CNN (Web)}
+\emph{Conv $\to$ ReLU $\to$ Pooling} wiederholen, am Ende Flatten $+$ voll verbundene Schicht $+$ Softmax. \textbf{Max-Pooling} ($2{\times}2$) halbiert die Auflösung und macht robust gegen kleine Verschiebungen. Parameter je Conv-Schicht: $k^2\,c_{\mathrm{in}}\,c_{\mathrm{out}}+c_{\mathrm{out}}$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: 1D-Filter}
+\centering
+\begin{tikzpicture}[every node/.style={minimum size=.42cm,inner sep=0,font=\scriptsize,draw=hnnavy}]
+  \foreach \i/\v in {0/1,1/2,2/3,3/4,4/5}{\node[fill=hnblue] at (\i*.5,1.1) {\v};}
+  \foreach \i/\v in {0/1,1/0,2/-1}{\node[fill=hnyellow,draw=hnorange,thick] at (\i*.5,.55) {\v};}
+  \foreach \i/\v in {0/-2,1/-2,2/-2}{\node[fill=hnmint] at (\i*.5+.5,0) {\v};}
+  \node[draw=none,font=\tiny,anchor=west] at (1.9,1.1) {Eingabe $z$};
+  \node[draw=none,font=\tiny,anchor=west] at (1.9,.55) {Filter $w$};
+  \node[draw=none,font=\tiny,anchor=west] at (2.4,0) {Ausgabe};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Warum CNNs funktionieren}
+\begin{itemize}
+\item \textbf{Lokalität}: Kanten, Ecken hängen nur von Nachbarpixeln ab.
+\item \textbf{Translationsäquivarianz}: derselbe Filter erkennt ein Muster überall.
+\item \textbf{Hierarchie}: tiefe Schichten kombinieren Kanten zu Formen zu Objekten (Rezeptives Feld wächst).
+\item Weniger Parameter $\Rightarrow$ weniger Overfitting, effizient.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{RNN: Gedächtnis über Zeit}
+\[ h_t=\tanh(W_hh_{t-1}+W_xx_t+b),\quad y_t=W_yh_t \]
+Gleiche Gewichte in jedem Zeitschritt; der versteckte Zustand $h_t$ trägt die Historie. Training per \emph{Backpropagation Through Time}: der Gradient wird über viele Faktoren $W_h$ multipliziert $\Rightarrow$ \hlp{Vanishing/Exploding Gradients}, lange Abhängigkeiten gehen verloren.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 1D-Faltung von Hand}
+$z=(1,2,3,4,5)$, Filter $w=(1,0,-1)$, Stride $1$, kein Padding.\\
+\hnsol\ Größe $\frac{5-3}{1}+1=3$. Ausgabe:\\
+$1\cdot1+2\cdot0+3\cdot(-1)=-2$;\; $2-4=-2$;\; $3-5=-2$ $\Rightarrow$ $(-2,-2,-2)$ (konstanter Anstieg $\to$ konstante Antwort: der Filter ist ein Kantendetektor).\\
+\textbf{CNN-Parameter}: $28{\times}28$, Conv $3{\times}3$ ($1\to8$): $3\cdot3\cdot1\cdot8+8=\ora{80}$; nach 2 Blöcken und FC (784$\to$10): $80+1168+7850=9098$ (Code: Vertiefungsseite).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{LSTM: Gates gegen Vergessen (Web)}
+\begin{align*}
+f_t&=\sigma(W_f[h_{t-1},x_t]+b_f)\;\text{(Vergessen)}\\
+i_t&=\sigma(W_i[\cdot]+b_i),\;\tilde c_t=\tanh(W_c[\cdot]+b_c)\\
+c_t&=f_t\odot c_{t-1}+i_t\odot\tilde c_t\\
+h_t&=o_t\odot\tanh(c_t),\;o_t=\sigma(W_o[\cdot]+b_o)
+\end{align*}
+Der Zellzustand $c_t$ ist eine ``Datenautobahn'' mit additivem Update $\Rightarrow$ Gradient bleibt erhalten. GRU: vereinfachte Variante.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{7}{Von RNN zu Attention}
+RNNs verarbeiten Sequenzen \emph{nacheinander} (nicht parallelisierbar, Gedächtnis begrenzt). \textbf{Self-Attention} (Kapitel Foundation Models) lässt jedes Token \emph{direkt} auf alle anderen zugreifen und ist parallelisierbar $\Rightarrow$ Transformer haben RNNs bei Sprache weitgehend abgelöst.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item CNN: wenige Parameter, Bildstruktur
+\item LSTM: lange Abhängigkeiten
+\item beide End-to-End trainierbar
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item CNN: kaum globaler Kontext
+\item RNN: sequentiell, langsam
+\item alle: viel Daten und Rechenzeit
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Faltung: lokal + geteilte Gewichte
+\item RNN: $h_t$ als Gedächtnis
+\item LSTM-Gates lösen Vanishing Gradients
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wie groß ist die Faltungsausgabe?}{$\lfloor(n+2p-k)/s\rfloor+1$ (Länge $n$, Filter $k$, Padding $p$, Stride $s$).}{Warum haben CNNs weniger Parameter als voll verbundene Netze?}{Derselbe kleine Filter wird an allen Positionen wiederverwendet (Sharing).}{Wie helfen LSTM-Gates?}{Additives Update des Zellzustands mit Vergessens-/Eingabe-Gate erhält den Gradienten über lange Zeit.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Die richtige Architektur ist Vorwissen über die Struktur der Daten.“
+\end{hnbanner}
+\end{hngrid}

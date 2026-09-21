@@ -1,0 +1,2 @@
+theta GD    : [0. 1.]
+theta Normal: [0. 1.]

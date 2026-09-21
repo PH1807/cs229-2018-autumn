@@ -1,0 +1,4 @@
+step   0  rec 9.845  KL 0.605
+step 100  rec 3.016  KL 1.304
+step 200  rec 2.458  KL 1.506
+step 300  rec 2.308  KL 1.598

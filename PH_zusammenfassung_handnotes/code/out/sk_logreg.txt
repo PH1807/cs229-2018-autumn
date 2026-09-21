@@ -1,0 +1,2 @@
+Accuracy: 0.959
+P(y=1|x) der ersten 3: [0.    0.872 0.001]

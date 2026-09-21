@@ -1,0 +1,2860 @@
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.12.4)  21 SEP 2026 04:26
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**main_druck.tex
+(./main_druck.tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+(./preamble.tex (/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2024/06/29 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2025/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2024/06/29 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count192
+\c@section=\count193
+\c@subsection=\count194
+\c@subsubsection=\count195
+\c@paragraph=\count196
+\c@subparagraph=\count197
+\c@figure=\count198
+\c@table=\count199
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen141
+)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+
+(/usr/local/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+))
+\Gm@cnth=\count266
+\Gm@cntv=\count267
+\c@Gm@tempcnt=\count268
+\Gm@bindingoffset=\dimen142
+\Gm@wd@mp=\dimen143
+\Gm@odd@mp=\dimen144
+\Gm@even@mp=\dimen145
+\Gm@layoutwidth=\dimen146
+\Gm@layoutheight=\dimen147
+\Gm@layouthof (/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/mathtools/mathtools.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/calc.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/mathtools/mhsetup.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/xcolor/xcolor.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-def/xetex.def)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/pgf.revision.tex)))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibraryfil
+tered.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-xetex.de
+f
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-dvipdfmx
+.def
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def))))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex)
+) (/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.
+tex)))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex))
+
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex)))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibraryshapes.geometric.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibrary
+shapes.geometric.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibraryshapes.misc.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibrary
+shapes.misc.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.
+meta.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarypositioning.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarycalc.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibraryfit.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarybackgrounds.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarydecorations.pathmorphing.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarydecorations.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/modules/pgfmoduledecoration
+s.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/decorations/pgfli
+brarydecorations.pathmorphing.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarypatterns.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibrarypattern
+s.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pgfplots/pgfplots.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.revision.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotscore.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/sys/pgfplotssysgeneric
+.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/libs/pgfplotslibrary.c
+ode.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/oldpgfcompatib/pgfplot
+soldpgfsupp_loader.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryfpu.cod
+e.tex)
+Package pgfplots: loading complementary utilities for your pgf version...
+
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/oldpgfcompatib/pgfplot
+soldpgfsupp_pgfutil-common-lists.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotsutil.code
+.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/liststructure/pgfplots
+liststructure.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/liststructure/pgfplots
+liststructureext.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/liststructure/pgfplots
+array.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/liststructure/pgfplots
+matrix.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/numtable/pgfplotstable
+shared.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/liststructure/pgfplots
+deque.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotsbinary.co
+de.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotsbinary.da
+ta.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotsutil.verb
+.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/libs/pgflibrarypgfplot
+s.surfshading.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/sys/pgflibrarypgfplots
+.surfshading.pgfsys-xetex.def
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/sys/pgflibrarypgfplots
+.surfshading.pgfsys-dvipdfmx.def))))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotscolormap.
+code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/util/pgfplotscolor.cod
+e.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotsstackedplots.c
+ode.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotsplothandlers.c
+ode.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotsmeshplothandle
+r.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotsmeshplotimage.
+code.tex)))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.scaling.code.
+tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotscoordprocessin
+g.code.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.errorbars.cod
+e.tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.markers.code.
+tex)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplotsticks.code.tex
+)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/pgfplots.paths.code.te
+x)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarydecorations.pathreplacing.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/decorations/pgfli
+brarydecorations.pathreplacing.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgfplots/libs/tikzlibrarypgfplo
+ts.contourlua.code.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibraryplotmarks.code.tex
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotmar
+ks.code.tex)))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/environ/environ.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/trimspaces/trimspaces.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/etoolbox/etoolbox.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbraster.code.tex
+Library (tcolorbox): 'tcbraster.code.tex' version '6.4.1'
+) (/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex
+Library (tcolorbox): 'tcbskins.code.tex' version '6.4.1'
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tikzfill/tikzfill.image.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tikzfill/tikzfill-common.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tikzfill/tikzlibraryfill.image.co
+de.tex))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbskinsjigsaw.code.tex
+Library (tcolorbox): 'tcbskinsjigsaw.code.tex' version '6.4.1'
+))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbbreakable.code.tex
+Library (tcolorbox): 'tcbbreakable.code.tex' version '6.4.1'
+(/usr/local/texlive/2025/texmf-dist/tex/latex/pdfcol/pdfcol.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/infwarerr/infwarerr.sty)))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/enumitem/enumitem.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/tools/array.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/colortbl/colortbl.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/listings.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstpatch.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstmisc.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/listings.cfg))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/refcount/refcount.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/gettitlestring/gettitlestring.s
+ty (/usr/local/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty)))
+(/usr/local/texlive/2025/texmf-dist/tex/generic/stringenc/stringenc.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/puenc.def)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/url/url.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/bitset/bitset.sty
+(/usr/local/texlive/2025/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/base/atbegshi-ltx.sty))
+(/usr/local/texlive/2025/texmf-dist/tex/latex/hyperref/hxetex.def
+(/usr/local/texlive/2025/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(/usr/local/texlive/2025/texmf-dist/tex/latex/base/atveryend-ltx.sty)
+(/usr/local/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+)))) (./main_druck.aux)
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+Package pgfplots notification 'compat/show suggested version=true': document ha
+s been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
+
+(./main_druck.out) (./main_druck.out) (./pages/c00_cover_full.tex
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd))
+[1] (./pages/c01_toc.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+)
+[2] (./pages/c02_toc.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.43748> not available
+(Font)              size <5> substituted on input line 48.
+
+
+LaTeX Font Warning: Font shape `TU/ChalkboardSE(0)/m/it' undefined
+(Font)              using `TU/ChalkboardSE(0)/m/n' instead on input line 59.
+
+)
+[3] (./pages/g01_wahrscheinlichkeit.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `TU/BradleyHand(0)/m/it' undefined
+(Font)              using `TU/BradleyHand(0)/m/n' instead on input line 2.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.46622> not available
+(Font)              size <5> substituted on input line 7.
+
+
+Overfull \hbox (1.4441pt too wide) in paragraph at lines 46--47
+[]|\TU/ChalkboardSE(0)/m/it/8.93245 Zähldaten| 
+
+Underfull \hbox (badness 10000) in paragraph at lines 47--47
+[]|\TU/ChalkboardSE(0)/m/it/8.93245 Gauß
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--48
+[]|\TU/ChalkboardSE(0)/m/it/8.93245 Mehrdim.
+)
+[4] (./pages/g02_linalg.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.4775> not available
+(Font)              size <5> substituted on input line 7.
+
+)
+[5] (./pages/g03_optimierung.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (3.8303pt too wide) in paragraph at lines 29--30
+ [][] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+)
+[6] (./pages/p01_linreg.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+[7] (./pages/v01_linreg.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty)
+(./code/np_gd.py) (./code/out/np_gd.txt) (./code/sk_linreg.py)
+(./code/out/sk_linreg.txt))
+[8] (./pages/p02_logreg.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+Overfull \hbox (2.12088pt too wide) in paragraph at lines 32--33
+ [][] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+)
+[9] (./pages/p03_glm.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+)
+[10] (./pages/v02_logreg_glm.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+(./code/sk_logreg.py) (./code/out/sk_logreg.txt))
+[11] (./pages/p04_generativ.tex
+Overfull \hbox (0.63173pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+[12] (./pages/v03_generativ.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_nb.py) (./code/out/sk_nb.txt))
+[13] (./pages/p05_kernel.tex
+Overfull \hbox (0.87933pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+Overfull \hbox (4.93643pt too wide) in paragraph at lines 34--41
+[][]  
+)
+[14] (./pages/p06_svm.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+)
+[15] (./pages/v04_svm.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+)
+[16] (./pages/v04b_svm_smo.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+(./code/sk_svm.py) (./code/out/sk_svm.txt))
+[17] (./pages/p07_perceptron.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[18] (./pages/p30_knn.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+)
+[19] (./pages/p08_trees.tex
+Overfull \hbox (0.80978pt too wide) in paragraph at lines 1--1
+[] 
+)
+[20] (./pages/p09_ensemble.tex
+Overfull \hbox (0.66508pt too wide) in paragraph at lines 1--1
+[] 
+)
+[21] (./pages/v05_knn_trees_ens.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_knn.py) (./code/out/sk_knn.txt) (./code/sk_trees.py)
+(./code/out/sk_trees.txt) (./code/sk_ensemble.py) (./code/out/sk_ensemble.txt))
+
+[22] (./pages/p10_loss.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (4.93687pt too wide) in paragraph at lines 33--40
+[][]  
+)
+[23] (./pages/p11_nn.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Ausgabe Mehrklas-
+
+Overfull \hbox (4.93643pt too wide) in paragraph at lines 37--47
+[][]  
+)
+[24] (./pages/p12_backprop.tex
+Overfull \hbox (0.84914pt too wide) in paragraph at lines 1--1
+[] 
+)
+[25] (./pages/v06_backprop.tex
+Overfull \hbox (0.62103pt too wide) in paragraph at lines 1--1
+[] 
+)
+[26] (./pages/v06b_backprop_code.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+(./code/torch_autograd.py) (./code/out/torch_autograd.txt))
+[27] (./pages/p36_dlpraxis.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+)
+[28] (./pages/p37_cnn_rnn.tex
+Overfull \hbox (1.10507pt too wide) in paragraph at lines 1--1
+[] 
+)
+[29] (./pages/v07_dl_code.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+(./code/torch_mlp.py) (./code/out/torch_mlp.txt) (./code/torch_cnn.py)
+(./code/out/torch_cnn.txt))
+[30] (./pages/v07b_dl_lstm.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+(./code/torch_lstm.py) (./code/out/torch_lstm.txt))
+[31] (./pages/p25_foundation.tex
+Overfull \hbox (0.86221pt too wide) in paragraph at lines 1--1
+[] 
+)
+[32] (./pages/p13_biasvar.tex
+Overfull \hbox (0.8186pt too wide) in paragraph at lines 1--1
+[] 
+)
+[33] (./pages/p14_lerntheorie.tex
+Overfull \hbox (1.13129pt too wide) in paragraph at lines 1--1
+[] 
+)
+[34] (./pages/v08_theorie.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+)
+[35] (./pages/p15_regularisierung.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+)
+[36] (./pages/v09_regularisierung.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_regularization.py) (./code/out/sk_regularization.txt))
+[37] (./pages/p34_tuning.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+)
+[38] (./pages/p16_gp.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+)
+[39] (./pages/p17_fehleranalyse.tex
+Overfull \hbox (1.0521pt too wide) in paragraph at lines 1--1
+[] 
+)
+[40] (./pages/p18_metriken.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (4.93687pt too wide) in paragraph at lines 41--50
+[][]  
+)
+[41] (./pages/p32_regmetriken.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+)
+[42] (./pages/v10_metriken.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_metrics.py) (./code/out/sk_metrics.txt))
+[43] (./pages/p39_shap.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+)
+[44] (./pages/p39b_shap_vertiefung.tex
+Overfull \hbox (1.09773pt too wide) in paragraph at lines 1--1
+[] 
+(./code/np_shapley.py) (./code/out/np_shapley.txt))
+[45] (./pages/p39c_shap_code.tex
+Overfull \hbox (1.11511pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_shap.py) (./code/out/sk_shap.txt))
+[46] (./pages/p40_fairness.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[47] (./pages/p40b_fairness_vertiefung.tex
+Overfull \hbox (0.69534pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+[48] (./pages/p40c_fairness_code.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+(./code/np_fairness.py) (./code/out/np_fairness.txt))
+[49] (./pages/p33_features.tex
+Overfull \hbox (0.6045pt too wide) in paragraph at lines 1--1
+[] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Mittelwert des Ziels je Kategorie
+)
+[50] (./pages/p35_workflow.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+)
+[51] (./pages/v11_workflow_code.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_leakage.py) (./code/out/sk_leakage.txt) (./code/sk_pipeline.py)
+(./code/out/sk_pipeline.txt))
+[52] (./pages/p19_kmeans.tex
+Overfull \hbox (1.05063pt too wide) in paragraph at lines 1--1
+[] 
+)
+[53] (./pages/p31_hierarchisch.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (2.09143pt too wide) in paragraph at lines 59--67
+[][]  
+)
+[54] (./pages/v12_clustering.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_cluster.py) (./code/out/sk_cluster.txt))
+[55] (./pages/p20_em.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[56] (./pages/v13_em.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_gmm.py) (./code/out/sk_gmm.txt))
+[57] (./pages/p21_fa.tex
+Overfull \hbox (1.06529pt too wide) in paragraph at lines 1--1
+[] 
+)
+[58] (./pages/p22_hmm.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[59] (./pages/p23_pca.tex
+Overfull \hbox (0.81668pt too wide) in paragraph at lines 1--1
+[] 
+)
+[60] (./pages/p24_ica.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[61] (./pages/v14_pca_ica.tex
+Overfull \hbox (0.892pt too wide) in paragraph at lines 1--1
+[] 
+(./code/sk_pca.py) (./code/out/sk_pca.txt))
+[62] (./pages/p38_vae_gan.tex
+Overfull \hbox (1.11511pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (2.22987pt too wide) in paragraph at lines 69--70
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Rauschvorhersage| 
+
+Overfull \hbox (1.21172pt too wide) in paragraph at lines 72--72
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Sampling| 
+)
+[63] (./pages/v15_vae_gan.tex
+Overfull \hbox (0.83751pt too wide) in paragraph at lines 1--1
+[] 
+
+Overfull \hbox (3.14816pt too wide) detected at line 13
+[]
+(./code/torch_vae.py) (./code/out/torch_vae.txt) (./code/torch_gan.py)
+(./code/out/torch_gan.txt))
+[64] (./pages/p26_kritik.tex
+Overfull \hbox (0.8537pt too wide) in paragraph at lines 1--1
+[] 
+)
+[65] (./pages/p27_mdp.tex
+Overfull \hbox (0.87007pt too wide) in paragraph at lines 1--1
+[] 
+)
+[66] (./pages/p28_lqr.tex
+Overfull \hbox (0.82297pt too wide) in paragraph at lines 1--1
+[] 
+)
+[67] (./pages/p29_policygradient.tex
+Overfull \hbox (0.87007pt too wide) in paragraph at lines 1--1
+[] 
+)
+[68] (./pages/v16_rl.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+)
+[69] (./pages/v16b_rl_lqr.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+)
+[70] (./pages/s01_algotabelle.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+Overfull \hbox (4.6526pt too wide) in paragraph at lines 8--37
+[][]  
+)
+[71] (./pages/s02_formeln.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+)
+[72] (./main_druck.aux)
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 2.975pt have occurred.
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+(see the transcript file for additional information)
+Output written on main_druck.pdf (72 pages).
+Transcript written on main_druck.log.
+ Font shape `OMS/cmsy/b/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.51625> not available
+(Font)              size <6> substituted on input line 34.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.9402> not available
+(Font)              size <5> substituted on input line 34.
+
+)
+
+[6
+
+] (./pages/p01_linreg.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.39996> on input line 6.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19998> not available
+(Font)              size <5> substituted on input line 6.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.5599pt on input line 38.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 6.65273pt on input line 38.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 6.65273pt on input line 39.
+LaTeX Font Info:    Calculating math sizes for size <7.39197> on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.69598> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+
+[7
+
+] (./pages/v01_linreg.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.39651> on input line 8.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19826> not available
+(Font)              size <5> substituted on input line 8.
+
+(/usr/local/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 31.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 8.03914pt on input line 31.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 5.30995pt on input line 31.
+
+(./code/np_gd.py
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 5.30995pt on input line 1.
+) (./code/out/np_gd.txt) (./code/sk_linreg.py)
+(./code/out/sk_linreg.txt))
+
+[8
+
+] (./pages/p02_logreg.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.62495> on input line 6.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.31247> not available
+(Font)              size <5> substituted on input line 6.
+
+LaTeX Font Info:    Calculating math sizes for size <8.10747> on input line 15.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.05373> not available
+(Font)              size <5> substituted on input line 15.
+
+
+Overfull \hbox (2.12088pt too wide) in paragraph at lines 32--33
+ [][] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.7624pt on input line 40.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 6.83092pt on input line 40.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 6.83092pt on input line 41.
+LaTeX Font Info:    Calculating math sizes for size <7.58997> on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.58997> not available
+(Font)              size <8> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.79498> not available
+(Font)              size <5> substituted on input line 41.
+
+)
+
+[9
+
+] (./pages/p03_glm.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[10
+
+] (./pages/v02_logreg_glm.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.25005> on input line 7.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.12502> not available
+(Font)              size <5> substituted on input line 7.
+
+LaTeX Font Info:    Calculating math sizes for size <7.75505> on input line 8.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.4285> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.87752> not available
+(Font)              size <5> substituted on input line 8.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.42499pt on input line 59.
+(./code/sk_logreg.py) (./code/out/sk_logreg.txt))
+
+[11
+
+] (./pages/p04_generativ.tex
+Overfull \hbox (0.63173pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.1> on input line 6.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.05> not available
+(Font)              size <5> substituted on input line 6.
+
+LaTeX Font Info:    Calculating math sizes for size <7.61401> on input line 35.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.807> not available
+(Font)              size <5> substituted on input line 35.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.28995pt on input line 38.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 6.41516pt on input line 38.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 6.41516pt on input line 39.
+LaTeX Font Info:    Calculating math sizes for size <7.128> on input line 39.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.564> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+
+[12
+
+] (./pages/v03_generativ.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_nb.py) (./code/out/sk_nb.txt))
+
+[13
+
+] (./pages/p05_kernel.tex
+Overfull \hbox (0.87933pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.41771> on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <8.41771> not available
+(Font)              size <8> substituted on input line 10.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.20885> not available
+(Font)              size <5> substituted on input line 10.
+
+
+Overfull \hbox (4.93643pt too wide) in paragraph at lines 34--41
+[][]  
+ []
+
+)
+
+[14
+
+] (./pages/p06_svm.tex
+Overfull \hbox (1.08517pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 6.53398pt on input line 60.
+LaTeX Font Info:    Calculating math sizes for size <7.26004> on input line 61.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.63002> not available
+(Font)              size <5> substituted on input line 61.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 6.53398pt on input line 62.
+)
+
+[15
+
+] (./pages/v04_svm.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.55681pt on input line 37.
+)
+
+[16
+
+] (./pages/v04b_svm_smo.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.38953> on input line 7.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19476> not available
+(Font)              size <5> substituted on input line 7.
+
+LaTeX Font Info:    Calculating math sizes for size <8.92502> on input line 7.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.46251> not available
+(Font)              size <5> substituted on input line 7.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 8.03246pt on input line 21.
+(./code/sk_svm.py) (./code/out/sk_svm.txt))
+
+[17
+
+] (./pages/p07_perceptron.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[18
+
+] (./pages/p30_knn.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[19
+
+] (./pages/p08_trees.tex
+Overfull \hbox (0.80978pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[20
+
+] (./pages/p09_ensemble.tex
+Overfull \hbox (0.66508pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[21
+
+] (./pages/v05_knn_trees_ens.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_knn.py) (./code/out/sk_knn.txt) (./code/sk_trees.py)
+(./code/out/sk_trees.txt) (./code/sk_ensemble.py) (./code/out/sk_ensemble.txt))
+
+
+[22
+
+] (./pages/p10_loss.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Overfull \hbox (4.93687pt too wide) in paragraph at lines 33--40
+[][]  
+ []
+
+)
+
+[23
+
+] (./pages/p11_nn.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Ausgabe Mehrklas-
+ []
+
+
+Overfull \hbox (4.93643pt too wide) in paragraph at lines 37--47
+[][]  
+ []
+
+)
+
+[24
+
+] (./pages/p12_backprop.tex
+Overfull \hbox (0.84914pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[25
+
+] (./pages/v06_backprop.tex
+Overfull \hbox (0.62103pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[26
+
+] (./pages/v06b_backprop_code.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/torch_autograd.py) (./code/out/torch_autograd.txt))
+
+[27
+
+] (./pages/p36_dlpraxis.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[28
+
+] (./pages/p37_cnn_rnn.tex
+Overfull \hbox (1.10507pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[29
+
+] (./pages/v07_dl_code.tex
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.19995pt on input line 1.
+
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/torch_mlp.py) (./code/out/torch_mlp.txt) (./code/torch_cnn.py)
+(./code/out/torch_cnn.txt))
+
+[30
+
+] (./pages/v07b_dl_lstm.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/torch_lstm.py) (./code/out/torch_lstm.txt))
+
+[31
+
+] (./pages/p25_foundation.tex
+Overfull \hbox (0.86221pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[32
+
+] (./pages/p13_biasvar.tex
+Overfull \hbox (0.8186pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[33
+
+] (./pages/p14_lerntheorie.tex
+Overfull \hbox (1.13129pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[34
+
+] (./pages/v08_theorie.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[35
+
+] (./pages/p15_regularisierung.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/it' will be
+(Font)              scaled to size 7.0923pt on input line 50.
+)
+
+[36
+
+] (./pages/v09_regularisierung.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_regularization.py) (./code/out/sk_regularization.txt))
+
+[37
+
+] (./pages/p34_tuning.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <8.39252> on input line 7.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.19626> not available
+(Font)              size <5> substituted on input line 7.
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.5532pt on input line 40.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 6.64682pt on input line 40.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 6.64682pt on input line 41.
+LaTeX Font Info:    Calculating math sizes for size <7.38542> on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.6927> not available
+(Font)              size <5> substituted on input line 41.
+
+)
+
+[38
+
+] (./pages/p16_gp.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[39
+
+] (./pages/p17_fehleranalyse.tex
+Overfull \hbox (1.0521pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[40
+
+] (./pages/p18_metriken.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Overfull \hbox (4.93687pt too wide) in paragraph at lines 41--50
+[][]  
+ []
+
+)
+
+[41
+
+] (./pages/p32_regmetriken.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[42
+
+] (./pages/v10_metriken.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_metrics.py) (./code/out/sk_metrics.txt))
+
+[43
+
+] (./pages/p39_shap.tex
+Overfull \hbox (0.85646pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <7.59003> on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.59003> not available
+(Font)              size <8> substituted on input line 73.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.79501> not available
+(Font)              size <5> substituted on input line 73.
+
+)
+
+[44
+
+] (./pages/p39b_shap_vertiefung.tex
+Overfull \hbox (1.09773pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/np_shapley.py) (./code/out/np_shapley.txt))
+
+[45
+
+] (./pages/p39c_shap_code.tex
+Overfull \hbox (1.11511pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_shap.py) (./code/out/sk_shap.txt))
+
+[46
+
+] (./pages/p40_fairness.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[47
+
+] (./pages/p40b_fairness_vertiefung.tex
+Overfull \hbox (0.69534pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 7.06856pt on input line 38.
+LaTeX Font Info:    Font shape `TU/Menlo(0)/b/n' will be
+(Font)              scaled to size 7.06856pt on input line 39.
+LaTeX Font Info:    Calculating math sizes for size <7.85402> on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <5.49779> not available
+(Font)              size <5> substituted on input line 39.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.927> not available
+(Font)              size <5> substituted on input line 39.
+
+)
+
+[48
+
+] (./pages/p40c_fairness_code.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Font shape `TU/Menlo(0)/m/n' will be
+(Font)              scaled to size 8.09995pt on input line 12.
+(./code/np_fairness.py) (./code/out/np_fairness.txt))
+
+[49
+
+] (./pages/p33_features.tex
+Overfull \hbox (0.6045pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 42--42
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Mittelwert des Ziels je Kategorie
+ []
+
+)
+
+[50
+
+] (./pages/p35_workflow.tex
+Overfull \hbox (0.80873pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[51
+
+] (./pages/v11_workflow_code.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_leakage.py) (./code/out/sk_leakage.txt) (./code/sk_pipeline.py)
+(./code/out/sk_pipeline.txt))
+
+[52
+
+] (./pages/p19_kmeans.tex
+Overfull \hbox (1.05063pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[53
+
+] (./pages/p31_hierarchisch.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Overfull \hbox (2.09143pt too wide) in paragraph at lines 59--67
+[][]  
+ []
+
+)
+
+[54
+
+] (./pages/v12_clustering.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_cluster.py) (./code/out/sk_cluster.txt))
+
+[55
+
+] (./pages/p20_em.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[56
+
+] (./pages/v13_em.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_gmm.py) (./code/out/sk_gmm.txt))
+
+[57
+
+] (./pages/p21_fa.tex
+Overfull \hbox (1.06529pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[58
+
+] (./pages/p22_hmm.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[59
+
+] (./pages/p23_pca.tex
+Overfull \hbox (0.81668pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[60
+
+] (./pages/p24_ica.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[61
+
+] (./pages/v14_pca_ica.tex
+Overfull \hbox (0.892pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+(./code/sk_pca.py) (./code/out/sk_pca.txt))
+
+[62
+
+] (./pages/p38_vae_gan.tex
+Overfull \hbox (1.11511pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Overfull \hbox (2.22987pt too wide) in paragraph at lines 69--70
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Rauschvorhersage| 
+ []
+
+
+Overfull \hbox (1.21172pt too wide) in paragraph at lines 72--72
+[]|\TU/ChalkboardSE(0)/m/it/8.955 Sampling| 
+ []
+
+)
+
+[63
+
+] (./pages/v15_vae_gan.tex
+Overfull \hbox (0.83751pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+
+Overfull \hbox (3.14816pt too wide) detected at line 13
+[]
+ []
+
+(./code/torch_vae.py) (./code/out/torch_vae.txt) (./code/torch_gan.py)
+(./code/out/torch_gan.txt))
+
+[64
+
+] (./pages/p26_kritik.tex
+Overfull \hbox (0.8537pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[65
+
+] (./pages/p27_mdp.tex
+Overfull \hbox (0.87007pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[66
+
+] (./pages/p28_lqr.tex
+Overfull \hbox (0.82297pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[67
+
+] (./pages/p29_policygradient.tex
+Overfull \hbox (0.87007pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[68
+
+] (./pages/v16_rl.tex
+Overfull \hbox (1.10172pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[69
+
+] (./pages/v16b_rl_lqr.tex
+Overfull \hbox (1.05733pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[70
+
+] (./pages/s01_algotabelle.tex
+Overfull \hbox (0.86652pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+LaTeX Font Info:    Calculating math sizes for size <7.5> on input line 8.
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/b/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/b/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 8.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 8.
+
+
+Overfull \hbox (4.6526pt too wide) in paragraph at lines 8--37
+[][]  
+ []
+
+)
+
+[71
+
+] (./pages/s02_formeln.tex
+Overfull \hbox (0.85312pt too wide) in paragraph at lines 1--1
+[] 
+ []
+
+)
+
+[72
+
+] (./main_druck.aux)
+ ***********
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-01-18>
+ ***********
+
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 2.975pt have occurred.
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+Package rerunfilecheck Info: File `main_druck.out' has not changed.
+(rerunfilecheck)             Checksum: C80B9EFB5E4B5842C34C64B2C8702235;14157.
+ ) 
+Here is how much of TeX's memory you used:
+ 48135 strings out of 473832
+ 1141078 string characters out of 5729481
+ 1895413 words of memory out of 5000000
+ 69923 multiletter control sequences out of 15000+600000
+ 640414 words of font info for 667 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 107i,18n,110p,978b,2259s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on main_druck.pdf (72 pages).

@@ -1,0 +1,93 @@
+\hnheader[Nicht nur \emph{wie gut}, sondern \emph{warum}: welche Features treiben die Vorhersage?][Shapley: faire Aufteilung der Vorhersage auf die Features]{Feature Importance}{\& SHAP}{Globale und lokale Erklärungen von Modellen}
+\hnsrc{notes/cs229-notes-ensemble.pdf (Variable Importance), materials/critiques-ml-aut19.pdf (Interpretierbarkeit); Permutation Importance und SHAP (Lundberg \& Lee 2017) als Web-Zusatz markiert}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Warum erklären?}
+Vertrauen, Fehlersuche, Regulierung. \textbf{Global}: welche Features zählen insgesamt? \textbf{Lokal}: warum bekam \emph{dieses} Beispiel diese Vorhersage? Erklärt wird das \emph{Modell}, nicht die Welt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Impurity Importance (Bäume)}
+Mittlere Impurity-Abnahme über alle Splits eines Features (Notes: ``variable importance''). Gratis beim Training, aber auf \emph{Trainingsdaten} berechnet und verzerrt bei vielen Ausprägungen und korrelierten Features.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: lokale Erklärung (schematisch)}
+\centering
+\begin{tikzpicture}[>=Stealth,x=.62cm,y=.36cm]
+  \draw[gray!60] (0,0)--(0,5.4); \node[font=\tiny] at (0,-.6) {$E[f]$};
+  \draw[gray!60] (5.6,0)--(5.6,5.4); \node[font=\tiny] at (5.6,-.6) {$f(x)$};
+  \fill[hnorange!70] (0,4.5) rectangle (2.4,5.2); \node[font=\tiny,anchor=west] at (2.5,4.85) {BMI $+2.4$};
+  \fill[hnorange!70] (2.4,3.3) rectangle (4.6,4.0); \node[font=\tiny,anchor=west] at (4.7,3.65) {s5 $+2.2$};
+  \fill[hnblue!90!black] (4.6,2.1) rectangle (3.9,2.8); \node[font=\tiny,anchor=west] at (4.7,2.45) {Alter $-0.7$};
+  \fill[hngreen!60] (3.9,.9) rectangle (5.6,1.6); \node[font=\tiny,anchor=east] at (3.8,1.25) {Rest $+1.7$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Permutation Importance}
+Wichtig ist, was fehlt, wenn man es \emph{zerstört}: Feature mischen und Leistungsverlust messen.
+\begin{pcode}[Permutation Importance]
+$s_0\leftarrow$ Score des Modells auf Testdaten \ \cm{\# $R$: Wiederholungen}\\
+\kw{for} Feature $j$: \kw{repeat} $R$ mal:\\
+\hii $X^{\pi}\leftarrow X$ mit Spalte $j$ zufällig permutiert\\
+\hii $s_j^{(r)}\leftarrow$ Score auf $X^{\pi}$\\
+$\mathrm{PI}_j\leftarrow s_0-\mathrm{mean}_r\,s_j^{(r)}$
+\end{pcode}
+Modell-agnostisch; Problem: gemischte Werte sind evtl.\ unrealistisch.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Shapley-Werte (Spieltheorie)}
+Features sind ``Spieler'', $v(S)$ der Wert einer Koalition, die Vorhersage der Gewinn:
+\[ \varphi_j=\sum_{S\subseteq N\setminus\{j\}}\frac{|S|!\,(n-|S|-1)!}{n!}\bigl[v(S\cup\{j\})-v(S)\bigr] \]
+= mittlerer \emph{Grenzbeitrag} von $j$ über alle Reihenfolgen. \hlt{Axiome}: Effizienz $\sum_j\varphi_j=v(N)-v(\emptyset)$, Symmetrie, Dummy (unwichtig $\Rightarrow0$), Additivität. Eindeutig.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{SHAP}
+Shapley-Werte für ML: $v(S)=\E[f(x)\mid x_S]$ (unbekannte Features ``ausintegrieren''). Additive Erklärung:
+\[ f(x)=\varphi_0+\sum_{j=1}^{d}\varphi_j,\quad\varphi_0=\E[f(X)] \]
+\textbf{TreeSHAP} (exakt, schnell), \textbf{KernelSHAP} (modellagnostisch, gewichtete Regression), \textbf{DeepSHAP}. Global: $\frac1n\sum_i|\varphi_j^{(i)}|$.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Shapley-Werte von Hand}
+$f(x_1,x_2)=3x_1+2x_2+4x_1x_2$, Instanz $x=(1,1)$, Baseline $(0,0)$: $v(\emptyset)=0$, $v(\{1\})=3$, $v(\{2\})=2$, $v(\{1,2\})=9$.\\
+\hnsol\ $\varphi_1=\tfrac12(3-0)+\tfrac12(9-2)=\ora{5}$;\; $\varphi_2=\tfrac12(2-0)+\tfrac12(9-3)=\ora{4}$.\\
+Summe $=9=f(x)-f(0)$ \hlm{(Effizienz)}. Die \emph{Interaktion} $4x_1x_2$ wird fair je zur Hälfte aufgeteilt ($2+2$).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Fallstricke}
+\begin{hncon}
+\item SHAP $\ne$ Kausalität: erklärt das Modell, nicht die Welt
+\item korrelierte Features: Wichtigkeit verteilt sich, unrealistische Punkte
+\item Aufwand $O(2^d)$ $\Rightarrow$ Näherungen; Hintergrunddaten bestimmen $\varphi_0$
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Impurity schnell, aber verzerrt $\to$ Permutation (Testdaten) robuster $\to$ SHAP: global \emph{und} lokal, additiv
+\item Shapley $=$ mittlerer Grenzbeitrag; $\sum\varphi_j=f(x)-$Baseline; Herleitung und Code: nächste Seite
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnnavy]{8}{Vergleich der Verfahren}
+\setlength{\tabcolsep}{2.4pt}\renewcommand{\arraystretch}{1.3}\fontsize{\hntabsz}{\hntablead}\selectfont
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{4.4cm}@{}}
+\rowcolor{hnnavy!12}\textbf{Verfahren}&\textbf{Ebene}&\textbf{Misst}&\textbf{Daten}&\textbf{Schwäche}\\
+Koeffizienten $w_j$ (linear)&global&Effekt pro Einheit&Training&nur lineare Modelle, skalenabhängig\\
+Impurity Importance&global&Split-Gewinn&Training&Bias, verzerrt bei Korrelation\\
+Permutation Importance&global&Leistungsverlust&Test&unrealistische Mischungen\\
+SHAP (mean $|\varphi|$)&global \emph{und} lokal&Beitrag zur Vorhersage&Hintergrund + Instanz&teuer, nicht kausal\\
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{9}{Einordnung: Leistungsmetriken, Feature Importance/SHAP, Fairness}
+\textbf{Leistungsmetriken}: \emph{wie gut}? \textbf{Feature Importance/SHAP}: \emph{warum} (braucht keine Labels). \textbf{Fairness}: \emph{für wen} (Metrik je Gruppe, braucht ein sensibles Merkmal). Tabelle: Kapitel Fairness-Analyse.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was unterscheidet Permutation Importance von Impurity Importance?}{Permutation misst den Leistungsverlust auf Testdaten, Impurity den Split-Gewinn auf Trainingsdaten (verzerrt bei vielen Ausprägungen).}{Was garantiert die Effizienz-Eigenschaft?}{$\sum_j\varphi_j=f(x)-\E[f(X)]$: die Beiträge erklären die Vorhersage vollständig.}{Wodurch unterscheiden sich SHAP und Fairness-Metriken?}{SHAP erklärt \emph{warum} (Features), Fairness misst \emph{für wen} (Gruppen).}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Erst wissen, wie gut das Modell ist -- dann verstehen, warum.“
+\end{hnbanner}
+\end{hngrid}

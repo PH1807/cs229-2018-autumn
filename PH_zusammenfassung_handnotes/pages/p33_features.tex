@@ -1,0 +1,89 @@
+\hnheader[Rohdaten sind erst der Anfang: saubere Daten und gute Features schlagen oft das bessere Modell.][Garbage in, garbage out!]{Feature Engineering}{\& Preprocessing}{Fehlende Werte, Skalierung, Kategorien, Ausreißer, Feature-Auswahl}
+\hnsrc{hand-notes/ML Notes.pdf (Feature Engineering \& Preprocessing); Beispiele selbst ergänzt}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Warum?}
+Modelle lernen nur, was in den Features steckt. \textbf{Preprocessing} macht Daten sauber und nutzbar; \textbf{Feature Engineering} erzeugt zusätzliche Signale (Kombinationen, Transformationen, Zeitmerkmale). Iterativer Prozess.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Fehlende Werte}
+\textbf{MCAR} (zufällig), \textbf{MAR} (hängt von anderen Features ab), \textbf{MNAR} (hängt vom fehlenden Wert selbst ab).\\
+Imputation: Mittel/Median (numerisch), Modus oder Kategorie ``fehlt'' (kategorial), KNN- oder Modell-Imputation; Zeilen/Spalten löschen, wenn zu viel fehlt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Ausreißer \& Log}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(1.8,0); \draw[->,hnnavy] (0,0)--(0,1.5);
+  \foreach \x/\h in {.15/1.2,.3/.9,.45/.6,.6/.35,.75/.2,.9/.12,1.05/.08,1.5/.05}{\fill[hnorange!60] (\x,0) rectangle (\x+.1,\h);}
+  \node[font=\tiny] at (.9,-.25) {schief $\to\log$};
+  \draw[->,thick,hnnavy] (2.0,.7)--(2.4,.7);
+  \draw[->,hnnavy] (2.6,0)--(4.4,0); \draw[->,hnnavy] (2.6,0)--(2.6,1.5);
+  \foreach \x/\h in {.35/.3,.55/.7,.75/1.1,.95/1.2,1.15/.9,1.35/.5,1.55/.2}{\fill[hngreen!60] (2.6+\x,0) rectangle (2.6+\x+.15,\h);}
+  \node[font=\tiny] at (3.5,-.25) {nach $\log$: symmetrischer};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Skalierung}
+\[ \text{Standardisierung: }z=\frac{x-\mu}{\sigma}\qquad\text{Min-Max: }x'=\frac{x-x_{\min}}{x_{\max}-x_{\min}} \]
+($\mu,\sigma$: Mittel und Streuung der Trainingsdaten; $x_{\min},x_{\max}$ kleinster/größter Wert.) Standardisierung: Mittel $0$, Std $1$, empfindlich bei Ausreißern. Min-Max: Bereich $[0,1]$, sehr empfindlich bei Ausreißern; \emph{robust}: Median/IQR.\\
+\hlt{Nötig} für distanz- und gradientenbasierte Verfahren (k-NN, SVM, K-Means, PCA, neuronale Netze, GD); \emph{nicht} für Bäume.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Kategoriale Variablen}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}p{2.3cm}p{6.1cm}@{}}
+\hline
+\textbf{Verfahren}&\textbf{Idee / Vorsicht}\\\hline
+Label-Encoding&Zahl pro Kategorie; erzeugt Scheinordnung\\
+One-Hot&eine 0/1-Spalte je Kategorie (Dummy-Falle: eine weglassen bei linearen Modellen)\\
+Ordinal&sinnvolle Rangfolge (niedrig $<$ mittel $<$ hoch)\\
+Target-Encoding&Mittelwert des Ziels je Kategorie (Leakage-Gefahr!)\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Skalieren von $x=(10,20,30,100)$}
+\hnsol\ $\mu=40$, $\sigma=\sqrt{\frac{900+400+100+3600}{4}}=35.4$.\\
+Standardisierung: $z=(-0.85,\,-0.57,\,-0.28,\,\ora{1.70})$.\\
+Min-Max: $x'=\frac{x-10}{90}=(0,\,0.11,\,0.22,\,1)$.\\
+Der Ausreißer $100$ quetscht die anderen Werte zusammen $\Rightarrow$ vorher \emph{cappen} oder log-transformieren.\\
+One-Hot: Stadt $\in\{$Delhi, Mumbai$\}$ $\to$ $(1,0)$ bzw.\ $(0,1)$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Ausreißer \& Transformationen}
+Erkennen: Boxplot/IQR-Regel ($Q_1,Q_3$ unteres/oberes Quartil, $\mathrm{IQR}=Q_3-Q_1$) ($x<Q_1-1.5\,\mathrm{IQR}$ oder $>Q_3+1.5\,\mathrm{IQR}$), $z$-Score $>3$. Behandeln: \emph{cappen} (Winsorizing an Perzentilen), transformieren ($\log$, Wurzel, Box-Cox), entfernen nur bei echten Fehlern (nicht bei seltenen, aber echten Werten). Weitere Transformationen: Binning, Interaktionen $A\times B$, Polynom-Features.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Feature-Auswahl}
+\begin{itemize}
+\item \textbf{Filter}: Korrelation, $\chi^2$, Mutual Information -- unabhängig vom Modell.
+\item \textbf{Wrapper}: Forward/Backward-Selektion, RFE -- teuer, modellbezogen.
+\item \textbf{Embedded}: L1/Lasso, Elastic Net, Baum-Importance -- Auswahl im Training.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnred]{8}{Data Leakage vermeiden}
+Skalierer, Imputer und Encoder \hlp{nur auf dem Trainingsset anpassen} (\texttt{fit}) und dann auf Val/Test \emph{anwenden} (\texttt{transform}). Am sichersten: alles in eine \texttt{Pipeline} (siehe Vertiefungsseite zu Workflow). Keine Zukunftsinformation in Zeitreihen-Features.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{9}{Zeit-Features}
+Aus Datum: Jahr, Monat, Wochentag, Quartal, Wochenende/Feiertag; \emph{Lag}-Features, Rolling-Statistiken (Mittel, Std), Zeit seit letztem Ereignis -- immer nur aus der Vergangenheit berechnen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Fehlende Werte, Ausreißer, Skalen zuerst klären
+\item Kategorien passend kodieren
+\item \emph{fit} nur auf Train, \emph{transform} überall
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Für welche Modelle ist Skalierung nötig?}{Distanz-/gradientenbasierte (k-NN, SVM, K-Means, PCA, NN); nicht für Bäume.}{Warum One-Hot statt Label-Encoding?}{Label-Encoding täuscht eine Ordnung vor, die es nicht gibt.}{Was ist Data Leakage beim Skalieren?}{Mittel/Std aus dem \emph{gesamten} Datensatz: Testinformation fließt ins Training.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Gute Features sind halbe Modellierung.“
+\end{hnbanner}
+\end{hngrid}

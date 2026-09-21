@@ -1,0 +1,116 @@
+\hnheader[Die Trainings-Kosten sind nur ein Proxy -- Metriken übersetzen das echte Ziel in eine Zahl.][Accuracy $\prec$ AUROC $\prec$ AUPRC bei starkem Klassenungleichgewicht]{Evaluations-}{metriken}{Confusion Matrix, Precision/Recall, ROC \& PR}
+\hnsrc{section/evaluation\_metrics\_spring2020.pdf (Y.\ Chen, nach A.\ Avati)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Warum Metriken?}
+Nicht alle Fehler sind gleich teuer (übersehener Tumor vs.\ Fehlalarm). Metriken quantifizieren die Lücke zwischen Baseline, aktuellem und gewünschtem Ergebnis und steuern die Teamarbeit.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Konfusionsmatrix}
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}r|c|c|@{}}
+\multicolumn{1}{c}{}&\multicolumn{1}{c}{\scriptsize Label $+$}&\multicolumn{1}{c}{\scriptsize Label $-$}\\\cline{2-3}
+\scriptsize Vorhersage $+$&\cellcolor{hnmint}TP&\cellcolor{hnpink}FP\\\cline{2-3}
+\scriptsize Vorhersage $-$&\cellcolor{hnpink}FN&\cellcolor{hnmint}TN\\\cline{2-3}
+\end{tabular}\\[2pt]
+FP = Fehler 1.\,Art, FN = Fehler 2.\,Art
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: ROC \& PR}
+\centering
+\begin{tikzpicture}[>=Stealth,scale=.78]
+  \begin{scope}
+    \draw[->,hnnavy] (0,0)--(2.4,0) node[right,font=\tiny]{FPR}; \draw[->,hnnavy] (0,0)--(0,2.4) node[above,font=\tiny]{TPR};
+    \draw[dashed,gray] (0,0)--(2.2,2.2);
+    \draw[hnorange,very thick] (0,0) .. controls (.2,1.7) and (.7,2.1) .. (2.2,2.2);
+    \node[font=\tiny] at (1.2,-.4) {ROC};
+  \end{scope}
+  \begin{scope}[shift={(3.6,0)}]
+    \draw[->,hnnavy] (0,0)--(2.4,0) node[right,font=\tiny]{Recall}; \draw[->,hnnavy] (0,0)--(0,2.4) node[above,font=\tiny]{Prec.};
+    \draw[dashed,gray] (0,.7)--(2.2,.7);
+    \draw[hnpurple,very thick] (0,2.2) .. controls (1.3,2.15) and (1.9,1.9) .. (2.2,.7);
+    \node[font=\tiny] at (1.2,-.4) {PR};
+  \end{scope}
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Punkt-Metriken}
+\renewcommand{\arraystretch}{2.1}
+\begin{tabular}{@{}p{2.6cm}p{3.0cm}p{2.8cm}@{}}
+\hline
+\textbf{Metrik}&\textbf{Formel}&\textbf{Frage}\\\hline
+Accuracy&$\dfrac{TP+TN}{\text{alle}}$&Anteil richtig\\
+Precision&$\dfrac{TP}{TP+FP}$&Positive echt?\\
+Recall (Sens.)&$\dfrac{TP}{TP+FN}$&Positive gefunden?\\
+Specificity&$\dfrac{TN}{TN+FP}$&Negative gefunden?\\
+F1&$\dfrac{2PR}{P+R}$&harm.\ Mittel ($P$, $R$)\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Schwellwert, ROC \& PR}
+Score-Modelle (LogReg, SVM) brauchen einen \hlt{Schwellwert}: niedriger $\Rightarrow$ Recall$\uparrow$, Precision$\downarrow$. Es gibt $n+1$ effektive Schwellwerte.\\
+\textbf{ROC}: Sensitivity über $1-$Specificity; \textbf{AUROC} $=P(\text{zufälliges Positiv} \text{ höher als zufälliges Negativ})$, unabhängig von der Prävalenz.\\
+\textbf{PR-Kurve}: Precision über Recall; \textbf{AUPRC}; robuster bei Ungleichgewicht.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Schwelle 0.5 vs.\ 0.6}
+20 Beispiele (10 pos., 10 neg.).\\
+\hnsol\ \textbf{Schwelle 0.5:} TP=9, FP=2, FN=1, TN=8: Acc $=\frac{17}{20}=0.85$, Prec $=\frac9{11}=0.82$, Recall $=0.90$, Spec $=0.80$, F1 $=\ora{0.857}$.\\
+\textbf{Schwelle 0.6:} TP=7, FP=2, FN=3, TN=8: Acc $=0.75$, Prec $=0.78$, Recall $=0.70$, F1 $=0.737$.\\
+Höhere Schwelle $\Rightarrow$ weniger Recall.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Berechnung}
+\begin{pcode}[ROC-Kurve per Schwellenscan]
+sortiere Beispiele nach Score (absteigend)\\
+$TP\leftarrow0,\;FP\leftarrow0$\\
+\kw{for} Beispiel in dieser Reihenfolge:\\
+\hii \kw{if} $y=+1$: $TP\leftarrow TP+1$ \ \kw{else}: $FP\leftarrow FP+1$\\
+\hii Punkt $(FP/N_-,\;TP/N_+)$ speichern \ \cm{\# $N_\pm$: Anzahl Pos./Neg.}\\
+$\mathrm{AUROC}\leftarrow$ Trapezregel über die Punkte
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{Klassenungleichgewicht}
+Prävalenz $<5\%$: \textbf{Accuracy} ist trivial hoch (immer Mehrheitsklasse), \textbf{AUROC} leicht hochzuhalten (viele Negative sehr niedrig scoren), \textbf{AUPRC} robuster. \textbf{Log-Loss}/\textbf{Brier-Score} $\frac1n\sum(\hat p_i-y_i)^2$ ($\hat p_i$ vorhergesagte Wkt., $y_i\in\{0,1\}$) bewerten Kalibrierung und strafen selbstsichere Fehler hart (\emph{proper scoring rules}).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{8}{Welche Metrik?}
+\begin{itemize}
+\item FN teuer $\to$ Recall
+\item FP teuer $\to$ Precision
+\item Ungleichgewicht $\to$ AUPRC, F1
+\item Wahrscheinlichkeiten $\to$ Log-Loss
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Fallstricke}
+\begin{hncon}
+\item Accuracy täuscht bei seltenen Klassen
+\item Test-Metrik \emph{nie} zum Tuning nutzen
+\item Ranking-Metriken ignorieren Kalibrierung
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item TP/FP/FN/TN als Basis
+\item Precision $\leftrightarrow$ Recall Tradeoff
+\item AUROC vs.\ AUPRC bei Ungleichgewicht
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{+}{Weitere Metriken \& Mehrklassen (aus den ML Notes)}
+$\mathrm{FPR}=\frac{FP}{FP+TN}=1-\mathrm{Spec}$, $\;\mathrm{FNR}=\frac{FN}{FN+TP}=1-\mathrm{Recall}$, $\;\mathrm{NPV}=\frac{TN}{TN+FN}$. \textbf{Mehrklassen}: One-vs-Rest, dann Metriken je Klasse mitteln -- \emph{Macro} (einfacher Mittelwert), \emph{Micro} (globale Zählung aller TP/FP/FN), \emph{Weighted} (nach Klassenhäufigkeit). \emph{Beispiel} (80 TP, 20 FP, 10 FN, 90 TN): Acc $=0.85$, Prec $=0.80$, Recall $=0.89$, $F_1=0.84$. Wahl: ausgeglichen $\to$ Accuracy/$F_1$; Ungleichgewicht $\to$ PR-AUC/$F_1$; FP teuer $\to$ Precision/Spezifität; FN teuer $\to$ Recall; Ranking $\to$ ROC-AUC/PR-AUC.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Precision vs.\ Recall?}{Precision $=\frac{TP}{TP+FP}$, Recall $=\frac{TP}{TP+FN}$.}{Wann AUPRC statt AUROC?}{Bei starkem Klassenungleichgewicht (AUROC bleibt leicht hoch).}{Wirkung einer höheren Schwelle?}{Weniger positive Vorhersagen: Recall sinkt, Precision steigt meist.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Was du misst, wird besser -- also miss, was wirklich zählt.“
+\end{hnbanner}
+\end{hngrid}

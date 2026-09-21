@@ -1,0 +1,68 @@
+\hnheader[Warum sieht der Gradient so einfach aus? Herleitung für logistische Regression, Softmax und alle GLMs.][Ein Gradient, viele Modelle: (Vorhersage $-$ Wahrheit) $\times$ Eingabe]{Logistische Regression \& GLM:}{Vertiefung}{Herleitung, Newton, Softmax und Code}
+\hnsrc{main\_notes.pdf Kap.\ 2--3; Schritte ausformuliert und ergänzt; Code: code/sk\_logreg.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{1}{Gradient der logistischen Regression}
+$h=g(\theta\T x)$, $g(z)=\frac1{1+e^{-z}}$, $g'=g(1-g)$. Für ein Beispiel:
+\hnleg{$x\in\R^d$ Merkmale ($x_j$: $j$-te Komponente), $y\in\{0,1\}$ Label, $\theta$ Parameter, $g$ Sigmoid, $h=P(y{=}1|x)$ vorhergesagte Wahrscheinlichkeit, $\ell$ Log-Likelihood des Beispiels.}
+\hnwords{$\ell$ ist die Log-Wahrscheinlichkeit des \emph{tatsächlichen} Labels: für $y{=}1$ bleibt $\log h$, für $y{=}0$ bleibt $\log(1-h)$.}
+\begin{align*}
+\ell&=y\log h+(1-y)\log(1-h)\\
+\tfrac{\partial\ell}{\partial\theta_j}&=\Bigl(\tfrac yh-\tfrac{1-y}{1-h}\Bigr)\tfrac{\partial h}{\partial\theta_j}&&\why{Kettenregel}\\
+&=\Bigl(\tfrac yh-\tfrac{1-y}{1-h}\Bigr)h(1-h)\,x_j&&\why{$g'{=}g(1{-}g)$}\\
+&=\bigl(y(1-h)-(1-y)h\bigr)x_j=(y-h)\,x_j&&\why{Bruch kürzen}
+\end{align*}
+Ergebnis: Fehler $(y-h)$ mal Eingabe $x_j$ -- je falscher die Vorhersage, desto größer die Korrektur.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{2}{Hesse-Matrix \& Newton}
+Ableiten von $\sum_i(y_i-h_i)x_i$ nochmals nach $\theta_k$ (mit $\partial_{\theta_k}h_i=h_i(1-h_i)x_{ik}$):
+\hnleg{$H$ Hesse-Matrix (alle zweiten Ableitungen), $S$ Diagonalmatrix mit $h_i(1-h_i)$, $\delta$ Schritt, $\ell_t$ aktueller Wert, $\nabla\ell$ Gradient.}
+\begin{align*}
+H_{jk}&=\tfrac{\partial^2\ell}{\partial\theta_j\partial\theta_k}=-\sum_ih_i(1-h_i)x_{ij}x_{ik}\\
+H&=-X\T SX,\quad S=\mathrm{diag}\bigl(h_i(1-h_i)\bigr)
+\end{align*}
+$v\T Hv=-\sum_ih_i(1-h_i)(x_i\T v)^2\le0$ $\Rightarrow$ $\ell$ ist \emph{konkav} (kein lokales Maximum außer dem globalen). Newton folgt aus der Taylor-Näherung $\ell(\theta)\approx\ell_t+\nabla\ell\T\delta+\frac12\delta\T H\delta$: Ableiten nach $\delta$ und Null setzen gibt $\delta=-H^{-1}\nabla\ell$, also $\theta\leftarrow\theta+(X\T SX)^{-1}X\T(y-h)$.
+\hnwords{Newton ersetzt $\ell$ lokal durch eine Parabel und springt direkt zu deren Gipfel; die Krümmung $H$ bestimmt die Schrittweite.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{3}{Softmax: Gradient}
+$p_k=\frac{e^{\theta_k\T x}}{\sum_je^{\theta_j\T x}}$, Verlust $L=-\log p_y=-\theta_y\T x+\log\sum_je^{\theta_j\T x}$.
+\hnleg{$k,j$ Klassenindizes, $\theta_k$ Parameter der Klasse $k$, $p_k$ Wahrscheinlichkeit der Klasse $k$, $y$ wahre Klasse, $\I\{\cdot\}$ Indikator (1, wenn wahr), $L$ Verlust.}
+\hnwords{Softmax macht Scores zu Wahrscheinlichkeiten; $L$ ist groß, wenn die wahre Klasse wenig Wahrscheinlichkeit bekommt.}
+\begin{align*}
+\nabla_{\theta_k}L&=-\I\{k{=}y\}\,x+\frac{e^{\theta_k\T x}}{\sum_je^{\theta_j\T x}}\,x&&\why{Ableitung von $\log\sum e^{\cdot}$}\\
+&=\bigl(p_k-\I\{k{=}y\}\bigr)\,x
+\end{align*}
+Genau wie im binären Fall: (Vorhersage $-$ Wahrheit) $\times$ Eingabe.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{4}{Warum alle GLMs $(y-h)x$ liefern}
+$p(y|x;\theta)=b(y)\exp(\eta\,y-a(\eta))$, $\eta=\theta\T x$ ($T(y)=y$).
+\hnleg{$\eta$ natürlicher Parameter, $b(y)$ Basisfunktion, $a(\eta)$ Log-Partition (normiert $p$ auf 1), $h=\E[y|x]$ Vorhersage.}
+\hnwords{Bernoulli, Gauß, Poisson usw. haben diese Form (Exponentialfamilie); darum ist der Gradient stets gleich.}
+\begin{align*}
+\log p&=\eta y-a(\eta)+\log b(y)\\
+\tfrac{\partial\log p}{\partial\theta_j}&=\bigl(y-a'(\eta)\bigr)x_j&&\why{Kettenregel, $\partial_{\theta_j}\eta=x_j$}\\
+&=(y-h)\,x_j&&\why{$a'(\eta)=\E[y;\eta]=h$}
+\end{align*}
+$a'(\eta)=\E[y]$: Ableitung von $\int p=1$ nach $\eta$ liefert $\int(y-a')p\,dy=0$.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: Gradient numerisch prüfen (Merkschema: Modell $\to$ Log-Likelihood $\to$ ableiten $\to$ Null setzen $\to$ Krümmung prüfen)}
+$\theta=(0,0)$, $x=(1,2)$, $y=1$. Dann $h=\sigma(0)=0.5$ ($\sigma$: Sigmoid, $e_2$: Einheitsvektor der 2.\ Komponente).\\
+\hnsol\ Formel: $(y-h)x=0.5\cdot(1,2)=\ora{(0.5,\,1.0)}$.\\
+Differenzenquotient ($\varepsilon=10^{-5}$): $\frac{\ell(\theta+\varepsilon e_2)-\ell(\theta-\varepsilon e_2)}{2\varepsilon}=1.0$ \hlm{stimmt} (Gradient-Check, Kapitel Backpropagation). \emph{In Worten:} Steigung numerisch messen, indem $\theta_2$ minimal nach oben und unten verschoben wird.
+\end{hnex}
+%
+\hnsnip[hnpurple]{sk_logreg}{Logistische Regression mit Skalierung in einer Pipeline}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Wo taucht in $\nabla\ell=(y-h)x$ die Ableitung $g'=g(1-g)$ auf?}{Sie kürzt sich mit den Nennern $h$ und $1-h$ der $\log$-Ableitung heraus.}{Warum ist die Log-Likelihood der LogReg konkav?}{$H=-X\T SX$ ist negativ semidefinit ($S\succeq0$).}{Wie sieht der Softmax-Gradient aus?}{$(p_k-\I\{k{=}y\})\,x$ für jede Klasse $k$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein Gradient, viele Modelle: (Vorhersage $-$ Wahrheit) $\times$ Eingabe.“
+\end{hnbanner}
+\end{hngrid}

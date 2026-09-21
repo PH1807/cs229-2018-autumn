@@ -1,0 +1,44 @@
+\hnheader[Warum sich Fairness-Kriterien widersprechen -- Herleitung, Reweighing und Code.][$\mathrm{FPR}=\frac{p}{1-p}\cdot\frac{1-\mathrm{PPV}}{\mathrm{PPV}}\cdot\mathrm{TPR}$]{Fairness:}{Vertiefung}{Herleitung und Gegenmaßnahmen}
+\hnsrc{Chouldechova (2017), Kleinberg et al.\ (2016), Kamiran \& Calders (2012), Hardt et al.\ (2016) als Web-Zusatz; Herleitungen ausformuliert; Code: code/np\_fairness.py (fairlearn, real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Zusammenhang PPV, TPR, FPR}
+\hnleg{$Y$ wahres Label, $p$ Basisrate (Anteil positiver Fälle), TPR Trefferrate, FPR Fehlalarmrate, PPV Precision, $TP,FP$ Anteile in der Konfusionsmatrix.}
+Basisrate $p=P(Y{=}1)$. Aus der Konfusionsmatrix (Anteile): $TP=p\cdot\mathrm{TPR}$, $FP=(1{-}p)\cdot\mathrm{FPR}$.
+\begin{align*}
+\mathrm{PPV}&=\frac{TP}{TP+FP}=\frac{p\,\mathrm{TPR}}{p\,\mathrm{TPR}+(1-p)\,\mathrm{FPR}}&&\why{Definition}\\
+\Rightarrow\;\mathrm{FPR}&=\frac{p}{1-p}\cdot\frac{1-\mathrm{PPV}}{\mathrm{PPV}}\cdot\mathrm{TPR}&&\why{nach FPR umstellen}
+\end{align*}
+\hnwords{PPV, TPR, FPR und Basisrate hängen fest zusammen: Kennt man drei, ist die vierte bestimmt.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Unmöglichkeit}
+Seien PPV und TPR (also auch FNR) in beiden Gruppen gleich. Dann bestimmt die Formel FPR eindeutig aus $p$: 
+\[ p_a\ne p_b\;\Rightarrow\;\mathrm{FPR}_a\ne\mathrm{FPR}_b \]
+Ausnahmen: perfekter Klassifikator ($\mathrm{PPV}=1\Rightarrow\mathrm{FPR}=0$) oder $\mathrm{TPR}=0$. Also kollidieren \hlt{Predictive Parity} und \hlt{Equalized Odds}, sobald die Basisraten verschieden sind.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Formel mit den Daten der Vorseite prüfen}
+Gruppe A: Basisrate $p=0.40$, PPV $=0.75$, TPR $=0.75$; Auswahlrate = Anteil der als positiv Vorhergesagten.\\
+\hnsol\ $\mathrm{FPR}_A=\frac{0.4}{0.6}\cdot\frac{0.25}{0.75}\cdot0.75=\frac23\cdot\frac13\cdot0.75=\ora{0.167}$ \hlm{stimmt}.\\
+Gruppe B: $p=0.20$, PPV $=0.50$, TPR $=0.25$: $\frac{0.2}{0.8}\cdot1\cdot0.25=\ora{0.0625}$ \hlm{stimmt}.\\
+Auswahlrate $=p\,\mathrm{TPR}+(1{-}p)\,\mathrm{FPR}$: A $=0.3+0.1=0.4$, B $=0.05+0.05=0.1$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Reweighing (Pre-Processing)}
+\hnleg{$A$ sensibles Merkmal (Gruppe), $Y$ Label, $w(a,y)$ Gewicht für Gruppe $a$ und Label $y$.}
+Gewicht je (Gruppe $a$, Label $y$), sodass $A$ und $Y$ im gewichteten Datensatz unabhängig werden:
+\[ w(a,y)=\frac{P(A{=}a)\,P(Y{=}y)}{P(A{=}a,Y{=}y)} \]
+\hnwords{Zähler: so viele Fälle würde man bei Unabhängigkeit erwarten; Nenner: so viele gibt es tatsächlich. Unterrepräsentierte Kombinationen bekommen mehr Gewicht.} Danach mit Gewichten trainieren (\texttt{sample\_weight}). Es ändert die \emph{Daten}, nicht das Modell.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hngreen]{4}{Post-Processing: Schwellwerte}
+Ein Score $S$ (Modellausgabe); pro Gruppe ein eigener Schwellwert $t_a$ wählen, sodass z.\,B.\ die TPR gleich wird (\emph{Equal Opportunity}). Man liest $t_a$ aus der ROC-Kurve der Gruppe ab. Einfach, modellunabhängig, braucht aber $A$ zur Anwendungszeit und kann anderen Kriterien schaden.
+\begin{pcode}[Gruppen-Schwellwerte]
+\kw{for} Gruppe $a$: $t_a\leftarrow$ kleinstes $t$ mit $\mathrm{TPR}_a(t)\ge\tau$ \cm{\# $\tau$: Ziel-Trefferrate}\\
+$\hat y\leftarrow\I[S\ge t_{A}]$
+\end{pcode}
+\end{hnp}
+%
+\end{hngrid}

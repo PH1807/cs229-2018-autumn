@@ -1,0 +1,3 @@
+beste Parameter: {'C': 1, 'gamma': 10}
+Test-Accuracy  : 0.989
+Support Vectors: [45 49]

@@ -1,0 +1,4 @@
+Epoche   0  loss 0.446  acc 0.855
+Epoche  50  loss 0.200  acc 0.960
+Epoche 100  loss 0.013  acc 0.973
+Epoche 150  loss 0.014  acc 0.973

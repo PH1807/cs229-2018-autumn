@@ -1,0 +1,120 @@
+\hnheader[Ziel: eine Gerade so durch die Datenwolke legen, dass sie $y$ möglichst gut vorhersagt.][Least Squares = Maximum Likelihood bei Gauß-Rauschen!]{Lineare}{Regression}{Die Grundlage aller Vorhersagemodelle}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee \& Modell}
+Gegeben: Daten $\{(x^{(i)},y^{(i)})\}_{i=1}^{n}$ mit $x\in\R^d$, $y\in\R$.\\
+Gesucht: Hypothese $h_\theta(x)\approx y$.
+\[ h_\theta(x)=\theta\T x=\sum_{j=0}^{d}\theta_j x_j,\quad x_0:=1 \]
+$x_0=1$ ist der \hlt{Bias-Term} (Achsenabschnitt).\\
+Design-Matrix $X\in\R^{n\times d}$: eine Zeile pro Beispiel, $\bm y\in\R^n$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Kostenfunktion (MSE)}
+Wie schlecht ist $\theta$? Summe der quadrierten Fehler:
+\[ \begin{aligned}J(\theta)&=\frac{1}{2n}\sum_{i=1}^{n}\bigl(h_\theta(x^{(i)})-y^{(i)}\bigr)^2\\&=\frac1{2n}\norm{X\theta-\bm y}^2\end{aligned} \]
+\ora{Konvex} (Schüssel-Form): genau ein globales Minimum, keine lokalen Fallen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Residuen}
+\centering
+\begin{tikzpicture}[scale=.98,>=Stealth]
+  \draw[->,hnnavy] (0,0)--(4.9,0) node[right,font=\scriptsize]{$x$};
+  \draw[->,hnnavy] (0,0)--(0,3.5) node[above,font=\scriptsize]{$y$};
+  \draw[hnorange,very thick] (.1,.515)--(4.8,3.57);
+  \foreach \x/\y in {.5/.7,1/1.4,1.6/1.3,2.2/2.1,2.8/2.0,3.4/2.9,4.0/2.6,4.6/3.4}{
+    \draw[hnpurple,dashed,line width=.5pt] (\x,\y)--(\x,{0.45+0.65*\x});
+    \fill[hnnavy] (\x,\y) circle(.06);}
+  \node[hnorange,font=\scriptsize,rotate=25] at (3.1,1.65) {$h_\theta(x)$};
+  \node[hnpurple,font=\scriptsize] at (1.05,2.5) {Residuum};
+  \draw[->,hnpurple] (1.05,2.35)--(1.02,1.45);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Gradient Descent}
+Ableiten und bergab laufen (Lernrate $\alpha$):
+\[ \theta_j\leftarrow\theta_j+\frac{\alpha}{n}\sum_{i=1}^{n}\bigl(y^{(i)}-h_\theta(x^{(i)})\bigr)x_j^{(i)} \]
+\textbf{Batch}: alle $n$ Punkte pro Schritt. \textbf{SGD}: 1 Punkt (oder Mini-Batch) pro Schritt -- billiger, verrauschter.
+\begin{pcode}[Batch-Gradient-Descent]
+\kw{init} $\theta\leftarrow 0$\\
+\kw{repeat} bis Konvergenz:\\
+\hii $g\leftarrow \tfrac1n X^{\top}(X\theta-y)$\\
+\hii $\theta\leftarrow\theta-\alpha\,g$\\
+\cm{\# SGD: für jedes i in zufälliger Reihenfolge}\\
+\hii $\theta\leftarrow\theta+\alpha\,(y_i-\theta^{\top}x_i)\,x_i$
+\end{pcode}
+\hlt{Tipp:} Features skalieren; $\alpha$ zu groß $\Rightarrow$ Divergenz, zu klein $\Rightarrow$ langsam.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Normalgleichung (geschlossene Lösung)}
+$\nabla_\theta J=0$ setzen ergibt in einem Schritt:
+\[ \boxed{\hat\theta=(X\T X)^{-1}X\T\bm y} \]
+Gut für \emph{kleines/mittleres} $d$ (Inversion kostet $O(d^3)$). Bei sehr großem $d$ oder singulärem $X\T X$: Gradient Descent oder Regularisierung.
+\begin{pcode}[Numpy-Einzeiler]
+theta = solve(X.T @ X, X.T @ y)\\
+\cm{\# besser als explizite Inverse (stabiler)}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{6}{Probabilistische Sicht}
+Annahme: $y=\theta\T x+\varepsilon$, $\varepsilon\sim\N(0,\sigma^2)$ iid. Dann ist
+\[ \log L(\theta)=\text{const}-\frac{1}{2\sigma^2}\sum_i(y^{(i)}-\theta\T x^{(i)})^2 \]
+$\Rightarrow$ \hlp{MLE $=$ Least Squares.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{Lokal gewichtete Regression}
+Nichtparametrisch: für jede Anfrage $x$ neu fitten, nahe Punkte zählen mehr:
+\[ w^{(i)}=\exp\!\Bigl(-\tfrac{\norm{x^{(i)}-x}^2}{2\tau^2}\Bigr) \]
+Minimiere $\sum_i w^{(i)}(y^{(i)}-\theta\T x^{(i)})^2$. Bandbreite $\tau$: klein $\to$ wackelig, groß $\to$ glatt.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=2]{Beispiel: 3 Punkte per Hand}
+\hnq\ Punkte $(1,1),(2,2),(3,2)$. Finde $\hat\theta$ und sage $x=4$ vorher.\\
+\hnsol\ $X\T X=\begin{psmallmatrix}3&6\\6&14\end{psmallmatrix}$, $X\T y=\begin{psmallmatrix}5\\11\end{psmallmatrix}$, $\det=6$\\
+$\hat\theta=\tfrac16\begin{psmallmatrix}14&-6\\-6&3\end{psmallmatrix}\begin{psmallmatrix}5\\11\end{psmallmatrix}=\begin{psmallmatrix}2/3\\1/2\end{psmallmatrix}$\\
+$h(4)=\tfrac23+\tfrac12\cdot4\approx\ora{2.67}$
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item einfach, schnell, gut interpretierbar
+\item geschlossene Lösung existiert
+\item konvexes Problem: keine lokalen Minima
+\item solide Baseline für jedes Regressionsproblem
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item nur lineare Zusammenhänge (Abhilfe: Feature-Maps, Kernel)
+\item empfindlich gegen Ausreißer (quadr. Fehler)
+\item $X\T X$ evtl. singulär (kollineare Features)
+\item Overfitting bei sehr vielen Features
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item $h_\theta(x)=\theta\T x$, Kosten $=$ MSE
+\item Lösung: Normalgleichung \emph{oder} (S)GD
+\item MLE unter Gauß-Rauschen
+\item LWLR: nichtparametrische Erweiterung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{11}{Polynom-Features \& Anwendungen}
+Auch Kurven sind „linear“: $\phi(x)=(1,x,x^2,\dots,x^k)$, $h_\theta(x)=\theta\T\phi(x)$. Linear in $\theta$, nichtlinear in $x$. Der Grad $k$ steuert die \hlt{Modellkomplexität} $\to$ Bias/Varianz. Anwendungen: Preis-/Umsatzprognose, Trends, Baseline für komplexere Modelle.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{12}{Annahmen (aus den ML Notes)}
+Linearität, Unabhängigkeit, \textbf{Homoskedastizität} (konstante Fehlervarianz), normalverteilte Fehler (Basis der MLE-Sicht), keine starke Multikollinearität. Residuenplot: Muster $\Rightarrow$ nichtlinear, Trichter $\Rightarrow$ Heteroskedastizität. Metriken: Kapitel Regressionsmetriken.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum ist $J(\theta)$ konvex?}{Quadratisch in $\theta$ (Hesse $X\T X/n\succeq0$): nur ein globales Minimum.}{Wann versagt die Normalgleichung?}{Bei sehr großem $d$ ($O(d^3)$) oder singulärem $X\T X$: dann GD oder Regularisierung.}{Wirkung von $\tau$ bei LWLR?}{Bandbreite: klein $\to$ sehr lokal/wackelig, groß $\to$ glatt (globale lineare Regression).}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein einfaches Modell, das man wirklich verstanden hat, schlägt ein kompliziertes, das man nur benutzt.“
+\end{hnbanner}
+\end{hngrid}

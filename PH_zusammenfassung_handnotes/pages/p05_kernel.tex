@@ -1,0 +1,114 @@
+\hnheader[Nichtlinear lernen, ohne den hochdimensionalen Feature-Raum je zu berechnen.][Nur Skalarprodukte zählen: $K(x,z)=\phi(x)\T\phi(z)$]{Kernel-}{Methoden}{Der Kernel-Trick}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Feature-Maps}
+Eine Abbildung $\phi:\R^d\to\R^p$ macht ein lineares Modell nichtlinear: $h(x)=\theta\T\phi(x)$. Problem: $p$ kann riesig (sogar unendlich) sein $\Rightarrow$ $\phi(x)$ explizit auszurechnen ist zu teuer.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Der Kernel-Trick}
+\hnleg{$\phi$ Feature-Map, $K$ Kernel, $\beta_i$ Gewicht von Trainingspunkt $i$, $n$ Anzahl Trainingspunkte.}
+Die Lösung ist stets $\theta=\sum_i\beta_i\phi(x^{(i)})$. Damit
+\[ h(x)=\sum_{i=1}^{n}\beta_i\,\underbrace{\phi(x^{(i)})\T\phi(x)}_{K(x^{(i)},x)} \]
+$K(x,z)$ oft in $O(d)$ berechenbar, obwohl $\phi$ riesig ist.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Anheben in 2D}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(2.2,0) node[right,font=\tiny]{$x$};
+  \foreach \x in {.3,.55,.8,1.05,1.3,1.55,1.8}{\fill[hnorange] (\x,0) circle(.05);}
+  \foreach \x in {0,.1,2.1,2.2}{\fill[hnpurple] (\x,0) circle(.05);}
+  \node[font=\tiny] at (1.1,-.3) {1D: nicht trennbar};
+  \draw[->,hnnavy] (2.9,-.1)--(2.9,1.7) node[above,font=\tiny]{$x^2$};
+  \draw[->,hnnavy] (2.9,-.1)--(5,-.1) node[right,font=\tiny]{$x$};
+  \foreach \x/\y in {3.3/.1,3.6/.14,3.9/.16,4.1/.15,4.4/.13,4.7/.1}{\fill[hnorange] (\x,\y) circle(.05);}
+  \foreach \x/\y in {2.95/1.5,3.1/1.0,4.8/1.0,4.95/1.5}{\fill[hnpurple] (\x,\y) circle(.05);}
+  \draw[hnnavy,dashed,thick] (2.9,.6)--(5,.6);
+  \node[font=\tiny] at (3.95,-.4) {2D: trennbar};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Wichtige Kernels}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{2.0cm}p{3.9cm}p{2.5cm}@{}}
+\hline
+\textbf{Kernel}&$K(x,z)$&\textbf{Feature-Raum}\\\hline
+Linear&$x\T z$&$\R^d$\\
+Polynom&$(x\T z+c)^k$&$O(d^k)$-dim.\\
+Gauß (RBF)&$\exp\!\bigl(-\frac{\|x-z\|^2}{2\sigma^2}\bigr)$&$\infty$-dim.\\\hline
+\end{tabular}
+\\[2pt]
+RBF: $\sigma$ klein $\to$ sehr lokal (Overfitting), $\sigma$ groß $\to$ fast linear.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Mercers Satz: wann ist $K$ gültig?}
+$K$ ist genau dann ein Kernel, wenn für \emph{beliebige} Punkte die \ora{Gram-Matrix} $[K]_{ij}=K(x^{(i)},x^{(j)})$ \hlt{symmetrisch und positiv semidefinit} ist.\\
+Bausteine: Summe, positive Skalierung und Produkt gültiger Kernels sind wieder Kernels.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Representer-Theorem}
+\hnleg{$L$ Verlustfunktion, $\lambda$ Regularisierungsstärke, $\alpha_i$ Gewicht von Punkt $i$, $L'$ Ableitung von $L$.}
+Für $J_\lambda(\theta)=\frac1n\sum_iL(\theta\T x^{(i)},y^{(i)})+\frac\lambda2\|\theta\|^2$ mit konvexem $L$ gibt es ein Optimum
+\[ \theta=\sum_{i=1}^{n}\alpha_i\,x^{(i)} \]
+\emph{Beweisidee:} $\nabla J=\frac1n\sum_iL'(\cdot)x^{(i)}+\lambda\theta=0\Rightarrow\theta=-\frac1{n\lambda}\sum_iL'(\cdot)x^{(i)}$. Rechtfertigt den Kernel-Trick.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Kernelisierte Regression}
+\begin{pcode}[Kernel-LMS]
+\kw{init} $\beta\leftarrow 0$\\
+\kw{repeat} bis Konvergenz, \kw{for} $i=1..n$:\\
+\hii $r\leftarrow y_i-\sum_j\beta_j K(x_j,x_i)$\\
+\hii $\beta_i\leftarrow\beta_i+\alpha\, r$\\
+\kw{predict}($x$): $\sum_i\beta_i K(x_i,x)$\\
+\cm{\# Gram-Matrix $K$ vorher berechnen: $O(n^2)$}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=4]{Beispiel: Polynom-Kernel $K(x,z)=(x\T z)^2$}
+$x=(1,2)$, $z=(3,1)$. \hnsol\\
+\textbf{Kernel:} $x\T z=3+2=5\Rightarrow K=25$.\\
+\textbf{Explizit:} $\phi(x)=(x_1^2,\sqrt2x_1x_2,x_2^2)$: $\phi(x)=(1,2.83,4)$, $\phi(z)=(9,4.24,1)$\\
+$\phi(x)\T\phi(z)=9+12+4=\ora{25}$ \; \hlm{gleiches Ergebnis, viel billiger}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item nichtlinear ohne Feature-Design
+\item konvexe Optimierung bleibt
+\item Kernel für Text, Graphen, Strings
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item Gram-Matrix: $O(n^2)$ Speicher/Zeit
+\item Wahl von Kernel \& Parametern
+\item schlecht skalierbar bei großem $n$
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item $K(x,z)=\phi(x)\T\phi(z)$
+\item $\theta=\sum\beta_i\phi(x_i)$ (Representer)
+\item Gültig $\Leftrightarrow$ Gram-Matrix PSD
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{11}{Wo Kernels vorkommen}
+\begin{itemize}
+\item SVM (nächstes Kapitel)
+\item Kernel-Ridge/Gauß-Prozesse
+\item Kernel-PCA, Kernel-$k$-Means
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wann ist $K$ ein gültiger Kernel?}{Gram-Matrix symmetrisch und positiv semidefinit (Mercer).}{Was sagt das Representer-Theorem?}{Es gibt ein Optimum $\theta=\sum\alpha_ix^{(i)}$ $\Rightarrow$ Kernel-Trick anwendbar.}{Wirkung von $\sigma$ beim RBF-Kernel?}{Klein: sehr lokal (Overfitting); groß: fast linear.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Nichtlinearität zum Preis eines Skalarprodukts.“
+\end{hnbanner}
+\end{hngrid}

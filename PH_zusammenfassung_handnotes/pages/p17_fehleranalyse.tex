@@ -1,0 +1,123 @@
+\hnheader[Erst diagnostizieren, dann reparieren -- nicht planlos herumprobieren.][Lernkurve lesen: Lücke $\Rightarrow$ Varianz, hoher Train-Fehler $\Rightarrow$ Bias]{Praktische}{Fehleranalyse}{Diagnostik, Error \& Ablative Analysis}
+\hnsrc{materials/ML-advice.pdf (A.\ Ng), notes/error-analysis.pdf (Y.\ Le Calonnec), section/error-analysis.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Problem}
+Spamfilter mit $20\%$ Testfehler. Mögliche Maßnahmen: mehr Daten, weniger/mehr Features, mehr Iterationen, Newton, anderes $\lambda$, SVM\dots\ Blindes Ausprobieren kostet Wochen. \hlt{Diagnose zuerst!}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Lernkurven}
+Plotte Train- und Testfehler über der Trainingsgröße $m$:
+\begin{itemize}
+\item \textbf{Varianz}: große Lücke, Test fällt noch $\Rightarrow$ mehr Daten helfen
+\item \textbf{Bias}: Train schon hoch, kleine Lücke $\Rightarrow$ Modell ausdrucksstärker machen
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: zwei Diagnosen}
+\centering
+\begin{tikzpicture}[>=Stealth,scale=.62]
+  \begin{scope}
+    \draw[->,hnnavy] (0,0)--(3.6,0); \draw[->,hnnavy] (0,0)--(0,3);
+    \draw[hnorange,thick] (.2,2.6) .. controls (1,1.9) and (2,1.6) .. (3.4,1.4);
+    \draw[hnpurple,thick] (.2,.3) .. controls (1,.5) and (2,.6) .. (3.4,.6);
+    \draw[dashed,gray] (0,1.0)--(3.6,1.0);
+    \node[font=\tiny] at (1.8,-.35) {hohe Varianz};
+    \node[font=\tiny,hnorange] at (3,1.85) {Test};
+    \node[font=\tiny,hnpurple] at (3,.25) {Train};
+  \end{scope}
+  \begin{scope}[shift={(4.6,0)}]
+    \draw[->,hnnavy] (0,0)--(3.6,0); \draw[->,hnnavy] (0,0)--(0,3);
+    \draw[hnorange,thick] (.2,2.8) .. controls (1,2.3) and (2,2.1) .. (3.4,2.0);
+    \draw[hnpurple,thick] (.2,1.2) .. controls (1,1.6) and (2,1.8) .. (3.4,1.85);
+    \draw[dashed,gray] (0,1.0)--(3.6,1.0);
+    \node[font=\tiny] at (1.8,-.35) {hoher Bias};
+  \end{scope}
+\end{tikzpicture}\\[-2pt]
+{\tiny gestrichelt: gewünschtes Niveau}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Welche Maßnahme behebt was?}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}p{4.0cm}p{4.4cm}@{}}
+\hline
+\textbf{Maßnahme}&\textbf{behebt}\\\hline
+mehr Trainingsbeispiele&hohe Varianz\\
+weniger Features&hohe Varianz\\
+mehr / bessere Features&hohen Bias\\
+mehr Iterationen, Newton&Optimierungs\emph{algorithmus}\\
+anderes $\lambda$ / $C$, andere Klasse&Optimierungs\emph{ziel}\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Algorithmus oder Ziel?}
+Ein SVM schlägt BLR (Bayessche Logistische Regression) bei der wahren Metrik $a(\theta)$, obwohl BLR das Ziel $J(\theta)$ maximiert ($\theta$ Parameter, $J$ Zielfunktion, $a$ Metrik, die uns wirklich interessiert). Vergleiche $J(\theta_{\mathrm{SVM}})$ mit $J(\theta_{\mathrm{BLR}})$:
+\begin{pcode}[Diagnose]
+\kw{if} $J(\theta_{\mathrm{BLR}})<J(\theta_{\mathrm{SVM}})$:\\
+\hii Problem = \kw{Optimierer} (nicht konvergiert)\\
+\hii $\to$ mehr Iterationen, Newton, andere $\alpha$\\
+\kw{else}: \ \cm{\# $J$ erreicht, aber $a$ schlecht}\\
+\hii Problem = \kw{Zielfunktion} falsch\\
+\hii $\to$ anderes $\lambda/C$, Gewichte, andere Klasse
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Error Analysis (Pipeline)}
+Bei mehrstufigen Systemen jede Komponente einzeln durch die \emph{Ground Truth} ersetzen und die Gesamtgenauigkeit messen:
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lc@{}}
+\hline
++ perfektes Preprocessing&85.1\,\%\\
++ perfekte Gesichtsdetektion&91\,\%\\
++ perfekte Augen-Segmentierung&95\,\%\\\hline
+\end{tabular}\\
+(Start: 85\,\%.) Große Sprünge zeigen, wo Arbeit sich lohnt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Ablative Analyse}
+Umgekehrt: vom \emph{guten} System aus Komponenten entfernen.
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lc@{}}
+\hline
+Gesamtsystem&99.9\,\%\\
+$-$ Rechtschreibung&99.0\,\%\\
+$-$ Text-Parser&95\,\%\\
+$-$ Bild-Features (Baseline)&94\,\%\\\hline
+\end{tabular}\\
+Zeigt, welche Features wirklich beitragen (gut für Publikationen).
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Fehler manuell zählen}
+Katzenklassifikator, Accuracy $90\%$. Von 100 Fehlern sind \ldots\\
+\hnsol\ \textbf{5 Hunde}: Selbst mit perfektem Hunde-Filter steigt die Accuracy nur $90\%\to\ora{90.5\%}$ -- nicht lohnend.\\
+\textbf{50 Hunde}: $\to\ora{95\%}$ -- \hlm{hier lohnt sich die Arbeit!}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{8}{Vorgehen in 5 Schritten}
+\begin{enumerate}
+\item Baseline bauen, Metrik festlegen
+\item Lernkurve $\to$ Bias oder Varianz?
+\item Optimierer vs.\ Ziel prüfen
+\item Error Analysis der Pipeline
+\item ca.\ 100 Fehler kategorisieren, priorisieren
+\end{enumerate}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Diagnose vor Aktion
+\item Lernkurve: Lücke = Varianz, Train hoch = Bias
+\item $J$ vs.\ $a$: Optimierer oder Ziel schuld?
+\item Fehleranalyse zeigt die Obergrenze des Gewinns
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Lernkurve: Varianz oder Bias?}{Große Lücke $\Rightarrow$ Varianz; hoher Trainingsfehler $\Rightarrow$ Bias.}{$J(\theta_{\mathrm{BLR}})<J(\theta_{\mathrm{SVM}})$ bedeutet?}{Optimierer hat sein Ziel nicht erreicht (Konvergenzproblem).}{Error vs.\ Ablative Analysis?}{Error: Komponenten durch Ground Truth ersetzen; Ablation: Komponenten entfernen.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer nicht misst, verbessert das Falsche.“
+\end{hnbanner}
+\end{hngrid}

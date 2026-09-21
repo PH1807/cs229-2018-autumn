@@ -1,0 +1,91 @@
+\hnheader[Leistungsfähig heißt nicht vertrauenswürdig: fünf Kritikpunkte an ML.][FGSM: $x_{\mathrm{adv}}=x+\varepsilon\,\mathrm{sign}(\nabla_xJ)$]{Kritische}{Perspektiven}{Adversarial Examples, Interpretierbarkeit, Kosten \& Ethik}
+\hnsrc{materials/critiques-ml-aut19.pdf (C.\ Chute, T.\ Ding, A.\ Kurenkov, 2019) und materials/critiques-ml.pdf (2018)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Fünf Themen}
+\begin{enumerate}
+\item Adversarial Examples
+\item Interpretierbarkeit
+\item Kosten: Daten \& Rechenleistung
+\item Schwächen der Community
+\item Ethische Fragen (Fairness, Bias)
+\end{enumerate}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Adversarial Examples}
+Winzige, für Menschen kaum sichtbare Störungen erzwingen falsche Vorhersagen ($+\varepsilon\cdot$Rauschen: Panda $\to$ Gibbon). Sie \emph{übertragen} sich auf andere Architekturen und Datensätze und lassen sich physisch bauen (z.\,B.\ Verkehrsschilder).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Bild $+$ Rauschen}
+\centering
+\begin{tikzpicture}[every node/.style={draw=hnnavy,rounded corners=1.5pt,font=\scriptsize,inner sep=3pt}]
+  \node[fill=hnmint] (a) at (0,0) {Bild $x$};
+  \node[draw=none,fill=none] at (1.1,0) {$+\,\varepsilon\,\mathrm{sign}(\nabla_xJ)$};
+  \node[fill=hnpink] (b) at (3.2,0) {$x_{\mathrm{adv}}$};
+  \node[draw=none,font=\tiny] at (0,-.6) {„Panda“};
+  \node[draw=none,font=\tiny] at (3.2,-.6) {„Gibbon“};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{FGSM \& Verteidigungen}
+Fast Gradient Sign Method: gehe in Richtung \emph{steigenden} Verlusts.
+\begin{pcode}[FGSM]
+\kw{input}: $x,y$, Modell $\theta$, Schrittgröße $\varepsilon$ \ \cm{\# $J$: Verlust, $x_{\mathrm{adv}}$: gestörtes Bild}\\
+$g\leftarrow\nabla_xJ(\theta,x,y)$\\
+$x_{\mathrm{adv}}\leftarrow x+\varepsilon\cdot\mathrm{sign}(g)$
+\end{pcode}
+\textbf{Abwehr}: adversariales Training (saubere + gestörte Beispiele), Distillation mit Temperatur-Softmax. Weiterhin ein \emph{Wettrüsten} / offenes Problem.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Interpretierbarkeit (Lipton)}
+Zwei Bedeutungen: \textbf{algorithmische Transparenz} (Modell selbst verständlich: lineare Modelle, kleine Bäume) vs.\ \textbf{Post-hoc-Erklärung} (Saliency Maps, Grad-CAM, Attention, t-SNE). \emph{Fallacy}: ``lineare Modelle interpretierbar, neuronale Netze Blackbox'' verwechselt beides.\\
+Fünf Fragen: Vertrauen, Kausalität, Übertragbarkeit, Informativität, Fairness -- Metriken wie Accuracy/AUROC erfassen sie nicht (Vertiefung: Kapitel SHAP und Fairness).
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: warum lineare Modelle anfällig sind}
+$f(x)=w\T x$, $x\in\R^{1000}$, $|w_i|=0.01$. Störung $\eta=\varepsilon\,\mathrm{sign}(w)$ mit $\varepsilon=0.1$ pro Feature.\\
+\hnsol\ $w\T\tilde x=w\T x+w\T\eta$ mit $w\T\eta=\varepsilon\|w\|_1=0.1\cdot1000\cdot0.01=\ora{1.0}$.\\
+Jedes Feature ändert sich nur um $0.1$, die Ausgabe aber um $1.0$ $\Rightarrow$ in \emph{hohen Dimensionen} summieren sich kleine Störungen (Goodfellow).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Kosten \& Gesellschaft}
+\begin{itemize}
+\item \textbf{Daten \& Compute}: moderne Modelle brauchen riesige Datenmengen und Rechenleistung -- Zugang und Umwelt.
+\item \textbf{Bias in Daten} $\Rightarrow$ ungerechte Entscheidungen gegenüber unterrepräsentierten Gruppen.
+\item \textbf{Verantwortung}: Evaluation über reine Testfehler hinaus.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Was tun?}
+\begin{itemize}
+\item Robustheit testen
+\item Erklärungen bereitstellen
+\item Fairness-Metriken prüfen
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Offene Probleme}
+\begin{hncon}
+\item robuste Verteidigung
+\item Kausalität statt Korrelation
+\item Übertragung auf neue Verteilungen
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item FGSM: $x+\varepsilon\,\mathrm{sign}(\nabla_xJ)$
+\item Zwei Arten von Interpretierbarkeit
+\item Genauigkeit $\ne$ Vertrauen
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was ist FGSM?}{$x_{\mathrm{adv}}=x+\varepsilon\,\mathrm{sign}(\nabla_xJ)$: Schritt in Richtung steigenden Verlusts.}{Zwei Arten von Interpretierbarkeit?}{Algorithmische Transparenz vs.\ Post-hoc-Erklärung.}{Warum sind lineare Modelle anfällig?}{$w\T\eta=\varepsilon\|w\|_1$ wächst mit der Dimension.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein Modell ist erst dann gut, wenn man ihm auch dann vertrauen kann, wenn niemand hinsieht.“
+\end{hnbanner}
+\end{hngrid}

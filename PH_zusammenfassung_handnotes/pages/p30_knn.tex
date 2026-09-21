@@ -1,0 +1,93 @@
+\hnheader[Lazy Learning: kein Training -- vorhergesagt wird über die nächsten Nachbarn.][Abstände zählen: Features vorher skalieren!]{k-Nearest}{Neighbors}{Nichtparametrisch, einfach, überraschend stark}
+\hnsrc{hand-notes/ML Notes.pdf (KNN); Ergänzungen (Fluch der Dimension, Bezug zu Bias/Varianz) aus dem Kursstoff}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Für einen neuen Punkt $x$: suche die $k$ ähnlichsten Trainingspunkte und übernimm ihre \hlt{Mehrheitsklasse} (Klassifikation) oder ihren \hlt{Mittelwert} (Regression). Nichtparametrisch: die Daten \emph{sind} das Modell.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Algorithmus}
+\begin{pcode}[k-NN-Vorhersage]
+\kw{for} jedes $x_i$: $d_i\leftarrow\mathrm{dist}(x,x_i)$\\
+$\mathcal N\leftarrow$ Indizes der $k$ kleinsten $d_i$\\
+\kw{classify}: $\arg\max_c\sum_{i\in\mathcal N}\I[y_i{=}c]$\\
+\kw{regress}: $\frac1k\sum_{i\in\mathcal N}y_i$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: $k=3$}
+\centering
+\begin{tikzpicture}
+  \foreach \x/\y in {.5/.6,1.0/1.4,.9/.3,1.6/.9,.4/1.6}{\draw[hnorange,thick] (\x-.07,\y-.07)--(\x+.07,\y+.07) (\x-.07,\y+.07)--(\x+.07,\y-.07);}
+  \foreach \x/\y in {2.9/1.7,3.3/.9,2.6/.5,3.5/1.7,3.0/1.2}{\draw[hnpurple,thick] (\x,\y) circle(.07);}
+  \node[star,star points=5,star point ratio=2.2,fill=hngreen,inner sep=1.4pt] (q) at (2.15,1.0) {};
+  \draw[hngreen,dashed] (q) circle(.98);
+  \node[font=\tiny,hngreen] at (2.15,2.15) {Anfrage, $k=3$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Abstandsmaße}
+\begin{align*}
+\text{Euklid:}&\quad d(x,z)=\sqrt{\textstyle\sum_j(x_j-z_j)^2}\\
+\text{Manhattan:}&\quad d(x,z)=\textstyle\sum_j|x_j-z_j|\\
+\text{Minkowski:}&\quad d(x,z)=\bigl(\textstyle\sum_j|x_j-z_j|^p\bigr)^{1/p}\\
+\text{Kosinus:}&\quad d(x,z)=1-\tfrac{x\T z}{\|x\|\|z\|}
+\end{align*}
+\hnleg{$x,z$ zwei Punkte, $j$ Merkmalsindex, $p$ Exponent (Minkowski).}
+$p=2$ Euklid, $p=1$ Manhattan. Kosinus für Text (Richtung statt Länge).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Wahl von $k$ (Bias--Varianz)}
+$k$ klein $\to$ flexible Grenze, \emph{hohe Varianz} (Overfitting, $k{=}1$: Trainingsfehler $0$). $k$ groß $\to$ glatt, \emph{hoher Bias} (Underfitting). Faustregel: ungerades $k$ bei 2 Klassen; $k$ per \hlt{Kreuzvalidierung} wählen.\\
+\textbf{sklearn}: \texttt{n\_neighbors}, \texttt{weights=`uniform'/`distance'}, \texttt{metric}, \texttt{p}.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: die Vorhersage hängt von $k$ ab}
+Anfrage $(0,0)$; Trainingspunkte:\\
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}c|ccccc@{}}
+Punkt&$(1,0)$&$(0,2)$&$(1,2)$&$(3,0)$&$(0,4)$\\\hline
+Abstand&1&2&2.24&3&4\\
+Klasse&A&B&B&A&A\\
+\end{tabular}\\
+\hnsol\ $k=1$: A. \;$k=3$: A,B,B $\Rightarrow$ \ora{B}. \;$k=5$: A,B,B,A,A $\Rightarrow$ A (3:2).\\
+Regression mit $y=(3,5,4,8,9)$, $k=3$: $\frac{3+5+4}{3}=4$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Fluch der Dimension}
+In hohen Dimensionen sind alle Punkte etwa gleich weit entfernt: ``nächste'' Nachbarn sind nicht mehr nah. Abhilfe: Features auswählen, PCA, mehr Daten. Aufwand naiv $O(nd)$ pro Anfrage; Beschleunigung mit k-d-Baum/Ball-Tree (nur niedrige $d$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item kein Training, sehr einfach
+\item nichtlineare Grenzen
+\item Klassifikation \emph{und} Regression
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item langsame Vorhersage bei großem $n$
+\item empfindlich bei Skalierung/Ausreißern
+\item leidet unter hoher Dimension
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Mehrheit/Mittel der $k$ Nachbarn
+\item $k$ steuert Bias--Varianz
+\item skalieren + Abstand wählen
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum ist $k{=}1$ overfittet?}{Jeder Trainingspunkt ist sein eigener Nachbar $\Rightarrow$ Trainingsfehler $0$, sehr wackelige Grenze (hohe Varianz).}{Warum skalieren?}{Ein Feature mit großer Skala dominiert den Abstand.}{Warum leidet k-NN in hohen Dimensionen?}{Abstände konzentrieren sich; ``nächste'' Nachbarn sind kaum näher als andere Punkte.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Sage mir, wer deine Nachbarn sind, und ich sage dir, wer du bist.“
+\end{hnbanner}
+\end{hngrid}

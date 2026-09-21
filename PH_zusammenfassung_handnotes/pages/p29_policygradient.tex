@@ -1,0 +1,96 @@
+\hnheader[Statt einer Wertfunktion: die Policy direkt optimieren.][$\nabla J=\E\bigl[\sum_t\nabla\log\pi_\theta(a_t|s_t)\,G_t\bigr]$]{Policy}{Gradient}{REINFORCE, Baselines \& Actor-Critic}
+\hnsrc{main\_notes.pdf (Policy Gradient / REINFORCE)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Direkte Parametrisierung}
+Policy $\pi_\theta(a|s)$ (z.\,B.\ Softmax oder Gauß). Ziel:
+\[ J(\theta)=\E_{\tau\sim\pi_\theta}\Bigl[\sum_{t=0}^{T}\gamma^tr_t\Bigr] \]
+($\tau$ Episode, $r_t$ Belohnung zur Zeit $t$, $\gamma$ Diskontfaktor, $\theta$ Policy-Parameter.) Gradienten-\emph{Aufstieg} auf $J$; funktioniert auch bei kontinuierlichen Aktionen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Log-Trick}
+$\nabla_\theta\pi_\theta=\pi_\theta\,\nabla_\theta\log\pi_\theta$. Damit wird der Gradient zu einem Erwartungswert, der sich per \hlt{Sampling} schätzen lässt -- ohne Modell der Umwelt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Gute Aktionen verstärken}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(3.6,0) node[right,font=\tiny]{Aktion};
+  \foreach \x/\h in {.4/.3,1.2/.9,2.0/.5,2.8/.2}{\fill[hnorange!40] (\x,0) rectangle (\x+.5,\h);}
+  \draw[->,hnnavy,thick] (1.45,1.05) -- (1.45,1.55) node[above,font=\tiny]{$G_t$ hoch};
+  \node[font=\tiny] at (1.8,-.3) {$\pi_\theta(a|s)$ verschiebt sich zu erfolgreichen Aktionen};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Policy-Gradient-Theorem}
+\[ \nabla_\theta J(\theta)=\E_\tau\Bigl[\sum_{t=0}^{T}\nabla_\theta\log\pi_\theta(a_t|s_t)\cdot G_t\Bigr] \]
+mit dem zukünftigen Ertrag $G_t=\sum_{t'=t}^{T}\gamma^{t'-t}r_{t'}$. Intuition: Aktionen mit hohem Ertrag werden wahrscheinlicher, solche mit niedrigem unwahrscheinlicher.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{REINFORCE}
+\begin{pcode}[REINFORCE]
+\kw{repeat}:\\
+\hii Episode $\tau=(s_0,a_0,r_0,\dots)$ unter $\pi_\theta$ ziehen\\
+\hii \kw{for} $t$: $G_t\leftarrow\sum_{t'\ge t}\gamma^{t'-t}r_{t'}$\\
+\hii $g\leftarrow\sum_t\nabla_\theta\log\pi_\theta(a_t|s_t)\,(G_t-b(s_t))$\\
+\hii $\theta\leftarrow\theta+\alpha\,g$
+\end{pcode}
+Mit $b\equiv0$: reines REINFORCE.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Varianzreduktion}
+REINFORCE hat \emph{hohe Varianz}. Eine \hlt{Baseline} $b(s_t)$ senkt sie, ohne den Erwartungswert zu verzerren: $g=\sum_t\nabla\log\pi\,(G_t-b(s_t))$. Typisch $b=V^\pi(s_t)$; $A(s,a)=Q(s,a)-V(s)$ heißt \emph{Advantage} und führt zu \ora{Actor-Critic}: Actor $=$ Policy, Critic $=$ Wertfunktion.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 2-armiger Bandit}
+$\pi(a_1)=\sigma(\theta)$, $\theta=0\Rightarrow\pi(a_1)=0.5$. Belohnung: $a_1\to1$, $a_2\to0$. Gezogen: $a_1$, $G=1$, $\alpha=0.5$.\\
+\hnsol\ $\nabla_\theta\log\sigma(\theta)=1-\sigma(\theta)=0.5$.\\
+Ohne Baseline: $\theta\leftarrow0+0.5\cdot0.5\cdot1=0.25\Rightarrow\pi(a_1)=\sigma(0.25)=\ora{0.56}$.\\
+Mit $b=0.5$: $\Delta\theta=0.5\cdot0.5\cdot(1-0.5)=0.125$ (kleinerer, stabilerer Schritt).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{7}{Policy Gradient vs.\ Wertmethoden}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{3cm}p{5cm}p{5cm}@{}}
+\hline
+&\textbf{Wert-basiert}&\textbf{Policy Gradient}\\\hline
+Lernt&$V,Q$&$\pi_\theta$ direkt\\
+Aktionen&diskret&auch kontinuierlich\\
+Varianz&niedrig&hoch\\
+Modell&oft $P$ nötig&modellfrei\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item kontinuierliche Aktionen
+\item modellfrei, flexibel
+\item stochastische Policies
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item hohe Varianz
+\item stichproben-ineffizient
+\item lokale Optima
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item $\nabla J=\E[\sum\nabla\log\pi\,G_t]$
+\item Baseline gegen Varianz
+\item Actor-Critic kombiniert beides
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Policy-Gradient-Theorem?}{$\nabla J=\E[\sum_t\nabla\log\pi(a_t|s_t)\,G_t]$.}{Wozu eine Baseline?}{Senkt die Varianz, ohne den Erwartungswert zu verzerren.}{Vorteil ggü.\ Wertmethoden?}{Kontinuierliche Aktionen, modellfrei; Nachteil: hohe Varianz.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Verstärke, was funktioniert hat -- und probiere trotzdem Neues.“
+\end{hnbanner}
+\end{hngrid}

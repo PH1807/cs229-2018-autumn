@@ -1,0 +1,100 @@
+\hnheader[Lernen durch Belohnung: der Agent handelt, die Umwelt antwortet.][Bellman: $V^*(s)=\max_a\bigl[R+\gamma\sum P\,V^*\bigr]$]{Bestärkendes}{Lernen (MDPs)}{Markov-Entscheidungsprozesse, Value \& Policy Iteration}
+\hnsrc{main\_notes.pdf (Reinforcement Learning), notes/cs229-notes12.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{MDP-Tupel}
+$(S,A,\{P_{sa}\},R,\gamma)$:\\
+$S$ Zustände, $A$ Aktionen, $P_{sa}(s')=P(s'|s,a)$ Übergänge, $R(s,a)$ Belohnung, $\gamma\in[0,1)$ Diskontierung.\\
+($s'$ Folgezustand, $V$ Wert eines Zustands.) Ziel: \hlt{Policy} $\pi:S\to A$ mit maximalem erwarteten Ertrag.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Wertfunktion}
+\[ V^\pi(s)=\E\Bigl[\sum_{t\ge0}\gamma^tR(s_t,a_t)\Bigm|s_0=s,\pi\Bigr] \]
+$\gamma$ nahe 1: weitsichtig; nahe 0: kurzsichtig. Optimal: $V^*(s)=\max_\pi V^\pi(s)$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Agent--Umwelt}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=2pt,font=\scriptsize,inner sep=4pt}]
+  \node[fill=hnmint] (ag) at (0,0) {Agent $\pi$};
+  \node[fill=hnyellow] (en) at (3.2,0) {Umwelt $P,R$};
+  \draw[->,hnorange,thick] (ag) to[bend left=30] node[draw=none,above,font=\tiny]{Aktion $a_t$} (en);
+  \draw[->,hnnavy,thick] (en) to[bend left=30] node[draw=none,below,font=\tiny]{$s_{t+1},\,r_t$} (ag);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Bellman-Gleichungen}
+\begin{align*}
+V^\pi(s)&=R(s)+\gamma\textstyle\sum_{s'}P_{s\pi(s)}(s')V^\pi(s')\\
+V^*(s)&=\max_a\bigl[R(s,a)+\gamma\textstyle\sum_{s'}P_{sa}(s')V^*(s')\bigr]\\
+\pi^*(s)&=\arg\max_a\bigl[R(s,a)+\gamma\textstyle\sum_{s'}P_{sa}(s')V^*(s')\bigr]
+\end{align*}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Value Iteration}
+\begin{pcode}[Value Iteration]
+$V(s)\leftarrow0$ für alle $s$\\
+\kw{repeat} bis Konvergenz:\\
+\hii \kw{for} jedes $s$:\\
+\hiii $V(s)\leftarrow\max_a\bigl[R(s,a)+\gamma\sum_{s'}P_{sa}(s')V(s')\bigr]$\\
+\kw{return} $\pi(s)=\arg\max_a[\cdots]$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Policy Iteration}
+\begin{pcode}[Policy Iteration]
+$\pi\leftarrow$ beliebig\\
+\kw{repeat} bis $\pi$ stabil:\\
+\hii \cm{\# Evaluation: lineares System}\\
+\hii löse $(I-\gamma P^{\pi})V^\pi=R^\pi$\\
+\hii \cm{\# Verbesserung}\\
+\hii $\pi(s)\leftarrow\arg\max_a\bigl[R+\gamma\sum P_{sa}V^\pi\bigr]$
+\end{pcode}
+Konvergiert in endlich vielen Schritten.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 2 Zustände, $\gamma=0.9$}
+$R(s_1)=0$, $R(s_2)=1$. Aktionen deterministisch: \emph{bleiben} oder \emph{wechseln}.\\
+\hnsol\ Bester Plan: in $s_2$ bleiben $\Rightarrow$ $V^*(s_2)=\frac1{1-0.9}=\ora{10}$; von $s_1$ nach $s_2$ wechseln: $V^*(s_1)=0+0.9\cdot10=\ora{9}$.\\
+Value Iteration: $V_0=(0,0)$, $V_1=(0,1)$, $V_2=(0.9,\,1.9)$, \dots\ $\to(9,10)$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{7}{Kontinuierliche Zustände \& unbekannte Dynamik}
+Approximiere $V(s)\approx\theta\T\phi(s)$ und iteriere (\emph{Fitted Value Iteration}):
+\[ y^{(i)}=R+\gamma\max_a\textstyle\sum_{s'}P_{s^{(i)}a}(s')V(s'),\;\;\theta\leftarrow\arg\min\sum_i(\theta\T\phi(s^{(i)})-y^{(i)})^2 \]
+Unbekannte Dynamik: $\hat P_{sa}(s')=\frac{\#(s,a\to s')}{\#(s,a)}$ aus Daten schätzen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item exakte Optimalität (diskret)
+\item Bellman: klare Rekursion
+\item Policy Iteration: endlich
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item Fluch der Dimensionalität
+\item Kenntnis von $P$ nötig (oder Schätzung)
+\item Diskretisierung bei kontinuierlichem $S$
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item MDP $(S,A,P,R,\gamma)$
+\item Bellman-Optimalität
+\item VI: max-Update; PI: Evaluation + Verbesserung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Bellman-Optimalität?}{$V^*(s)=\max_a[R+\gamma\sum P_{sa}V^*]$.}{Value vs.\ Policy Iteration?}{VI: max-Update bis Konvergenz; PI: Evaluation (lin.\ System) $+$ Verbesserung.}{Rolle von $\gamma$?}{Nahe 1 weitsichtig, nahe 0 kurzsichtig.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Entscheide heute so, dass die Summe aller morgigen Belohnungen maximal wird.“
+\end{hnbanner}
+\end{hngrid}

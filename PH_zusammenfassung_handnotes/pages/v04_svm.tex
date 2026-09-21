@@ -1,0 +1,54 @@
+\hnheader[Vom Margin zum Dual: Lagrange-Funktion, Stationarität und der Kernel-Trick.][Nur Skalarprodukte tauchen im Dual auf -- deshalb Kernels!]{Support Vector Machines:}{Vertiefung}{Herleitung: Margin, Dual, Soft-Margin}
+\hnsrc{main\_notes.pdf Kap.\ 6 (Margins, Lagrange duality, dual form, SMO), materials/smo.pdf, section/cs229-cvxopt2.pdf; Schritte ergänzt; Code: code/sk\_svm.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Der Margin ist $2/\|w\|$}
+\hnleg{$w\in\R^d$ Normalenvektor der Trennebene, $b$ Offset, $x_i$ Trainingspunkt, $y_i\in\{-1,+1\}$ Klasse, $\gamma$ Margin (Abstand), $\|w\|$ Länge von $w$.}
+Abstand eines Punkts $x$ zur Ebene $w\T x+b=0$: $\frac{|w\T x+b|}{\|w\|}$ (Projektion auf den Normalenvektor). Mit Normierung $\min_iy_i(w\T x_i+b)=1$ liegen die nächsten Punkte bei $w\T x+b=\pm1$:
+\[ \gamma=\frac1{\|w\|}\;\text{je Seite},\qquad\text{Breite}=\frac2{\|w\|} \]
+\hlt{Margin maximieren $=\|w\|$ minimieren:} $\min\frac12\|w\|^2$ s.t.\ $y_i(w\T x_i+b)\ge1$ (konvexes QP).
+\hnwords{Der Score $w\T x+b$ geteilt durch $\|w\|$ ist der echte Abstand. Legt man den nächsten Punkt auf Score 1, ist der Streifen $2/\|w\|$ breit: großer Margin heißt kleines $\|w\|$.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Lagrange-Funktion}
+Nebenbedingung $g_i=1-y_i(w\T x_i+b)\le0$, Multiplikatoren $\alpha_i\ge0$:
+\hnleg{$\mathcal L$ Lagrange-Funktion, $\alpha_i$ Multiplikator (Gewicht) je Nebenbedingung, $g_i$ Nebenbedingung ($\le0$ heißt erfüllt).}
+\[ \mathcal L(w,b,\alpha)=\tfrac12\|w\|^2-\sum_i\alpha_i\bigl[y_i(w\T x_i+b)-1\bigr] \]
+Primal $=\min_{w,b}\max_{\alpha\ge0}\mathcal L$. Duales Problem: $\max_{\alpha\ge0}\min_{w,b}\mathcal L$. (Konvex + Slater $\Rightarrow$ starke Dualität, beide gleich.)
+\hnwords{Die Nebenbedingungen werden mit Strafgewichten $\alpha_i$ in die Zielfunktion gezogen; $\max_\alpha$ bestraft jede Verletzung beliebig hart, sodass nur zulässige $w,b$ übrig bleiben.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Stationarität: $\min_{w,b}\mathcal L$}
+\begin{align*}
+\nabla_w\mathcal L&=w-\textstyle\sum_i\alpha_iy_ix_i=0\;\Rightarrow\;w=\textstyle\sum_i\alpha_iy_ix_i\\
+\tfrac{\partial\mathcal L}{\partial b}&=-\textstyle\sum_i\alpha_iy_i=0\;\Rightarrow\;\textstyle\sum_i\alpha_iy_i=0
+\end{align*}
+$w$ ist eine Linearkombination der Trainingspunkte -- nur Punkte mit $\alpha_i>0$ (\emph{Support Vectors}) zählen.
+\hnwords{Gradient null setzen: $w$ ist die mit $\alpha_iy_i$ gewichtete Summe der Punkte. Punkte mit $\alpha_i=0$ fallen heraus.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{4}{Einsetzen ergibt das Dual}
+\begin{align*}
+\mathcal L&=\tfrac12\|w\|^2-w\T\!\!\underbrace{\textstyle\sum_i\alpha_iy_ix_i}_{=w}-b\underbrace{\textstyle\sum_i\alpha_iy_i}_{=0}+\textstyle\sum_i\alpha_i\\
+&=\textstyle\sum_i\alpha_i-\tfrac12\|w\|^2\\
+&=\textstyle\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\langle x_i,x_j\rangle
+\end{align*}
+\hnleg{$\langle x_i,x_j\rangle=x_i\T x_j$ Skalarprodukt; \texttt{underbrace} zeigt, welcher Term durch die Stationarität ersetzt wird.}
+\hnwords{Rückeinsetzen eliminiert $w$ und $b$; das Problem hängt nur noch von $\alpha$ ab, und die Daten treten nur als Skalarprodukte auf.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{5}{Dual-Problem \& Kernel}
+\[ \max_\alpha W(\alpha)=\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_jK(x_i,x_j) \]
+\hnleg{$W(\alpha)$ duale Zielfunktion, $K(x_i,x_j)$ Kernel (Skalarprodukt im Feature-Raum), $f$ Entscheidungsfunktion.}
+s.t.\ $\alpha_i\ge0$, $\sum_i\alpha_iy_i=0$. Vorhersage $f(x)=\sum_i\alpha_iy_iK(x_i,x)+b$. Ersetzt man $\langle x_i,x_j\rangle$ durch $K$, arbeitet die SVM implizit im (ggf.\ unendlichdimensionalen) Feature-Raum.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{6}{Soft-Margin \& KKT}
+\hnleg{$C$ Strafparameter, $\xi_i\ge0$ Schlupf (wie stark Punkt $i$ den Margin verletzt), $f_i=f(x_i)$, $\mu_i$ Multiplikator zu $\xi_i\ge0$.}
+$\min\frac12\|w\|^2+C\sum\xi_i$ s.t.\ $y_if_i\ge1-\xi_i$, $\xi_i\ge0$. Ableiten der Lagrange-Funktion nach $\xi_i$: $C-\alpha_i-\mu_i=0$ mit $\mu_i\ge0$ $\Rightarrow$ $0\le\alpha_i\le C$ (sonst dasselbe Dual).\\
+\emph{Complementary Slackness} $\alpha_i[y_if_i-1+\xi_i]=0$ liefert $\alpha_i=0\Rightarrow y_if_i\ge1$;\; $0<\alpha_i<C\Rightarrow y_if_i=1$;\; $\alpha_i=C\Rightarrow y_if_i\le1$.
+\hnwords{Ist eine Nebenbedingung nicht aktiv (Punkt weit genug innen), muss ihr Gewicht $\alpha_i$ null sein; nur Punkte am oder im Margin tragen bei.}
+\end{hnp}
+%
+\end{hngrid}

@@ -1,0 +1,3 @@
+AdaBoost  CV-Acc: 0.967
+Voting    CV-Acc: 0.963
+Stacking  CV-Acc: 0.965

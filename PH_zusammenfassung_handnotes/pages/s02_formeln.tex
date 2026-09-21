@@ -1,0 +1,116 @@
+\hnheader[Die wichtigsten Formeln der Vorlesung auf einer Seite. Symbole: Notationsübersicht auf Seite 3.][Formeln verstehen, nicht nur auswendig lernen!]{Formel-}{Spickzettel}{Kompakte Sammlung für die Klausurvorbereitung}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Lineare Regression}
+$\hat\theta=(X\T X)^{-1}X\T y$\\[2pt]
+$\theta\leftarrow\theta+\alpha(y-h_\theta(x))x$\\[2pt]
+LWLR: $w^{(i)}=e^{-\|x^{(i)}-x\|^2/2\tau^2}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Logistisch / Softmax}
+$h=\frac{1}{1+e^{-\theta\T x}}$, $\;\theta\leftarrow\theta+\alpha(y-h)x$\\[2pt]
+$P(k|x)=\frac{e^{\theta_k\T x}}{\sum_je^{\theta_j\T x}}$\\[2pt]
+Newton: $\theta\leftarrow\theta-H^{-1}\nabla\ell$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{GLM}
+$p(y;\eta)=b(y)\,e^{\eta\T T(y)-a(\eta)}$\\[2pt]
+$h(x)=\E[T(y)|x]$, $\;\eta=\theta\T x$\\[2pt]
+Bernoulli: $\phi=\frac1{1+e^{-\eta}}$; Poisson: $\lambda=e^{\eta}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{4}{Generativ}
+$p(y|x)=\frac{p(x|y)p(y)}{p(x)}$\\[2pt]
+GDA: $x|y\sim\N(\mu_y,\Sigma)$\\[2pt]
+NB: $p(x|y)=\prod_jp(x_j|y)$, $\;\hat\phi=\frac{1+\#}{2+\#}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{5}{SVM \& Kernel}
+$\min\frac12\|w\|^2$ s.t.\ $y_i(w\T x_i+b)\ge1$\\[2pt]
+$f(x)=\sum_i\alpha_iy_iK(x_i,x)+b$, $0\le\alpha_i\le C$\\[2pt]
+$K=\phi\T\phi\Leftrightarrow$ Gram PSD; $\theta=\sum\alpha_ix_i$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnnavy]{6}{Verluste (Margin $z$)}
+$\phi_{\log}=\log(1+e^{-z})$\\[2pt]
+$\phi_{\mathrm{hinge}}=\max(1-z,0)$\\[2pt]
+$\phi_{\exp}=e^{-z}$, $\;\phi_{01}=\I\{z\le0\}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{7}{Bias-Varianz \& Ensemble}
+$\mathrm{MSE}=\sigma^2+\mathrm{Bias}^2+\mathrm{Var}$\\[2pt]
+$\mathrm{Var}(\bar X)=\rho\sigma^2+\frac{1-\rho}{n}\sigma^2$\\[2pt]
+AdaBoost: $\alpha_m=\log\frac{1-\mathrm{err}_m}{\mathrm{err}_m}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{8}{Lerntheorie}
+$P(|\bar Z-\E\bar Z|\ge t)\le2e^{-2nt^2/(b-a)^2}$\\[2pt]
+$n\ge\frac{1}{2\gamma^2}\log\frac{2k}{\delta}$, $\;\mathrm{VC}_{\mathrm{lin}}=d+1$\\[2pt]
+Perceptron: Fehler $\le(D/\gamma)^2$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{9}{Regularisierung}
+$J_\lambda=J+\frac\lambda2\|\theta\|_2^2\;\;/\;\;J+\lambda\|\theta\|_1$\\[2pt]
+MAP: $\arg\max[\log p(y|\theta)+\log p(\theta)]$\\[2pt]
+Ridge: $(X\T X+\lambda I)^{-1}X\T y$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{10}{Netze \& Backprop}
+$z^{[\ell]}=W^{[\ell]}a^{[\ell-1]}+b^{[\ell]}$, $\;a=\sigma(z)$\\[2pt]
+$\delta_{\ell-1}=(W_\ell\T\delta_\ell)\odot\sigma'(z_{\ell-1})$\\[2pt]
+$\theta\leftarrow\theta-\alpha\frac1B\sum_{i\in\mathcal B}\nabla J^{(i)}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{11}{EM \& Gemische}
+E: $Q_i(z)=p(z|x_i;\theta)$\\[2pt]
+$\gamma_{ik}=\frac{\phi_k\N(x_i;\mu_k,\Sigma_k)}{\sum_j\phi_j\N(x_i;\mu_j,\Sigma_j)}$\\[2pt]
+$\mu_k=\frac{\sum_i\gamma_{ik}x_i}{\sum_i\gamma_{ik}}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnnavy]{12}{PCA / FA / ICA}
+PCA: $\max_{U\T U=I}\mathrm{tr}(U\T\hat\Sigma U)$\\[2pt]
+FA: $x\sim\N(\mu,\Lambda\Lambda\T+\Psi)$\\[2pt]
+ICA: $W\leftarrow W+\alpha\bigl((1-2g(Wx))x\T+(W\T)^{-1}\bigr)$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{13}{HMM \& GP}
+HMM: $\alpha_j(t)=\bigl(\sum_i\alpha_i(t{-}1)A_{ij}\bigr)B_{j,x_t}$\\[2pt]
+GP: $\mu_*=K_*(K+\sigma^2I)^{-1}y$\\[2pt]
+$\Sigma_*=K_{**}-K_*(K+\sigma^2I)^{-1}K_*\T$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{14}{Metriken}
+$P=\frac{TP}{TP+FP}$, $\;R=\frac{TP}{TP+FN}$\\[2pt]
+$F_1=\frac{2PR}{P+R}$, $\;\mathrm{Acc}=\frac{TP+TN}{n}$\\[2pt]
+Brier: $\frac1n\sum(\hat p_i-y_i)^2$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{15}{Bestärkendes Lernen}
+$V^*(s)=\max_a[R+\gamma\sum_{s'}P_{sa}(s')V^*(s')]$\\[2pt]
+LQR: $u_t=-K_tx_t$, Riccati rückwärts\\[2pt]
+$\nabla J=\E[\sum_t\nabla\log\pi\,(G_t-b)]$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{16}{Optimierer \& Normalisierung}
+$v\leftarrow\beta v+g$, $\theta\leftarrow\theta-\alpha v$\\[2pt]
+Adam: $\theta\leftarrow\theta-\alpha\frac{\hat m}{\sqrt{\hat v}+\varepsilon}$\\[2pt]
+$\mathrm{BN}(z)=\gamma\frac{z-\mu_B}{\sqrt{\sigma_B^2+\varepsilon}}+\beta$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{17}{VAE / Faltung}
+$\mathrm{ELBO}=\E_Q\log p(x|z)-\mathrm{KL}(Q\|p(z))$\\[2pt]
+$z=\mu+\sigma\odot\xi$, $\;\mathrm{KL}=\frac12\sum(\mu^2+\sigma^2-1-\log\sigma^2)$\\[2pt]
+Conv-Größe $\lfloor\frac{n+2p-k}{s}\rfloor+1$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{18}{Regressionsmetriken}
+$\mathrm{MAE}=\frac1n\sum|e_i|$, $\mathrm{MSE}=\frac1n\sum e_i^2$\\[2pt]
+$R^2=1-\frac{\mathrm{SSE}}{\mathrm{SST}}$\\[2pt]
+$R^2_{\mathrm{adj}}=1-(1-R^2)\frac{n-1}{n-p-1}$
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer die Formeln herleiten kann, muss sie nicht auswendig lernen.“
+\end{hnbanner}
+\end{hngrid}

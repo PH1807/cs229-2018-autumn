@@ -1,0 +1,90 @@
+\hnheader[Daten sind Matrizen, Modelle sind Abbildungen: die Sprache hinter allen Formeln.][Kein Gradient ohne Matrixableitung!]{Grundlagen:}{Lineare Algebra}{Vektoren, Matrizen, Eigenwerte \& Matrixableitungen}
+\hnsrc{Vorwissen zu CS229; angelehnt an section/cs229-linalg.pdf sowie main\_notes.pdf (Normalgleichung, PCA)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Vektoren \& Normen}
+Skalarprodukt $x\T y=\sum_ix_iy_i=\|x\|\|y\|\cos\varphi$.\\
+$\|x\|_2=\sqrt{x\T x}$, $\|x\|_1=\sum|x_i|$.\\
+$x\perp y\iff x\T y=0$. Projektion von $y$ auf $u$ ($\|u\|{=}1$): $(u\T y)\,u$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Matrizen: Rechenregeln}
+$(AB)\T=B\T A\T$, $\;(AB)^{-1}=B^{-1}A^{-1}$\\
+$\mathrm{tr}(AB)=\mathrm{tr}(BA)$, $\;\mathrm{tr}(A)=\sum\lambda_i$\\
+Design-Matrix $X\in\R^{n\times d}$: eine Zeile pro Beispiel; $X\theta$ liefert alle Vorhersagen auf einmal.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Least Squares = Projektion}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \fill[hnblue!70] (0,0)--(3.4,.5)--(4.4,1.6)--(1,1.1)--cycle;
+  \draw[->,hnnavy,thick] (1.6,.7)--(2.6,2.4) node[above,font=\scriptsize]{$y$};
+  \draw[->,hnorange,very thick] (1.6,.7)--(2.6,1.25) node[right,font=\scriptsize]{$X\hat\theta$};
+  \draw[dashed,hnpurple,thick] (2.6,1.25)--(2.6,2.4);
+  \node[font=\tiny,hnpurple] at (3.55,1.9) {Residuum $\perp$ Spalten von $X$};
+  \node[font=\tiny,hnnavy] at (1.1,.3) {span$(X)$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Eigenwerte, PSD, SVD}
+$Av=\lambda v$. Für \emph{symmetrische} $A$: reelle $\lambda$, orthonormale Eigenvektoren, $A=U\Lambda U\T$.\\
+\textbf{Positiv semidefinit (PSD)}: $x\T Ax\ge0\;\forall x\iff\lambda_i\ge0$ (Kovarianzmatrizen, Gram-Matrizen, konvexe Hesse-Matrizen).\\
+\textbf{SVD}: $X=U\Sigma V\T$; Singulärwerte$^2$ $=$ Eigenwerte von $X\T X$ $\Rightarrow$ PCA.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Matrixableitungen (Gradient nach $x$)}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.6cm}p{4.6cm}@{}}
+\hline
+\textbf{Funktion}&\textbf{Gradient}\\\hline
+$a\T x$&$a$\\
+$x\T Ax$&$(A+A\T)x$, symmetrisch: $2Ax$\\
+$\|Xx-y\|^2$&$2X\T(Xx-y)$\\
+$\log\det A$&$A^{-\top}$\\
+$\|x\|_2^2$&$2x$\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Eigenwerte von $A=\begin{psmallmatrix}2&1\\1&2\end{psmallmatrix}$}
+\hnsol\ $\det(A-\lambda I)=(2-\lambda)^2-1=0\Rightarrow\lambda_1=3,\;\lambda_2=1$.\\
+Eigenvektoren $v_1=\tfrac1{\sqrt2}(1,1)$, $v_2=\tfrac1{\sqrt2}(1,-1)$ (orthogonal). Beide $\lambda>0\Rightarrow$ $A$ ist PSD, ja sogar positiv definit.\\
+Als Kovarianzmatrix: Ellipse mit Achsen $v_1$ (Länge $\propto\sqrt3$) und $v_2$ ($\propto1$) -- genau die Hauptkomponenten.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Kovarianz \& Gauß-Ellipsen}
+$\Sigma=\E[(x-\mu)(x-\mu)\T]$ ist symmetrisch PSD. Die Höhenlinien von $\N(\mu,\Sigma)$ sind Ellipsen: Richtungen $=$ Eigenvektoren, Streuung $\propto\sqrt{\lambda_i}$. Mahalanobis-Abstand: $(x-\mu)\T\Sigma^{-1}(x-\mu)$. $\Sigma$ singulär $\Leftrightarrow$ ein $\lambda=0$ (Daten liegen im Unterraum $\to$ Faktorenanalyse).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Numerik}
+\begin{itemize}
+\item \texttt{solve(A,b)} statt \texttt{inv(A)@b}
+\item Konditionszahl $\lambda_{\max}/\lambda_{\min}$ groß $\to$ instabil (Features skalieren)
+\item Regularisierung: $X\T X+\lambda I$
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Typische Fehler}
+\begin{hncon}
+\item Dimensionen vertauschen ($X\T X$ vs.\ $XX\T$)
+\item $(AB)\T=A\T B\T$ (falsch!)
+\item Inverse ohne Rangprüfung
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Wo es gebraucht wird}
+\begin{itemize}
+\item Normalgleichung, GDA, Kernel-Gram-Matrix
+\item PCA, Faktorenanalyse, GP
+\item Backprop (Jacobi-Matrizen)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was ist der Gradient von $\|X\theta-y\|^2$?}{$2X\T(X\theta-y)$.}{Woran erkennt man eine PSD-Matrix?}{Alle Eigenwerte $\ge0$, äquivalent $x\T Ax\ge0$.}{Warum ist $X\T X$ immer PSD?}{$v\T X\T Xv=\|Xv\|^2\ge0$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer Matrixableitungen beherrscht, sieht in jedem Lernalgorithmus dieselbe Gleichung.“
+\end{hnbanner}
+\end{hngrid}

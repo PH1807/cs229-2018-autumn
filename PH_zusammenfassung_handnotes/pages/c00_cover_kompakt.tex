@@ -1,0 +1,61 @@
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay,shift={(current page.north west)}]
+  % --- Kopfzeile
+  \node[font=\hnhead\large,text=hnnavy] at (10.5,-1.5) {Stanford University \; $\cdot$ \; CS229 \; $\cdot$ \; Herbst 2018};
+  \draw[hnorange,line width=1pt,dash pattern=on 3pt off 2pt] (5.5,-2.1)--(15.5,-2.1);
+  % --- Titel
+  \node[font=\hnhead,text=hnnavy] at (10.5,-4.6) {\fontsize{78}{80}\selectfont CS229};
+  \node[font=\hnhead,text=hnorange] at (10.5,-8.2) {\fontsize{64}{66}\selectfont MACHINE};
+  \node[font=\hnhead,text=hnorange] at (10.5,-11.3) {\fontsize{64}{66}\selectfont LEARNING};
+  \node[font=\hnhead,text=hnnavy] at (10.5,-14.3) {\fontsize{50}{52}\selectfont HANDNOTES};
+  \draw[hnorange,line width=1.1pt] (4.2,-16.1)--(9.6,-16.1);
+  \draw[hnorange,line width=1.1pt] (11.4,-16.1)--(16.8,-16.1);
+  \draw[hnorange,line width=1.1pt,fill=hnorange!25] (10.5,-16.1) ellipse (.55 and .22);
+  \node[font=\hnscript,text=hnnavy] at (10.5,-17.3) {\fontsize{16}{18}\selectfont Kompaktfassung: die Übersichtsseiten zum Wiederholen};
+  % --- Deko links oben: Streudiagramm
+  \begin{scope}[shift={(1.7,-6.2)}]
+    \draw[hnnavy,thick,->] (0,0)--(0,-3.4); \draw[hnnavy,thick,->] (0,-3.4)--(3.6,-3.4);
+    \foreach \x/\y in {.6/-.8,.9/-1.1,.7/-1.5,1.2/-.6}{\fill[hnorange] (\x,\y) circle(.09);}
+    \foreach \x/\y in {1.8/-1.9,2.2/-2.4,2.8/-2.1,2.4/-2.9,3.0/-2.8}{\draw[hnnavy,thick] (\x-.09,\y-.09)--(\x+.09,\y+.09) (\x-.09,\y+.09)--(\x+.09,\y-.09);}
+    \draw[hnnavy,dashed,thick] (.4,-3.1) .. controls (1.4,-.4) and (2.2,-3.0) .. (3.5,-.6);
+  \end{scope}
+  % --- Deko links unten: Baum
+  \begin{scope}[shift={(3.3,-11.3)}]
+    \node[circle,fill=hnorange,inner sep=3.5pt] (t) at (0,0) {};
+    \node[fill=hnblue,draw=hnnavy,inner sep=4pt] (l) at (-1.3,-1.4) {}; \node[fill=hnblue,draw=hnnavy,inner sep=4pt] (r) at (1.3,-1.4) {};
+    \foreach \p/\x/\i in {l/-2.0/1,l/-.6/2,r/.6/3,r/2.0/4}{\node[circle,fill=hngreen!60,draw=hngreen,inner sep=3pt] (cl\i) at (\x,-2.9) {}; \draw[hnnavy,thick] (\p)--(cl\i);}
+    \draw[hnnavy,thick] (t)--(l); \draw[hnnavy,thick] (t)--(r);
+  \end{scope}
+  % --- Deko rechts oben: Netz
+  \begin{scope}[shift={(16.3,-6.0)}]
+    \foreach \i in {0,1,2}{\node[circle,fill=hnorange,draw=hnnavy,inner sep=3pt] (a\i) at (0,-\i*1.1) {};}
+    \foreach \i in {0,1,2,3}{\node[circle,fill=hnblue,draw=hnnavy,inner sep=3pt] (b\i) at (1.6,.55-\i*1.1) {};}
+    \foreach \i in {0,1}{\node[circle,fill=hngreen!60,draw=hngreen,inner sep=3pt] (c\i) at (3.2,-.55-\i*1.1) {};}
+    \foreach \i in {0,1,2}{\foreach \j in {0,1,2,3}{\draw[hnnavy!60] (a\i)--(b\j);}}
+    \foreach \i in {0,1,2,3}{\foreach \j in {0,1}{\draw[hnnavy!60] (b\i)--(c\j);}}
+  \end{scope}
+  % --- Deko rechts unten: Gluehbirne
+  \begin{scope}[shift={(17.4,-11.7)}]
+    \draw[hnnavy,thick,fill=hnyellow] (0,0) circle(.9);
+    \draw[hnnavy,thick,fill=hnblue] (-.4,-.85) rectangle (.4,-1.3);
+    \draw[hnorange,thick] (-.35,-.25)--(-.1,.25)--(.1,-.15)--(.35,.3);
+    \foreach \a in {30,70,110,150}{\draw[hnorange,thick] (\a:1.15)--(\a:1.5);}
+  \end{scope}
+  % --- Feature-Zeile
+  \foreach \x/\t/\u in {2.7/40 Kapitelseiten/Übersicht je Thema, 7.3/Spickzettel/Algorithmen \& Formeln, 11.9/Beispiele/mit Rechnung \& Lösung, 16.5/Selbsttests/drei Fragen pro Seite}{
+    \draw[hnnavy!40,dashed] (\x+2.2,-20.0)--(\x+2.2,-22.9);
+    \node[font=\hnhead\Large,text=hnorange] at (\x,-21.0) {\t};
+    \node[font=\hnscript\small,text=hnnavy,align=center] at (\x,-22.0) {\u};
+  }
+  \foreach \x in {2.7,7.3,11.9,16.5}{\fill[hnorange!15] (\x,-19.5) circle(.55);}
+  \draw[hnnavy,thick,fill=white] (1.95,-19.85) rectangle (2.45,-19.15) (2.95,-19.85) rectangle (3.45,-19.15);
+  \draw[hnnavy,thick] (7.0,-19.2)--(7.6,-19.8) (7.0,-19.8)--(7.6,-19.2) (6.95,-19.5)--(7.65,-19.5);
+  \node[font=\Large,text=hnnavy] at (11.9,-19.5) {$\langle/\rangle$};
+  \draw[hnnavy,thick] (16.5,-19.5) circle(.3) circle(.15); \fill[hnorange] (16.5,-19.5) circle(.05);
+  % --- Fußzeile
+  \draw[hnnavy!40] (2,-23.7)--(19,-23.7);
+  \node[font=\hnhead\large,text=hnnavy] at (10.5,-24.6) {Andrew Ng \& Tengyu Ma};
+  \node[font=\hnscript\normalsize,text=hnnavy!80] at (10.5,-25.5) {Vorlesungsnotizen \& Ergänzungsmaterial (notes, extra-notes, materials, section)};
+  \node[font=\hnhead\normalsize,text=hnnavy] at (9.0,-27.4) {Lernen. \textcolor{hnorange}{Verstehen.} Umsetzen. \textcolor{hnorange}{Wachsen.}};
+  \node[font=\hnhead\LARGE,text=hnorange] at (13.6,-27.4) {$\rangle\rangle\rangle$};
+\end{tikzpicture}

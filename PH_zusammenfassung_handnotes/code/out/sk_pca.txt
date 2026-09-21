@@ -1,0 +1,2 @@
+Komponenten fuer 90% Varianz: 31 von 64
+erste 3 EVR: [0.12  0.096 0.084]

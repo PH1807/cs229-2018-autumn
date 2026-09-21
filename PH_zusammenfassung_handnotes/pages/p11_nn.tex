@@ -1,0 +1,126 @@
+\hnheader[Schicht für Schicht: lineare Abbildung plus Nichtlinearität -- beliebig tief.][Ohne Nichtlinearität kollabiert jedes Netz zu einem linearen Modell!]{Neuronale}{Netze}{Deep Learning: Architektur \& Bausteine}
+\hnsrc{main\_notes.pdf (Deep Learning), notes/cs229-notes-deep\_learning.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Lineare Modelle sind beschränkt. Durch \hlt{Komposition nichtlinearer Schichten} approximiert ein Netz beliebig komplexe Funktionen. Ein Netz \emph{lernt} seine Merkmale selbst, statt sie von Hand zu entwerfen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Forward-Pass}
+\begin{align*}
+a^{[0]}&=x\\
+z^{[\ell]}&=W^{[\ell]}a^{[\ell-1]}+b^{[\ell]}\\
+a^{[\ell]}&=\sigma(z^{[\ell]}),\quad\ell<r\\
+\hat y&=W^{[r]}a^{[r-1]}+b^{[r]}
+\end{align*}
+\hnleg{$r$ Schichten, $\ell$ Schichtindex, $W^{[\ell]},b^{[\ell]}$ Gewichte und Bias, $z$ Vorstufe, $a$ Aktivierung, $\sigma$ nichtlineare Aktivierung, $\hat y$ Ausgabe.}
+Ohne $\sigma$: $W^{[r]}\cdots W^{[1]}x=\tilde Wx$ (linear!).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: 3-4-1-Netz}
+\centering
+\begin{tikzpicture}[every node/.style={circle,draw=hnnavy,fill=hnblue!50,minimum size=3.2mm,inner sep=0pt}]
+  \foreach \i in {1,2,3}{\node[fill=hnmint] (i\i) at (0,\i*.8) {};}
+  \foreach \j in {1,2,3,4}{\node[fill=hnyellow] (h\j) at (1.7,\j*.65-.15) {};}
+  \node[fill=hnpink] (o) at (3.4,1.6) {};
+  \foreach \i in {1,2,3}{\foreach \j in {1,2,3,4}{\draw[gray!60,line width=.3pt] (i\i)--(h\j);}}
+  \foreach \j in {1,2,3,4}{\draw[gray!60,line width=.3pt] (h\j)--(o);}
+  \node[draw=none,fill=none,font=\tiny] at (0,-.1) {Eingabe};
+  \node[draw=none,fill=none,font=\tiny] at (1.7,-.1) {verborgen $\sigma$};
+  \node[draw=none,fill=none,font=\tiny] at (3.4,.95) {$\hat y$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Aktivierungsfunktionen}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}p{2.0cm}p{3.4cm}p{3.0cm}@{}}
+\hline
+\textbf{Name}&\textbf{Formel}&\textbf{Einsatz}\\\hline
+Sigmoid&$1/(1+e^{-z})$&Ausgabe binär\\
+Tanh&$\frac{e^z-e^{-z}}{e^z+e^{-z}}$&veraltet (verborgen)\\
+ReLU&$\max(z,0)$&Standard (verborgen)\\
+Leaky ReLU&$\max(z,\gamma z)$, $\gamma{\approx}0.01$&gegen „dying ReLU“\\
+GELU&$z\,\Phi(z)$, $\Phi$: Gauß-CDF&Transformer\\
+Softmax&$e^{z_k}/\sum_je^{z_j}$&Ausgabe Mehrklassen\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Moderne Bausteine}
+\hnleg{$W_1,W_2,b_1,b_2$ Gewichte/Bias, $\hat\mu,\hat\sigma$ Mittel und Streuung über die Merkmale, $\gamma,\beta$ lernbare Skala/Verschiebung, $k$ Filtergröße, $s$ Schrittweite, $w_j$ Filtergewichte, $m$ Breite.}
+\textbf{ResNet}: $\mathrm{Res}(z)=z+\sigma(W_2\sigma(W_1z+b_1)+b_2)$ -- Gradient fließt durch die Abkürzung (gegen Vanishing Gradients).\\
+\textbf{LayerNorm}: $\mathrm{LN}(z)=\gamma\odot\frac{z-\hat\mu}{\hat\sigma}+\beta$ (skaleninvariant in $W$).\\
+\textbf{Faltung (CNN)}: $\mathrm{Conv}(z)_i=\sum_{j=1}^{k}w_jz_{is-\ell+j-1}$. Parameter-Sharing: $O(m^2)\to O(km)$.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Forward-Pass 2-2-1 mit ReLU}
+$x=(1,2)$, $W^{[1]}=\begin{psmallmatrix}1&-1\\0.5&1\end{psmallmatrix}$, $b^{[1]}=0$, $W^{[2]}=(1,\,2)$, $b^{[2]}=-1$.\\
+\hnsol\ $z^{[1]}=(1-2,\;0.5+2)=(-1,\;2.5)$\\
+$a^{[1]}=\mathrm{ReLU}(z^{[1]})=(0,\;2.5)$\\
+$\hat y=1\cdot0+2\cdot2.5-1=\ora{4}$; Verlust ($y{=}3$): $\tfrac12(4-3)^2=0.5$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Beispiel: Parameter zählen}
+Netz $100\to50\to10$ (voll verbunden):\\
+Schicht 1: $100\cdot50+50=5050$\\
+Schicht 2: $50\cdot10+10=510$\\
+Summe: $\ora{5560}$ Parameter.\\
+Allgemein: Schicht mit $m_{\mathrm{in}}\to m_{\mathrm{out}}$ hat $m_{\mathrm{in}}m_{\mathrm{out}}+m_{\mathrm{out}}$ Parameter.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item universelle Approximation
+\item lernt Merkmale selbst
+\item skaliert mit Daten \& Rechenleistung
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item nichtkonvex, viele Hyperparameter
+\item datenhungrig, schwer interpretierbar
+\item anfällig für Adversarial Examples
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item $z=Wa+b$, $a=\sigma(z)$
+\item ReLU = Standard, Softmax am Ausgang
+\item ResNet/LayerNorm/CNN als Bausteine
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{10}{Ausgabe \& Verlust}
+\begin{itemize}
+\item binär: Sigmoid + Cross-Entropy
+\item Mehrklassen: Softmax + Cross-Entropy
+\item Regression: linear + MSE
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{11}{Start des Trainings}
+\begin{itemize}
+\item Gewichte klein \emph{zufällig} initialisieren (nicht $0$: Symmetriebruch!)
+\item Eingaben normalisieren
+\item Mini-Batch-SGD (nächste Seite)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{12}{Querverweise}
+\begin{itemize}
+\item Backpropagation: wie der Gradient entsteht
+\item Regularisierung: Weight Decay $=$ L2
+\item Foundation Models: Transformer = MLP + Attention
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wozu Nichtlinearität?}{Ohne $\sigma$ ist ein tiefes Netz nur eine lineare Abbildung $\tilde Wx$.}{Wozu ResNets?}{Skip-Connections lassen den Gradient durch viele Schichten fließen.}{Parameter einer Schicht $m_{\mathrm{in}}\to m_{\mathrm{out}}$?}{$m_{\mathrm{in}}m_{\mathrm{out}}+m_{\mathrm{out}}$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Tiefe Netze sind einfache Bausteine -- nur sehr oft hintereinander.“
+\end{hnbanner}
+\end{hngrid}

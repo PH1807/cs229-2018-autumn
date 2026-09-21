@@ -1,0 +1,57 @@
+\hnheader[Welcher Algorithmus passt wann? Alle Methoden der Vorlesung im Vergleich.][Frage dich immer: Modell? Verlust? Optimierung?]{Algorithmen-}{Spickzettel}{Aufgabe, Idee, Lösungsverfahren, Stärken \& Grenzen}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnnavy]{A}{Vergleichstabelle}
+\setlength{\tabcolsep}{2.4pt}\renewcommand{\arraystretch}{1.42}\fontsize{7.5}{8.8}\selectfont
+\newcommand{\tabhd}[1]{\textbf{#1}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.55cm}>{\raggedright\arraybackslash}p{1.95cm}>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}p{2.85cm}>{\raggedright\arraybackslash}p{3.35cm}>{\raggedright\arraybackslash}p{3.3cm}@{}}
+\rowcolor{hnnavy!12}\tabhd{Methode}&\tabhd{Aufgabe}&\tabhd{Schlüsselidee}&\tabhd{Lösung}&\tabhd{Stärke}&\tabhd{Grenze}\\
+\rowcolor{hnorange!10}Lineare Regression&Regression&Least Squares, $\theta\T x$&Normalgl., (S)GD&einfach, interpretierbar&nur linear, Ausreißer\\
+\rowcolor{hnorange!10}Logistische Regr.&Klassifikation&Sigmoid + MLE&GD, Newton&Wahrscheinlichkeiten, konvex&nur lineare Grenze\\
+\rowcolor{hnorange!10}GLM&beides&ExpFamilie, $\eta=\theta\T x$&GD, Newton&einheitliche Theorie&Verteilungsannahme\\
+\rowcolor{hnorange!10}GDA&Klassifikation&Gauß $p(x|y)$ + Bayes&geschl.\ MLE&wenig Daten&starke Annahme\\
+\rowcolor{hnorange!10}Naive Bayes&Klassifikation&Unabhängigkeit + Laplace&Zählen&schnell, skalierbar&„naive“ Annahme\\
+\rowcolor{hnorange!10}SVM&Klassifikation&max.\ Margin + Kernel&QP, SMO&Kernel, sparse&teuer bei großem $n$\\
+\rowcolor{hnorange!10}Perceptron&Klassifikation&Update bei Fehler&online&Schranke $(D/\gamma)^2$&nur trennbar\\
+\rowcolor{hnorange!10}k-NN&beides&Mehrheit/Mittel der $k$ Nachbarn&kein Training&einfach, nichtlinear&langsam, Fluch der Dimension\\
+\rowcolor{hnorange!10}Decision Tree&beides&rekursive Splits&greedy, Pruning&interpretierbar&hohe Varianz\\
+\rowcolor{hnorange!10}Random Forest&beides&Bagging + Feature-Zufall&Bäume mitteln&robust, wenig Tuning&schwer interpretierbar\\
+\rowcolor{hnorange!10}Boosting&beides&sequentielle schwache Lerner&forward stagewise&senkt Bias&Overfitting bei großem $M$\\
+\rowcolor{hnorange!10}Gaussian Process&Regression&Prior über Funktionen&Konditionierung&Unsicherheit&$O(n^3)$\\
+\rowcolor{hnpurple!10}CNN / RNN-LSTM&Bild / Sequenz&Faltung+Sharing / Gates&Backprop + Adam&nutzt Datenstruktur&datenhungrig\\
+\rowcolor{hnpurple!10}Neuronales Netz&beides&tiefe Nichtlinearität&Backprop + SGD&universell&datenhungrig, nichtkonvex\\
+\rowcolor{hnteal!10}K-Means&Clustering&Zentroide&alternieren&einfach, schnell&lokale Optima, $K$ nötig\\
+\rowcolor{hnteal!10}Hierarchisches Clustering&Clustering&Baum aus Verschmelzungen&Linkage, Dendrogramm&kein $K$ nötig&$O(n^2)$, nicht umkehrbar\\
+\rowcolor{hnteal!10}EM / Gauß-Gemisch&Dichte, Cluster&latente Variable, ELBO&E/M-Schritt&weiche Zuordnung&lokale Optima\\
+\rowcolor{hnteal!10}Faktorenanalyse&Dim.-Reduktion&latente Faktoren&EM&funktioniert bei $n\gg m$&Rotation nicht eindeutig\\
+\rowcolor{hnteal!10}PCA&Dim.-Reduktion&max.\ Varianz&Eigenvektoren&geschlossen, schnell&nur linear\\
+\rowcolor{hnteal!10}ICA&Quellentrennung&Unabhängigkeit, Nicht-Gauß&SGD auf Likelihood&Cocktailparty&Skalierung/Permutation\\
+\rowcolor{hnteal!10}HMM&Sequenzen&latente Zustandskette&Forward, Viterbi, Baum-Welch&Zeitreihen&Markov-Annahme\\
+\rowcolor{hnteal!10}VAE / GAN / Diffusion&Generieren&latente Variable, Minimax, Entrauschen&ELBO-SGD, adversarial&neue Samples&instabil / teuer\\
+\rowcolor{hnteal!10}Transformer / SSL&Repräsentation&Self-Attention, Next-Token&SGD&skaliert mit Daten&sehr teuer\\
+\rowcolor{hnrose!10}Value / Policy Iteration&RL (diskret)&Bellman-Gleichung&dyn.\ Programmierung&exakt&Fluch der Dimension\\
+\rowcolor{hnrose!10}LQR / DDP / LQG&Regelung&lin.\ Dynamik, quadr.\ Kosten&Riccati&analytisch&Linearität nötig\\
+\rowcolor{hnrose!10}REINFORCE&RL (allgemein)&Policy Gradient&Sampling + GD&flexibel&hohe Varianz\\
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{B}{Faustregeln zur Wahl}
+\begin{itemize}
+\item Wenig Daten, Gauß-artig $\to$ GDA / regularisiert linear
+\item Tabellarische Daten, viel Rauschen $\to$ Random Forest / Boosting
+\item Bilder, Text, Audio $\to$ neuronale Netze
+\item Unsicherheit wichtig, kleines $n$ $\to$ Gaussian Process
+\item Struktur ohne Labels $\to$ Clustering / PCA
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{C}{Farblegende}
+\colorbox{hnorange!10}{überwacht} \colorbox{hnpurple!10}{Deep Learning} \colorbox{hnteal!10}{unüberwacht} \colorbox{hnrose!10}{bestärkend}\\[2pt]
+Lesetipp: für jede Zeile die drei Fragen beantworten -- \emph{Modell} (Hypothese), \emph{Verlust} (Ziel), \emph{Optimierung} (Verfahren).
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Kein Algorithmus gewinnt immer -- gute Praxis heißt, die Annahmen zu kennen.“
+\end{hnbanner}
+\end{hngrid}

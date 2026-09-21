@@ -1,0 +1,101 @@
+\hnheader[Latente Variablen: erst raten (E-Schritt), dann neu schätzen (M-Schritt).][Jede Iteration erhöht $\log p(x;\theta)$ -- nie weniger!]{EM-}{Algorithmus}{Gauß-Gemische \& Expectation-Maximization}
+\hnsrc{main\_notes.pdf (Mixture of Gaussians, EM), notes/cs229-notes7b.pdf, notes/cs229-notes8.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Gauß-Gemisch (MoG)}
+\[ p(x)=\sum_{k=1}^{K}\phi_k\,\N(x;\mu_k,\Sigma_k) \]
+($K$ Komponenten, $\phi_k$ Mischgewicht, $\mu_k,\Sigma_k$ Mittel/Kovarianz von Komponente $k$.) Latente Variable $z\sim\mathrm{Multinomial}(\phi)$ (welche Komponente?), $x|z{=}k\sim\N(\mu_k,\Sigma_k)$. $z$ ist \emph{nicht} beobachtet.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Jensen \& ELBO}
+Jensen: für konkaves $f$ gilt $\E[f(X)]\le f(\E[X])$. Damit für jedes $Q(z)$:
+\[ \log p(x;\theta)\ge\sum_zQ(z)\log\frac{p(x,z;\theta)}{Q(z)} \]
+(\ora{ELBO}). Gleichheit, wenn $Q(z)=p(z|x;\theta)$. ($x$ Beobachtung, $z$ verborgene Variable, $\theta$ Parameter, $Q$ frei wählbare Verteilung über $z$.)
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: untere Schranke}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(4.4,0) node[right,font=\tiny]{$\theta$};
+  \draw[->,hnnavy] (0,0)--(0,2.6) node[above,font=\tiny]{$\log p$};
+  \draw[hnorange,very thick] (.2,.7) .. controls (1.2,2.5) and (2.4,2.2) .. (4.2,1.6);
+  \draw[hnpurple,thick] (.9,.85) .. controls (1.5,2.0) and (2.0,2.0) .. (2.5,1.3);
+  \fill[hnnavy] (1.65,1.83) circle(.06);
+  \node[font=\tiny,hnorange] at (3.6,2.1) {$\log p(x;\theta)$};
+  \node[font=\tiny,hnpurple] at (.95,2.2) {ELBO};
+  \node[font=\tiny] at (1.65,1.5) {E: berührt};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Allgemeiner EM}
+\begin{pcode}[EM (allgemein)]
+\kw{repeat} bis Konvergenz:\\
+\hii \cm{\# E-Schritt}\\
+\hii $Q_i(z^{(i)})\leftarrow p(z^{(i)}\mid x^{(i)};\theta)$\\
+\hii \cm{\# M-Schritt}\\
+\hii $\theta\leftarrow\arg\max_\theta\sum_i\sum_{z}Q_i(z)\log\frac{p(x^{(i)},z;\theta)}{Q_i(z)}$
+\end{pcode}
+E: ELBO scharf machen (Schranke berührt). M: ELBO in $\theta$ hochschieben $\Rightarrow$ $\log p$ steigt monoton.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{EM für Gauß-Gemische}
+\begin{pcode}[EM für MoG]
+\kw{repeat}:\\
+\hii \cm{\# E: Verantwortlichkeit $\gamma_{ik}=P(z_i{=}k|x_i)$}\\
+\hii $\gamma_{ik}\leftarrow\dfrac{\phi_k\N(x_i;\mu_k,\Sigma_k)}{\sum_j\phi_j\N(x_i;\mu_j,\Sigma_j)}$\\
+\hii \cm{\# M: gewichtete MLE}\\
+\hii $\phi_k\leftarrow\frac1n\sum_i\gamma_{ik}$\\
+\hii $\mu_k\leftarrow\frac{\sum_i\gamma_{ik}x_i}{\sum_i\gamma_{ik}}$\\
+\hii $\Sigma_k\leftarrow\frac{\sum_i\gamma_{ik}(x_i-\mu_k)(x_i-\mu_k)^{\top}}{\sum_i\gamma_{ik}}$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: eine EM-Iteration in 1D}
+Daten $x=\{0,1,4\}$, $\mu=(0,4)$, $\sigma=1$, $\phi=(0.5,0.5)$.\\
+\hnsol\ \textbf{E:} $\gamma_{\cdot1}=(0.9997,\;0.982,\;0.0003)$ (z.\,B.\ $x{=}1$: $\frac{\N(1;0,1)}{\N(1;0,1)+\N(1;4,1)}=\frac{0.242}{0.242+0.0044}$).\\
+\textbf{M:} $\sum\gamma_{\cdot1}=1.982\Rightarrow\phi_1=0.66$, $\mu_1=\frac{0.982+0.0012}{1.982}\approx\ora{0.50}$, $\mu_2\approx\ora{3.95}$.\\
+Die Zentren rücken zu den Datenclustern.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Praxis \& Konvergenz}
+\begin{itemize}
+\item Nichtkonvex: nur \emph{lokales} Maximum; mehrere Starts.
+\item Initialisierung oft mit K-Means.
+\item Degeneriert eine Komponente ($\Sigma_k\to0$): regularisieren.
+\item K-Means $=$ hartes EM (Verantwortlichkeit 0/1).
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item weiche Zuordnung, Wahrscheinlichkeiten
+\item allgemein für latente Variablen
+\item monotoner Fortschritt
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item lokale Optima, langsam
+\item $K$ muss vorgegeben werden
+\item bei wenig Daten instabil
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item E: $Q=p(z|x;\theta)$
+\item M: gewichtete MLE
+\item $\log p$ steigt monoton
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was macht der E-Schritt?}{$Q_i(z)=p(z|x_i;\theta)$: macht die ELBO-Schranke scharf.}{Warum steigt $\log p$ monoton?}{Der M-Schritt hebt die ELBO, die stets unter $\log p$ liegt.}{K-Means und EM?}{K-Means $=$ hartes EM mit gleichen, kugelförmigen Gauß-Komponenten.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Rate klug, schätze neu -- und wiederhole, bis das Raten nichts mehr ändert.“
+\end{hnbanner}
+\end{hngrid}

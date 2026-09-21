@@ -1,0 +1,6 @@
+k=2 Inertia=  819.6 Silhouette=0.493
+k=3 Inertia=  367.6 Silhouette=0.557
+k=4 Inertia=  310.3 Silhouette=0.460
+k=5 Inertia=  268.1 Silhouette=0.399
+Hierarchisch Clustergroessen: [97, 98, 105]
+GMM Gewichte phi: [0.31 0.33 0.36]

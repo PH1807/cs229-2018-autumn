@@ -1,0 +1,5 @@
+s5   imp 0.35 perm 0.19 SHAP 27.9
+bmi  imp 0.34 perm 0.16 SHAP 26.6
+bp   imp 0.09 perm 0.03 SHAP 9.1
+s3   imp 0.06 perm -0.02 SHAP 7.4
+Additiv.: 252.3 = 252.3

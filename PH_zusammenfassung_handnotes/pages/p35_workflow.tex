@@ -1,0 +1,94 @@
+\hnheader[Ein guter Workflow macht aus einer Idee ein zuverlässiges, wiederholbares System.][Iterieren, validieren, dokumentieren -- nicht hetzen]{ML-Workflow}{\& Best Practices}{Von der Problemdefinition bis zum Monitoring}
+\hnsrc{hand-notes/ML Notes.pdf (ML Fundamentals; End-to-End ML Workflow \& Best Practices); MLOps-Teil größtenteils Web-Wissen (markiert)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnnavy]{1}{Der End-to-End-Workflow (mit Rückkopplung)}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=2pt,font=\scriptsize,align=center,inner sep=3pt,minimum height=9.5mm,minimum width=1.95cm}]
+  \node[fill=hnorange!20] (a) at (0,0) {1 Problem\\verstehen};
+  \node[fill=hnmint] (b) at (2.35,0) {2 Daten\\sammeln};
+  \node[fill=hnyellow] (c) at (4.7,0) {3 Vorverarbeitung\\\& EDA};
+  \node[fill=hnblue] (d) at (7.05,0) {4 Modell bauen\\\& tunen};
+  \node[fill=hnpink] (e) at (9.4,0) {5 Bewerten\\(Metriken)};
+  \node[fill=hnlilac] (f) at (11.75,0) {6 Deployment};
+  \node[fill=hnorange!20] (g) at (14.1,0) {7 Monitoring};
+  \foreach \p/\q in {a/b,b/c,c/d,d/e,e/f,f/g}{\draw[->,thick,hnorange] (\p)--(\q);}
+  \draw[->,thick,hnorange,dashed] (g.south) -- ++(0,-.7) -| (c.south) node[pos=.25,below,draw=none,font=\tiny]{Feedback: Drift $\to$ neu trainieren};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{2}{Lernparadigmen \& Aufgaben}
+\begin{itemize}
+\item \textbf{Überwacht}: Klassifikation (Spam ja/nein), Regression (Hauspreis)
+\item \textbf{Unüberwacht}: Clustering, Dimensionsreduktion, Anomalieerkennung
+\item \textbf{Bestärkend}: Agent lernt aus Belohnung
+\end{itemize}
+Begriffe: Feature, Target, Modell, Training, Inferenz, Muster. Datentypen: numerisch, kategorial (nominal/ordinal), Text, Bild, Zeitreihe.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{3}{Train / Validation / Test}
+\centering
+\begin{tikzpicture}[every node/.style={draw=hnnavy,minimum height=.5cm,font=\scriptsize,inner sep=0}]
+  \node[fill=hnblue,minimum width=4.2cm] at (2.1,0) {Train (60--80\,\%)};
+  \node[fill=hnyellow,minimum width=1.9cm] at (5.15,0) {Val (10--20\,\%)};
+  \node[fill=hnpink,minimum width=1.9cm] at (7.1,0) {Test (10--20\,\%)};
+\end{tikzpicture}\\[2pt]
+\raggedright\textbf{Train}: Muster lernen. \textbf{Validation}: Hyperparameter/Modelle wählen. \textbf{Test}: einmaliges, ehrliches Endurteil. \hlp{Test nie zum Tunen berühren.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnred]{4}{Data Leakage}
+\textbf{Falsch}: Preprocessing auf allen Daten, \emph{dann} splitten. \textbf{Richtig}: erst splitten, Transformer nur auf Train \texttt{fit}en.\\
+Weitere Leaks: Ziel-Info in Features (Target Leakage), Zukunftsdaten bei Zeitreihen, Duplikate über Train/Test, Gruppen (Patienten) über Splits verteilt.\\
+Symptom: \emph{zu gute} Testergebnisse, die im Einsatz einbrechen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Checkliste Daten \& Modellierung}
+\begin{hnchk}
+\item Daten relevant, ausreichend, sauber; Verteilungen verstanden
+\item fehlende Werte, Duplikate, Typen, Kategorien behandelt
+\item einfache \emph{Baseline} zuerst (z.\,B.\ LogReg, Mittelwert)
+\item eine Änderung nach der anderen; Ergebnisse protokollieren
+\item passende Metrik; Fehleranalyse; Business-Kontext
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{6}{Deployment \& Monitoring (MLOps, Web)}
+\begin{itemize}
+\item Modell versionieren, speichern; Inferenz-Pipeline testen; Eingaben validieren
+\item Latenz und Verfügbarkeit überwachen
+\item \textbf{Data/Concept Drift}: Verteilung ändert sich $\to$ Leistung fällt; Alarme, regelmäßig neu trainieren
+\item Werkzeuge (Beispiele): Git/DVC, MLflow, CI/CD
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{7}{Häufige Fallstricke}
+\begin{hncon}
+\item unklare Problemdefinition/Erfolgsmetrik
+\item schlechte oder verzerrte Daten
+\item Overfitting auf das Trainings- oder Validierungsset
+\item Baselines ignoriert, Ergebnisse nicht validiert
+\item nach dem Deployment nicht überwacht
+\end{hncon}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: Churn-Vorhersage (Kundenabwanderung) -- konkreter Ablauf}
+\hnsol\ \textbf{Problem}: wird ein Kunde kündigen? (binäre Klassifikation, F1/AUPRC, da selten). \textbf{Daten}: CRM, Nutzung, Support-Tickets. \textbf{Vorverarbeitung}: Median-Imputation, One-Hot (Region), Standardisierung; Split \emph{vor} dem Fit, alles in einer Pipeline. \textbf{Modell}: Baseline LogReg, dann Random Forest/Gradient Boosting, Tuning per Random Search + Stratified CV. \textbf{Bewertung}: Test einmal (AUPRC, Confusion Matrix, Fehleranalyse). \textbf{Betrieb}: API, Drift-Monitoring, monatliches Retraining.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{8}{Key Takeaways}
+\begin{hnchk}
+\item Erst Problem und Metrik klären, dann Daten, dann Modell -- \emph{Baseline zuerst}
+\item Split vor Preprocessing, Testset einmal benutzen, alles in Pipelines
+\item Deployment ist nicht das Ende: überwachen und nachtrainieren
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Wofür braucht man ein Validation- \emph{und} ein Testset?}{Validation zum Wählen/Tunen, Test zur einmaligen, unverzerrten Endbewertung.}{Nenne zwei Arten von Data Leakage.}{Preprocessing vor dem Split; Target-/Zukunftsinformation in Features.}{Was ist Concept Drift?}{Die Beziehung zwischen Features und Ziel ändert sich im Betrieb $\Rightarrow$ Modell veraltet.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein starker Workflow schlägt ein geniales Modell in einer chaotischen Pipeline.“
+\end{hnbanner}
+\end{hngrid}

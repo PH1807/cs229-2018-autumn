@@ -1,0 +1,95 @@
+\hnheader[Finde die Richtungen größter Varianz und projiziere die Daten darauf.][PCA $=$ Eigenvektoren der Kovarianzmatrix]{Hauptkomponenten-}{analyse (PCA)}{Dimensionsreduktion durch Eigenvektoren}
+\hnsrc{main\_notes.pdf (PCA), notes/cs229-notes10.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Daten $x\in\R^n$ liegen ungefähr in einem $k$-dimensionalen Unterraum ($k\ll n$). PCA findet ihn direkt -- ohne Iteration, nur mit einer \hlt{Eigenwertzerlegung}. Nutzen: Kompression, Visualisierung, Rauschunterdrückung.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Optimierungsproblem}
+Wähle orthonormale Richtungen $U=[u_1\cdots u_k]$, die die \emph{projizierte Varianz} maximieren:
+\[ \max_{U\T U=I_k}\mathrm{tr}\bigl(U\T\hat\Sigma U\bigr) \]
+Lösung: die $k$ Eigenvektoren von $\hat\Sigma$ zu den größten Eigenwerten. ($\hat\Sigma$ Kovarianzmatrix, $u_j$ Richtungen, $\mathrm{tr}$ Spur, $I_k$ Einheitsmatrix.)
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Hauptachsen}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \begin{scope}[rotate around={30:(2,1.3)}]
+    \foreach \x/\y in {.3/1.3,.7/1.5,1.1/1.2,1.5/1.45,1.9/1.3,2.3/1.5,2.7/1.2,3.1/1.45,3.6/1.3,.9/1.05,2.1/1.55,3.3/1.1}{\fill[hnnavy] (\x,\y) circle(.05);}
+    \draw[->,hnorange,very thick] (2,1.3)--(3.9,1.3) node[right,font=\tiny]{$u_1$};
+    \draw[->,hnpurple,very thick] (2,1.3)--(2,2.3) node[above,font=\tiny]{$u_2$};
+  \end{scope}
+  \node[font=\tiny] at (2,-.1) {$u_1$: größte Varianz};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Algorithmus}
+\begin{pcode}[PCA]
+$\bar x\leftarrow\frac1n\sum_ix_i$;\;\; $x_i\leftarrow x_i-\bar x$ \ \cm{\# zentrieren}\\
+$\hat\Sigma\leftarrow\frac1nX^{\top}X$\\
+$(\lambda_j,u_j)\leftarrow$ Eigenpaare von $\hat\Sigma$ (oder SVD von $X$)\\
+$U_k\leftarrow[u_1\cdots u_k]$ zu den $k$ größten $\lambda_j$\\
+$z_i\leftarrow U_k^{\top}x_i\in\R^k$ \ \cm{\# Projektion}\\
+$\tilde x_i\leftarrow U_kz_i+\bar x$ \ \cm{\# Rekonstruktion}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Wie viele Komponenten?}
+Anteil erklärter Varianz ($\lambda_j$ Eigenwert = Varianz entlang $u_j$, $n$ Dimensionen, $k$ behaltene Komponenten):
+\[ \frac{\sum_{j=1}^{k}\lambda_j}{\sum_{j=1}^{n}\lambda_j} \]
+Wähle $k$ so, dass z.\,B.\ $90$--$99\%$ erklärt sind (Scree-Plot). \hlt{Vorher skalieren}, wenn Features verschiedene Einheiten haben (sonst dominiert die größte Skala).
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 4 Punkte in 2D}
+Zentrierte Punkte $(2,0),(-2,0),(0,1),(0,-1)$.\\
+\hnsol\ $\hat\Sigma=\frac14\sum xx\T=\begin{psmallmatrix}2&0\\0&0.5\end{psmallmatrix}$, Eigenwerte $\lambda_1=2$, $\lambda_2=0.5$, $u_1=(1,0)$.\\
+Erklärte Varianz von $u_1$: $\frac{2}{2.5}=\ora{80\%}$.\\
+Projektion auf $u_1$: $(2,0)\to2$, $(0,1)\to0$ -- aus 2D wird 1D, ein Fünftel der Varianz geht verloren.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Bezüge}
+\begin{itemize}
+\item \textbf{Faktorenanalyse}: probabilistische Variante (mit Rauschen $\Psi$); PCA ist der Grenzfall $\Psi=\sigma^2I\to0$.
+\item \textbf{SVD}: $X=U\Sigma V\T$; die Spalten von $V$ sind die Hauptachsen.
+\item \textbf{ICA}: sucht statt maximaler Varianz \emph{Unabhängigkeit}.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item geschlossene Lösung
+\item unüberwacht, schnell
+\item nützlich vor anderen Verfahren
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item nur \emph{lineare} Struktur
+\item Varianz $\ne$ Relevanz für die Aufgabe
+\item skalenempfindlich
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item zentrieren, Kovarianz, Eigenvektoren
+\item Projektion $z=U_k\T x$
+\item Varianzanteil wählt $k$
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{+}{PCA in Formeln \& Praxis (aus den ML Notes)}
+Schritte: $Z=\frac{X-\mu}{\sigma}$ (standardisieren), $C=\frac1{n-1}Z\T Z$, Eigenzerlegung $Cv_i=\lambda_iv_i$, sortieren, $V_k=[v_1..v_k]$, $Z_k=ZV_k$. Erklärte Varianz: $\mathrm{EVR}_i=\frac{\lambda_i}{\sum_j\lambda_j}$, kumulativ $\mathrm{CEV}_k=\sum_{i\le k}\mathrm{EVR}_i$ (Scree-Plot: $k$ am Ellenbogen). Vorteile: weniger Dimensionen, entfernt Multikollinearität, beschleunigt Modelle, Visualisierung (2D/3D). Grenzen: Komponenten schwer interpretierbar, nur linear, skalenempfindlich. Code: Vertiefungsseite.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was maximiert PCA?}{Projizierte Varianz $\mathrm{tr}(U\T\hat\Sigma U)$ mit $U\T U=I$.}{Wie viele Komponenten?}{So viele, dass z.\,B.\ $90$--$99\%$ der Varianz erklärt sind.}{Warum vorher skalieren?}{Sonst dominiert das Feature mit der größten Skala.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Behalte die Richtungen, in denen die Daten etwas zu erzählen haben.“
+\end{hnbanner}
+\end{hngrid}

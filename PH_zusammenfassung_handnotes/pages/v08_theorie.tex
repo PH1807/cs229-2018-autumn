@@ -1,0 +1,72 @@
+\hnheader[Bias--Varianz, Konzentrationsungleichungen und Generalisierungsschranken -- mit allen Zwischenschritten.][Trainingsfehler $\to$ wahrer Fehler: die Brücke der Lerntheorie]{Generalisierung \& Lerntheorie:}{Vertiefung}{Herleitung, Hoeffding, Perceptron}
+\hnsrc{main\_notes.pdf Kap.\ 8 (Bias-Varianz, Sample Complexity), extra-notes/hoeffding.pdf, notes/cs229-notes6.pdf; Schritte ergänzt}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{1}{Bias--Varianz-Zerlegung (Regression)}
+\hnleg{$h^*(x)$ wahre Funktion, $\xi$ Rauschen, $S$ Trainingsmenge, $h_S$ darauf gelerntes Modell, $\bar h=\E_S[h_S]$ mittleres Modell über alle möglichen Trainingsmengen, $\indep$ unabhängig.}
+Setup: $y=h^*(x)+\xi$, $\xi\sim\N(0,\sigma^2)$, unabhängig vom Trainingsset $S$; $h_S$ das gelernte Modell, $\bar h=\E_S[h_S]$.
+\begin{align*}
+\mathrm{MSE}(x)&=\E[(y-h_S(x))^2]=\E\bigl[(\xi+(h^*-h_S))^2\bigr]&&\why{$y=h^*+\xi$}\\
+&=\E[\xi^2]+\E[(h^*-h_S)^2]=\sigma^2+\E[(h^*-h_S)^2]&&\why{$\E[\xi]=0$ und $\xi\indep S$: Kreuzterm $=0$}\\
+&=\sigma^2+\E\bigl[((h^*-\bar h)+(\bar h-h_S))^2\bigr]&&\why{$\pm\bar h$}\\
+&=\sigma^2+(h^*-\bar h)^2+\E[(\bar h-h_S)^2]&&\why{$h^*-\bar h$ konstant, $\E[\bar h-h_S]=0$: Kreuzterm $=0$}
+\end{align*}
+$=\underbrace{\sigma^2}_{\text{Rauschen}}+\underbrace{(h^*-\bar h)^2}_{\mathrm{Bias}^2}+\underbrace{\mathrm{Var}(h_S(x))}_{\text{Varianz}}$. \hnwords{Der erwartete Fehler zerfällt in nicht vermeidbares Rauschen, die systematische Abweichung des Durchschnittsmodells (Bias$^2$) und das Schwanken um dieses Durchschnittsmodell (Varianz).} Die Hilfsregel: für $A\indep B$ mit $\E A=0$ gilt $\E[(A+B)^2]=\E A^2+\E B^2$ (Kreuzterm $2\E[A]\E[B]=0$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{2}{Hoeffding (Beweisskizze)}
+$Z_i\in[a,b]$ unabhängig, $\bar Z=\frac1n\sum Z_i$. Für $\lambda>0$:
+\hnleg{$Z_i$ Zufallsgrößen (z.\,B.\ 0/1-Fehler), $[a,b]$ deren Wertebereich, $t$ Abweichung, $\lambda$ Hilfsparameter der Chernoff-Methode.}
+\begin{align*}
+P(\bar Z-\E\bar Z\ge t)&\le e^{-\lambda t}\E\bigl[e^{\lambda(\bar Z-\E\bar Z)}\bigr]&&\why{Markov auf $e^{\lambda\cdot}$}\\
+&=e^{-\lambda t}\textstyle\prod_i\E\bigl[e^{\frac\lambda n(Z_i-\E Z_i)}\bigr]&&\why{Unabhängigkeit}\\
+&\le e^{-\lambda t}e^{n\frac{\lambda^2(b-a)^2}{8n^2}}&&\why{Hoeffdings Lemma}
+\end{align*}
+Optimales $\lambda=\frac{4nt}{(b-a)^2}$ $\Rightarrow$ $e^{-2nt^2/(b-a)^2}$; beide Seiten: Faktor $2$.
+\hnwords{Das Stichprobenmittel weicht nur selten weit vom wahren Mittel ab, und zwar exponentiell selten in $n$.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{3}{Generalisierungsschranke}
+\hnleg{$\mathcal H$ Hypothesenraum mit $k$ Elementen, $J(h)$ Trainingsfehler, $L(h)$ wahrer Fehler, $\gamma$ Toleranz, $\delta$ Fehlerwahrscheinlichkeit, $\hat h$ ERM-Lösung, $h^*$ bestes $h$ in $\mathcal H$.}
+\begin{align*}
+P(\exists h\in\mathcal H:|J(h)-L(h)|>\gamma)&\le\sum_hP(|J-L|>\gamma)&&\why{Union Bound}\\
+&\le2k\,e^{-2\gamma^2n}=:\delta&&\why{Hoeffding}\\
+\Rightarrow\;\gamma&=\sqrt{\tfrac{\log(2k/\delta)}{2n}}
+\end{align*}
+ERM $\hat h$, bestes $h^*$: $L(\hat h)\le J(\hat h)+\gamma\le J(h^*)+\gamma\le L(h^*)+2\gamma$.
+\hnwords{Für jedes einzelne $h$ ist Trainings- $\approx$ wahrer Fehler; die Union Bound sichert das für alle $k$ zugleich. ERM verliert höchstens $2\gamma$ gegen das Beste.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{4}{Perceptron-Fehlerschranke}
+\hnleg{$\theta^{(k)}$ Gewichte nach $k$ Updates, $(x,y)$ falsch klassifiziertes Beispiel, $u$ perfekter Trennvektor, $\gamma$ Margin, $D$ Radius der Daten.}
+Fehler beim $k$-ten Update: $y\theta^{(k)\top}x\le0$, $\theta^{(k+1)}=\theta^{(k)}+yx$; $\|u\|=1$, $yu\T x\ge\gamma$, $\|x\|\le D$.
+\begin{align*}
+\theta^{(k+1)\top}u&=\theta^{(k)\top}u+yx\T u\ge\theta^{(k)\top}u+\gamma\;\Rightarrow\;\ge k\gamma\\
+\|\theta^{(k+1)}\|^2&=\|\theta^{(k)}\|^2+2y\theta^{(k)\top}x+\|x\|^2\\&\le\|\theta^{(k)}\|^2+D^2\;\Rightarrow\;\le kD^2\\
+k\gamma&\le\theta^{(k+1)\top}u\le\|\theta^{(k+1)}\|\le\sqrt kD\;\Rightarrow\;k\le(D/\gamma)^2
+\end{align*}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Konzentration in Zahlen}
+Fehlerrate einer Hypothese, $n=1000$ Trainingsbeispiele, Toleranz $\gamma=0.05$.\\
+\hnsol\ Hoeffding: $P(|J-L|\ge0.05)\le2e^{-2\cdot0.0025\cdot1000}=2e^{-5}\approx\ora{0.013}$.\\
+Mit $k=10^6$ Hypothesen: $2\cdot10^6e^{-5}\gg1$ -- Schranke nutzlos; man braucht $n\ge3500$ (Kapitel Lerntheorie).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{5}{Lese-Tipps}
+\begin{itemize}
+\item Kreuzterme fallen weg, wenn Erwartungswert 0 und Unabhängigkeit.
+\item ``$\pm$ einfügen'' ist der Standardtrick (Bias--Varianz).
+\item Konzentration: Markov $\to$ Chernoff $\to$ Hoeffding; dann Union Bound für ``für alle $h$''.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum verschwindet der Kreuzterm $\E[(h^*-\bar h)(\bar h-h_S)]$?}{$h^*-\bar h$ ist konstant und $\E[\bar h-h_S]=0$.}{Wo geht die Union Bound ein?}{Sie macht aus ``für ein festes $h$'' ein ``für alle $h\in\mathcal H$'' (Faktor $k$).}{Warum begrenzen zwei Ungleichungen die Perceptron-Fehler?}{Projektion auf $u$ wächst linear, Norm nur wie $\sqrt k$: beides passt nur für $k\le(D/\gamma)^2$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Erst zerlegen, dann abschätzen: Fehler = Rauschen + Bias + Varianz.“
+\end{hnbanner}
+\end{hngrid}

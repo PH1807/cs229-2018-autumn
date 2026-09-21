@@ -1,0 +1,88 @@
+\hnheader[Fast jeder ML-Algorithmus ist angewandte Wahrscheinlichkeitsrechnung.][ML $=$ Wahrscheinlichkeit $+$ Optimierung]{Grundlagen:}{Wahrscheinlichkeit}{Bayes, Erwartungswerte, MLE \& MAP, Entropie}
+\hnsrc{Vorwissen zu CS229; angelehnt an section/cs229-prob.pdf, section/gaussians.pdf sowie hand-notes/ (Conditional Probability)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Grundregeln}
+\textbf{Summenregel}: $P(A)=\sum_bP(A,B{=}b)$ (Marginalisieren)\\
+\textbf{Produktregel}: $P(A,B)=P(A|B)P(B)$\\
+\textbf{Bedingt}: $P(A|B)=\frac{P(A\cap B)}{P(B)}$, $P(B)>0$\\
+\hlt{Bayes}: $P(A|B)=\frac{P(B|A)P(A)}{P(B)}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Unabhängigkeit}
+$A\indep B\iff P(A,B)=P(A)P(B)\iff P(A|B)=P(A)$.\\
+\textbf{Bedingt unabhängig}: $A\indep B\mid C\iff P(A,B|C)=P(A|C)P(B|C)$ -- Grundannahme von \ora{Naive Bayes} (Features unabhängig \emph{gegeben} die Klasse).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Venn-Diagramm}
+\centering
+\begin{tikzpicture}
+  \fill[hnpink!70] (0,0) circle(.95); \fill[hnblue!80,opacity=.7] (1.15,0) circle(.95);
+  \begin{scope}\clip (0,0) circle(.95); \fill[hnlilac] (1.15,0) circle(.95);\end{scope}
+  \draw[hnnavy] (0,0) circle(.95); \draw[hnnavy] (1.15,0) circle(.95);
+  \node[font=\scriptsize] at (-.45,0) {$A$}; \node[font=\scriptsize] at (1.6,0) {$B$}; \node[font=\tiny] at (.58,0) {$A\cap B$};
+  \node[font=\tiny,hnnavy] at (.58,-1.25) {$P(A|B)=$ Anteil von $A\cap B$ in $B$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Erwartungswert, Varianz, Kovarianz}
+\begin{align*}
+\E[X]&=\textstyle\sum_xxP(x)\;\text{bzw.}\;\int xp(x)dx\\
+\E[aX+bY]&=a\E X+b\E Y&&\why{Linearität}\\
+\mathrm{Var}(X)&=\E[(X-\E X)^2]=\E[X^2]-(\E X)^2\\
+\mathrm{Cov}(X,Y)&=\E[(X-\E X)(Y-\E Y)],\quad\rho=\tfrac{\mathrm{Cov}}{\sigma_X\sigma_Y}
+\end{align*}
+Unabhängig $\Rightarrow$ Cov $=0$ (umgekehrt nicht!). Mittelwert von $n$ iid: $\mathrm{Var}(\bar X)=\sigma^2/n$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Wichtige Verteilungen}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}p{1.75cm}p{2.5cm}p{1.6cm}p{1.35cm}@{}}
+\hline
+\textbf{Name}&\textbf{Träger / Dichte}&$\E$, Var&\textbf{Einsatz}\\\hline
+Bernoulli($\phi$)&$\phi^y(1-\phi)^{1-y}$&$\phi$, $\phi(1{-}\phi)$&LogReg\\
+Multinomial&$K$ Klassen&&Softmax\\
+Poisson($\lambda$)&$\lambda^ye^{-\lambda}/y!$&$\lambda$, $\lambda$&Zähldaten\\
+Gauß $\N(\mu,\sigma^2)$&$\frac{e^{-(y-\mu)^2/2\sigma^2}}{\sqrt{2\pi}\sigma}$&$\mu$, $\sigma^2$&Rauschen\\
+Mehrdim.\ Gauß&$\N(\mu,\Sigma)$&$\mu$, $\Sigma$&GDA, GP\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Bayes beim Medizintest}
+Prävalenz $1\%$, Sensitivität $95\%$, Spezifität $90\%$. Wie wahrscheinlich ist man krank bei positivem Test?\\
+\hnsol\ $P(+)=0.95\cdot0.01+0.10\cdot0.99=0.1085$.\\
+$P(\text{krank}|+)=\frac{0.95\cdot0.01}{0.1085}\approx\ora{8.8\%}$ -- trotz gutem Test klein, weil die Krankheit selten ist (\emph{Base-Rate-Fehler}). Genau das passiert bei Klassenungleichgewicht.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Maximum Likelihood (MLE)}
+Wähle $\theta$, das die Daten am wahrscheinlichsten macht:
+\[ \hat\theta=\arg\max_\theta\sum_{i=1}^{n}\log p(x^{(i)};\theta) \]
+(Log: Produkt $\to$ Summe, gleiches Maximum.) \emph{Beispiel Bernoulli}, $k$ Erfolge in $n$: $\ell=k\log\phi+(n{-}k)\log(1{-}\phi)$, $\ell'=\frac k\phi-\frac{n-k}{1-\phi}=0\Rightarrow\hat\phi=\frac kn$.\\
+Gauß: $\hat\mu=\frac1n\sum x_i$, $\hat\sigma^2=\frac1n\sum(x_i-\hat\mu)^2$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{MAP \& Bayes}
+\[ p(\theta|D)\propto p(D|\theta)\,p(\theta) \]
+\textbf{MAP}: $\arg\max[\log p(D|\theta)+\log p(\theta)]$ $=$ MLE + \emph{Regularisierer} (Gauß-Prior $\to$ L2, Laplace $\to$ L1).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{8}{Entropie, KL, Cross-Entropy}
+$H(p)=-\sum p\log p$, $\;H(p,q)=-\sum p\log q$\\
+$\mathrm{KL}(p\|q)=H(p,q)-H(p)\ge0$\\
+Cross-Entropy-Verlust $=$ MLE: minimiert KL zwischen Daten und Modell.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{9}{LLN \& CLT}
+\textbf{Gesetz der großen Zahlen}: $\bar X_n\to\E X$.\\
+\textbf{Zentraler Grenzwertsatz}: $\sqrt n(\bar X_n-\mu)\to\N(0,\sigma^2)$ -- warum Rauschen oft \emph{gaußsch} ist und Hoeffding/Konzentration wirkt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was besagt der Satz von Bayes?}{Posterior $=$ Likelihood $\times$ Prior / Evidenz.}{Wie lautet der MLE-Schätzer für $\phi$ bei $k$ Erfolgen in $n$ Versuchen?}{$\hat\phi=k/n$.}{Was ist der Zusammenhang MAP $\leftrightarrow$ Regularisierung?}{Log-Prior wirkt als Strafterm: Gauß $\to$ L2, Laplace $\to$ L1.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Alles Lernen ist Schließen unter Unsicherheit -- Wahrscheinlichkeit ist die Sprache dafür.“
+\end{hnbanner}
+\end{hngrid}

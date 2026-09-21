@@ -1,0 +1,117 @@
+\hnheader[Klassifikation: die Ausgabe ist eine Wahrscheinlichkeit zwischen 0 und 1.][Die Update-Regel sieht aus wie LMS -- ist aber ein anderes Modell!]{Logistische}{Regression}{Von Zahlen zu Wahrscheinlichkeiten}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Binäre Klassifikation, $y\in\{0,1\}$. Ein lineares Modell taugt nicht ($\theta\T x\notin[0,1]$). Lösung: \hlt{Sigmoid} quetscht alles in $(0,1)$:
+\[ g(z)=\frac{1}{1+e^{-z}} \]
+$h_\theta(x)=g(\theta\T x)=P(y{=}1\mid x;\theta)$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Likelihood}
+$P(y{=}1|x)=h_\theta(x)$, $P(y{=}0|x)=1-h_\theta(x)$. Kompakt: $P(y|x)=h^y(1-h)^{1-y}$.
+\[ \begin{aligned}\ell(\theta)=\sum_i\bigl[&y^{(i)}\log h^{(i)}\\&+(1-y^{(i)})\log(1-h^{(i)})\bigr]\end{aligned} \]
+Maximiere $\ell$ (Maximum Likelihood) $=$ minimiere die \ora{Cross-Entropy}.
+\hnleg{$n$ Beispiele, $h^{(i)}=h_\theta(x^{(i)})$ Vorhersage für Beispiel $i$, $\ell$ Log-Likelihood.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Sigmoid}
+\centering
+\begin{tikzpicture}[scale=.86,>=Stealth]
+  \draw[->,hnnavy] (-2.4,0)--(2.5,0) node[right,font=\scriptsize]{$z=\theta\T x$};
+  \draw[->,hnnavy] (0,-.1)--(0,2.5);
+  \draw[dashed,gray] (-2.4,1.1)--(2.4,1.1);
+  \draw[dashed,gray] (-2.4,2.2)--(2.4,2.2);
+  \node[font=\tiny,anchor=east] at (-2.4,2.2) {1};
+  \node[font=\tiny,anchor=east] at (-2.4,1.1) {0.5};
+  \draw[hnorange,very thick,domain=-2.4:2.4,samples=60,smooth] plot(\x,{2.2/(1+exp(-1.9*\x))});
+  \fill[hnpurple] (0,1.1) circle(.07);
+  \node[font=\scriptsize,hnpurple,anchor=west] at (.15,.75) {Grenze $z{=}0$};
+  \node[font=\scriptsize,hnorange] at (1.6,2.45) {Klasse 1};
+  \node[font=\scriptsize,hnorange] at (-1.6,.35) {Klasse 0};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Gradient Ascent}
+Ableiten liefert (mit $g'=g(1-g)$) die einfache Regel
+\[ \theta_j\leftarrow\theta_j+\alpha\bigl(y^{(i)}-h_\theta(x^{(i)})\bigr)x_j^{(i)} \]
+\hnleg{$\alpha$ Lernrate, $x_j^{(i)}$ Merkmal $j$ von Beispiel $i$, $y^{(i)}-h$ Fehler der Vorhersage.}
+Form \emph{identisch} zur LMS-Regel, aber $h$ ist nichtlinear. (Grund: GLM-Struktur.)
+\begin{pcode}[Logistische Regression (SGD)]
+\kw{init} $\theta\leftarrow 0$\\
+\kw{repeat} bis Konvergenz:\\
+\hii \kw{for} $i$ in zufälliger Reihenfolge:\\
+\hiii $h\leftarrow 1/(1+e^{-\theta^{\top}x_i})$\\
+\hiii $\theta\leftarrow\theta+\alpha\,(y_i-h)\,x_i$\\
+\kw{predict}: Klasse 1 falls $\theta^{\top}x\ge 0$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Newton-Verfahren (Fisher Scoring)}
+Nutzt Krümmung, konvergiert \ora{quadratisch}:
+\[ \theta\leftarrow\theta-H^{-1}\nabla_\theta\ell,\quad H=-X\T SX,\; S=\mathrm{diag}\bigl(h_i(1-h_i)\bigr) \]
+\hnleg{$H$ Hesse-Matrix (Krümmung), $\nabla_\theta\ell$ Gradient, $S$ Gewichtsmatrix, $d$ Anzahl Merkmale.}
+Wenige Iterationen (oft $<10$), aber jeder Schritt kostet $O(d^3)$.
+\begin{pcode}[Newton / IRLS]
+\kw{repeat} bis Konvergenz:\\
+\hii $h\leftarrow\sigma(X\theta)$\\
+\hii $S\leftarrow\mathrm{diag}(h\odot(1-h))$\\
+\hii $\theta\leftarrow\theta+(X^{\top}SX)^{-1}X^{\top}(y-h)$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{6}{Softmax (Mehrklassen)}
+$K$ Klassen, je ein Parametervektor $\theta_k$ ($j$ läuft über alle Klassen):
+\[ P(y{=}k|x)=\frac{e^{\theta_k\T x}}{\sum_{j=1}^{K}e^{\theta_j\T x}} \]
+Verlust: $-\log P(y|x)$ (Cross-Entropy). Für $K=2$: wieder Sigmoid.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{Entscheidungsgrenze}
+$\{x:\theta\T x=0\}$ ist eine \hlt{Hyperebene} $\Rightarrow$ lineares Modell. Schwelle 0.5 ist nur Konvention: höhere Schwelle $\to$ mehr Precision, niedrigere $\to$ mehr Recall.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=2]{Beispiel: Vorhersage + 1 Update}
+$\theta=(-3,1,1)$, $x=(1,2,3)$, $y=1$.\\
+$z=-3+2+3=2\Rightarrow h=\sigma(2)\approx0.88$: \ora{Klasse 1}.\\
+Update ($\alpha=0.5$): $(y-h)=0.12$\\
+$\Delta\theta=0.5\cdot0.12\cdot(1,2,3)=(0.06,0.12,0.18)$
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item liefert Wahrscheinlichkeiten
+\item konvex: kein lokales Minimum
+\item schnell, robust, gut interpretierbar
+\item Baseline für Klassifikation
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item nur lineare Grenzen (sonst Features/Kernel)
+\item bei perfekt trennbaren Daten $\|\theta\|\to\infty$ (Regularisieren!)
+\item empfindlich bei starkem Klassen-Ungleichgewicht
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item $h=\sigma(\theta\T x)$, MLE $=$ Cross-Entropy
+\item SGD-Regel: $\theta\mathrel{+}=\alpha(y-h)x$
+\item Newton: wenige, teure Schritte
+\item Softmax = Mehrklassen-Verallgemeinerung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{11}{Praxis, Anwendungen \& Querverweise}
+\textbf{Tipps:} Features skalieren, L2-Regularisierung gegen $\|\theta\|\to\infty$, bei Klassen-Ungleichgewicht Gewichte oder Schwelle anpassen, Wahrscheinlichkeiten auf Kalibrierung prüfen. \textbf{Anwendungen:} Spam- und Betrugserkennung, Risikoscores, Klickvorhersage, Kreditausfall. \textbf{Siehe auch:} GLMs (warum die Regel wie LMS aussieht), SVM (anderer Verlust), Neuronale Netze (letzte Schicht $=$ Softmax).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum hat die SGD-Regel die Form $(y-h)x$?}{Gradient der Log-Likelihood; $g'=g(1-g)$ kürzt sich heraus.}{Was passiert bei perfekt trennbaren Daten?}{Likelihood wächst weiter, $\|\theta\|\to\infty$ $\Rightarrow$ Regularisierung nötig.}{Vorteil von Newton gegenüber GD?}{Quadratische Konvergenz, wenige Iterationen; Nachteil: $O(d^3)$ pro Schritt.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Logistische Regression ist ein lineares Modell mit einem Wahrscheinlichkeits-Filter davor.“
+\end{hnbanner}
+\end{hngrid}

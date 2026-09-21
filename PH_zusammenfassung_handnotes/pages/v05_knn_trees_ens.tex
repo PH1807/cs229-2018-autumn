@@ -1,0 +1,39 @@
+\hnheader[Warum Entropie-Splits nie schaden und warum Mittelung die Varianz senkt -- plus Code für k-NN, Baum und Ensembles.][Konkavität + Jensen erklärt Information Gain]{k-NN, Bäume \& Ensembles:}{Vertiefung}{Herleitung und Code}
+\hnsrc{notes/cs229-notes-dt.pdf, notes/cs229-notes-ensemble.pdf (R.\ Townshend); hand-notes/ML Notes.pdf (k-NN, Random Forest, Ensemble); Herleitungen ausformuliert; Code: code/sk\_knn.py, sk\_trees.py, sk\_ensemble.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Information Gain $\ge0$ (Jensen)}
+\hnleg{$p$ Klassenverteilung im Knoten, $H(p)=-\sum_cp_c\log p_c$ Entropie (Unordnung), $R$ Knoten, $R_k$ Kind-Knoten, $w_k=|R_k|/|R|$ Anteil der Beispiele im Kind, $\mathrm{IG}$ Information Gain.}
+Elternverteilung $p=\sum_kw_kp_k$ ist der \emph{gewichtete Mittelwert} der Kinderverteilungen ($w_k=|R_k|/|R|$). Entropie $H$ ist konkav, also
+\[ H(p)=H\Bigl(\sum_kw_kp_k\Bigr)\ge\sum_kw_kH(p_k) \]
+$\Rightarrow\mathrm{IG}=H(p)-\sum_kw_kH(p_k)\ge0$; strikt $>0$, wenn die Kinder verschieden sind ($H$ \emph{strikt} konkav). Die Fehlerrate $1-\max p$ ist konkav, aber nicht strikt: Gleichheit möglich, $\mathrm{IG}=0$ (Beispiel Kapitel Decision Trees).
+\hnwords{Die Mischung zweier Verteilungen ist unordentlicher als der Durchschnitt ihrer Einzelunordnungen (Jensen). Ein Split macht die Kinder im Mittel also nie unreiner.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Varianz eines Ensembles}
+$X_i$ identisch verteilt, $\mathrm{Var}(X_i)=\sigma^2$, $\mathrm{Corr}=\rho$:
+\hnleg{$X_i$ Vorhersage des $i$-ten Modells, $n$ Anzahl Modelle, $\bar X=\frac1n\sum X_i$ Ensemble-Mittel, $\sigma^2$ Varianz eines Modells, $\rho$ Korrelation zweier Modelle, Cov Kovarianz.}
+\begin{align*}
+\mathrm{Var}(\bar X)&=\tfrac1{n^2}\sum_{i,j}\mathrm{Cov}(X_i,X_j)&&\why{Bilinearität}\\
+&=\tfrac1{n^2}\bigl(n\sigma^2+n(n{-}1)\rho\sigma^2\bigr)&&\why{$n$ Diagonal-, $n(n{-}1)$ Nebenterme}\\
+&=\rho\sigma^2+\tfrac{1-\rho}{n}\sigma^2
+\end{align*}
+$n\to\infty$: bleibt $\rho\sigma^2$ $\Rightarrow$ Korrelation senken (Bagging, Random Forest).
+\hnwords{Unabhängige Fehler mitteln sich weg ($\sigma^2/n$), gemeinsame nicht ($\rho\sigma^2$).}
+\end{hnp}
+%
+\hnsnip[hnpurple]{sk_knn}{k-Nearest Neighbors: Einfluss von $k$}
+%
+\hnsnip[hngreen]{sk_trees}{Entscheidungsbaum vs.\ Random Forest, Feature-Importance}
+%
+\hnsnip[hnorange]{sk_ensemble}{AdaBoost, Voting und Stacking}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum ist der Information Gain nie negativ?}{Entropie ist konkav: $H(\sum w_kp_k)\ge\sum w_kH(p_k)$ (Jensen).}{Warum senkt Bagging die Varianz nicht auf null?}{Es bleibt $\rho\sigma^2$; nur weniger Korrelation $\rho$ hilft weiter (Random Forest).}{Warum wird bei k-NN skaliert?}{Ein Feature mit großer Skala dominiert den Abstand.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Mehrere Bäume, weniger Varianz -- solange sie nicht alle dasselbe lernen.“
+\end{hnbanner}
+\end{hngrid}

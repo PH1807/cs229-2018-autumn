@@ -1,0 +1,58 @@
+\hnheader[Ridge, MAP und Lasso ausgerechnet -- Regularisierung ist ein Prior in Verkleidung.][$\lambda=\sigma^2/\tau^2$: starker Prior $=$ starke Regularisierung]{Regularisierung:}{Vertiefung}{Herleitung und Code}
+\hnsrc{main\_notes.pdf Kap.\ 9 (Regularisierung, Bayes); Schritte ergänzt; Code: code/sk\_regularization.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{1}{Ridge-Lösung}
+$J_\lambda=\frac12\|X\theta-y\|^2+\frac\lambda2\|\theta\|^2$:
+\hnleg{$\lambda\ge0$ Stärke der Regularisierung, $\|\theta\|^2=\sum\theta_j^2$, $I$ Einheitsmatrix, $\succ0$ positiv definit (alle Eigenwerte $>0$), $\lambda_i$ Eigenwerte von $X\T X$.}
+\begin{align*}
+\nabla J_\lambda&=X\T(X\theta-y)+\lambda\theta=0\\
+(X\T X+\lambda I)\,\theta&=X\T y\;\Rightarrow\;\theta_\lambda=(X\T X+\lambda I)^{-1}X\T y
+\end{align*}
+$X\T X+\lambda I\succ0$ für $\lambda>0$: \emph{immer invertierbar}. Eigenwerte $\lambda_i\to\lambda_i+\lambda$: kleine Richtungen werden gedämpft.
+\hnwords{Der Strafterm zieht $\theta$ zum Nullpunkt. Die Lösung sieht aus wie die Normalgleichung mit einem zusätzlichen $\lambda$ auf der Diagonalen.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{2}{MAP $=$ Ridge}
+Prior $\theta\sim\N(0,\tau^2I)$, Rauschen $\N(0,\sigma^2)$:
+\hnleg{$p(\theta)$ Prior (Vorwissen über $\theta$), $\tau^2$ Prior-Varianz, $\sigma^2$ Rauschvarianz, $\theta_{\mathrm{MAP}}$ wahrscheinlichstes $\theta$ nach Sicht der Daten.}
+\begin{align*}
+\theta_{\mathrm{MAP}}&=\arg\max\bigl[\log p(y|X,\theta)+\log p(\theta)\bigr]\\
+&=\arg\min\bigl[\tfrac1{2\sigma^2}\|X\theta-y\|^2+\tfrac1{2\tau^2}\|\theta\|^2\bigr]&&\why{$-\log$ der Gauß-Dichten}
+\end{align*}
+$=\arg\min\frac12\|X\theta-y\|^2+\frac{\lambda}{2}\|\theta\|^2$ mit $\lambda=\frac{\sigma^2}{\tau^2}$. Starker Prior (kleines $\tau$) $=$ großes $\lambda$.
+\hnwords{MAP maximiert Likelihood mal Prior. Der Minus-Logarithmus davon ist Fehlerquadratsumme plus Strafterm, also genau Ridge.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{3}{Lasso: Soft-Thresholding}
+\hnleg{$z$ unregularisierte Lösung, $\lambda$ Stärke, $s\in\partial|\theta|$ Subgradient (bei $\theta=0$ ganzes Intervall $[-1,1]$).}
+1D (bzw.\ orthonormale Designs): $\min_\theta\frac12(\theta-z)^2+\lambda|\theta|$. Subgradient: $\theta-z+\lambda s=0$ mit $s\in\partial|\theta|$.
+\begin{align*}
+\theta>0:&\;\theta=z-\lambda\;(z>\lambda)\qquad\theta<0:\;\theta=z+\lambda\;(z<-\lambda)\\
+\theta=0:&\;|z|\le\lambda
+\end{align*}
+$\theta^*=\mathrm{sign}(z)\max(|z|-\lambda,0)$: kleine Koeffizienten werden \emph{exakt Null} (Sparsität).
+\hnwords{Lasso schiebt jeden Koeffizienten um $\lambda$ Richtung Null; was betragsmäßig kleiner als $\lambda$ ist, landet auf Null.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Ridge-Schrumpfung nachgerechnet}
+1D ohne Bias: $\sum xy=11$, $\sum x^2=14$ (Summen über die Datenpunkte), $\theta$ Steigung, $\lambda$ Stärke. Ridge: $(14+\lambda)\theta=11$.\\
+\hnsol\ $\lambda=0$: $\theta=0.786$;\; $\lambda=2$: $\frac{11}{16}=0.688$;\; $\lambda=14$: $\frac{11}{28}=\ora{0.393}$.\\
+Lasso ($z=0.786$): $\lambda=0.3\to0.486$;\; $\lambda=1\to\ora{0}$ (exakt null).
+\end{hnex}
+%
+\hnsnip[hnorange]{sk_regularization}{Ridge schrumpft, Lasso macht spärlich}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{4}{Lesart der Ausgabe}
+Nur $4$ von $20$ Features sind informativ. \textbf{Ridge} schrumpft die Norm ($77.9\to52.7$), setzt aber \emph{keinen} Koeffizienten auf null. \textbf{Lasso} setzt $16$ von $20$ Koeffizienten \emph{exakt} auf null; übrig bleiben $4$, so viele wie informative Features (Sparsität, Herleitung: Soft-Thresholding). $\alpha$ steuert die Stärke; sklearn nennt den Regularisierungsparameter \texttt{alpha} (bei \texttt{LogisticRegression}: $C=1/\lambda$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Wie hängen $\lambda$ und der Prior zusammen?}{$\lambda=\sigma^2/\tau^2$ (Rauschvarianz durch Prior-Varianz).}{Warum macht L1 Koeffizienten exakt null?}{Der Subgradient von $|\theta|$ ist bei $0$ das Intervall $[-1,1]$; für $|z|\le\lambda$ liegt das Optimum bei $0$.}{Warum ist $X\T X+\lambda I$ immer invertierbar?}{Alle Eigenwerte sind $\ge\lambda>0$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Was wie ein Trick aussieht, ist meist ein Prior in Verkleidung.“
+\end{hnbanner}
+\end{hngrid}

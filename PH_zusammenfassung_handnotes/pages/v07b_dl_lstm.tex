@@ -1,0 +1,17 @@
+\hnheader[LSTM in PyTorch und die Parameterzahlen der Architekturen nachgerechnet.][Parameter zählen prüft, ob man die Architektur verstanden hat]{DL-Praxis:}{Vertiefung 2}{LSTM, Parameterzahlen und Selbsttest}
+\hnsrc{main\_notes.pdf (Deep Learning); Adam, Dropout, CNN, LSTM als Web-Ergänzung (markiert); Herleitung ausformuliert; Code: code/torch\_mlp.py, torch\_cnn.py, torch\_lstm.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\hnsnip[hngreen]{torch_lstm}{LSTM-Sequenzklassifikator}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{2}{Lesart der Ausgaben}
+\hnleg{Conv: $\text{Kern}^2\cdot\text{Eingangskanäle}\cdot\text{Ausgangskanäle}+\text{Ausgangskanäle}$ (Bias); FC: Eingänge $\times$ Ausgänge $+$ Bias; LSTM: 4 Gates $\times$ Hidden $\times$ (Eingabe $+$ Hidden $+$ Bias).}
+\textbf{MLP}: Verlust $0.45\to0.01$, Accuracy $0.86\to0.97$ auf den Moons-Daten (Trainingsdaten, mit Dropout im Training). \textbf{CNN}: $28{\times}28\to14{\times}14\to7{\times}7$, Conv1 hat $80$ Parameter, insgesamt $9098$ (der FC-Teil $16\cdot49\cdot10+10=7850$ dominiert). \textbf{LSTM}: $1523$ Parameter für Eingabe $5$, versteckt $16$: $4\cdot16\cdot(5+16+1)=1408$ plus Kopf $16\cdot3+3=51$ plus zweiter Bias-Vektor $64$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum teilt Adam durch $1-\beta_1^t$?}{$m_t$ startet bei $0$: $\E m_t=(1-\beta_1^t)g$ ist zu klein, die Korrektur skaliert zurück.}{Wie viele Parameter hat Conv $3{\times}3$ ($1\to8$)?}{$3\cdot3\cdot1\cdot8+8=80$.}{Was macht \texttt{opt.zero\_grad()}?}{Löscht die akkumulierten Gradienten vor dem nächsten Backward-Pass.}
+\end{hnp}
+%
+\end{hngrid}

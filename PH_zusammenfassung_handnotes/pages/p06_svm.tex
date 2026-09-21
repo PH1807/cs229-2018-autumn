@@ -1,0 +1,117 @@
+\hnheader[Finde die Trennlinie mit dem größten Abstand zu beiden Klassen.][Nur die Support Vectors ($\alpha_i>0$) bestimmen die Grenze!]{Support Vector}{Machines}{Maximaler Margin, Dualität \& Kernel}
+\hnsrc{main\_notes.pdf (Kap.\ SVM), notes/cs229-notes3.pdf, materials/smo.pdf, section/cs229-cvxopt2.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee: Margin}
+Labels $y\in\{-1,+1\}$, Klassifikator $\mathrm{sign}(w\T x+b)$.\\
+\textbf{Funktionaler Margin:} $\hat\gamma^{(i)}=y^{(i)}(w\T x^{(i)}+b)$\\
+\textbf{Geometrischer Margin:} $\gamma^{(i)}=\hat\gamma^{(i)}/\|w\|$ (echter Abstand).\\
+Ziel: den \hlt{kleinsten} geometrischen Margin \emph{maximieren}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Primal (trennbar)}
+Normierung $\min_i\hat\gamma^{(i)}=1$ liefert ein konvexes quadratisches Programm:
+\[ \min_{w,b}\tfrac12\|w\|^2\;\;\text{s.t.}\;\;y^{(i)}(w\T x^{(i)}+b)\ge1 \]
+Margin-Breite $=2/\|w\|$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze}
+\centering
+\begin{tikzpicture}[scale=.72]
+  \draw[hnnavy,thick] (.2,.4)--(4.2,3.2);
+  \draw[hnnavy,dashed] (.2,1.05)--(4.2,3.85);
+  \draw[hnnavy,dashed] (.2,-.25)--(4.2,2.55);
+  \foreach \x/\y in {.6/2.0,1.2/2.6,1.9/3.2,.9/1.6,2.4/3.5}{\fill[hnpurple] (\x,\y) circle(.07);}
+  \foreach \x/\y in {2.3/.5,3.1/.9,3.5/1.4,1.7/.2,3.9/.6}{\fill[hnorange] (\x,\y) circle(.07);}
+  \draw[hnrose,thick] (1.65,1.45) circle(.13);\fill[hnpurple] (1.65,1.45) circle(.07);
+  \draw[hnrose,thick] (2.65,1.31) circle(.13);\fill[hnorange] (2.65,1.31) circle(.07);
+  \node[font=\tiny,hnrose] at (3.2,2.35) {Support Vectors};
+  \draw[<->,hnnavy] (2.5,1.94)--(2.2,2.4);
+  \node[font=\tiny] at (2.95,2.0) {Margin};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Dual-Form \& Kernel}
+Lagrange: $w=\sum_i\alpha_iy^{(i)}x^{(i)}$. Dual-Problem:
+\[ \max_\alpha\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy^{(i)}y^{(j)}\langle x^{(i)},x^{(j)}\rangle \]
+$\text{s.t. }\alpha_i\ge0,\;\sum_i\alpha_iy^{(i)}=0$. \hlt{Nur Skalarprodukte} $\Rightarrow$ ersetze durch $K(x^{(i)},x^{(j)})$:
+\[ f(x)=\sum_i\alpha_iy^{(i)}K(x^{(i)},x)+b \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Soft-Margin (nicht trennbar)}
+Schlupfvariablen $\xi_i\ge0$ erlauben Verletzungen:
+\[ \min_{w,b,\xi}\tfrac12\|w\|^2+C\sum_i\xi_i\;\;\text{s.t.}\;\;y^{(i)}(w\T x^{(i)}+b)\ge1-\xi_i \]
+Dual: nur $0\le\alpha_i\le C$. Gleichbedeutend mit \ora{Hinge-Verlust} $\xi_i=\max(0,1-y^{(i)}f(x^{(i)}))$.\\
+$C$ groß $\to$ wenige Fehler (Overfitting), $C$ klein $\to$ großer Margin.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnrose]{6}{KKT-Bedingungen}
+Allgemein: Primal-/Dual-Zulässigkeit, \emph{Complementary Slackness} $\alpha_ig_i=0$, Stationarität. Für die SVM:
+\begin{itemize}
+\item $\alpha_i=0\Rightarrow y_if_i\ge1$
+\item $0<\alpha_i<C\Rightarrow y_if_i=1$
+\item $\alpha_i=C\Rightarrow y_if_i\le1$
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=4,acc=hnpurple]{7}{SMO-Algorithmus (vereinfacht)}
+Aktualisiert immer \emph{zwei} $\alpha$ gleichzeitig (wegen $\sum\alpha_iy_i=0$). Grenzen: $y_i\ne y_j$: $L=\max(0,\alpha_j-\alpha_i)$, $H=\min(C,C+\alpha_j-\alpha_i)$; sonst $L=\max(0,\alpha_i+\alpha_j-C)$, $H=\min(C,\alpha_i+\alpha_j)$.
+\begin{pcode}[Simplified SMO]
+$\alpha\leftarrow0,\;b\leftarrow0$\\
+\kw{repeat} bis sich kein $\alpha$ mehr ändert:\\
+\hii \kw{for} $i=1..n$: \kw{if} $\alpha_i$ verletzt KKT (Toleranz):\\
+\hiii wähle $j\ne i$ zufällig; $E_k\leftarrow f(x_k)-y_k$\\
+\hiii $\eta\leftarrow2K_{ij}-K_{ii}-K_{jj}$;\; \kw{if} $\eta=0$: \kw{continue}\\
+\hiii $\alpha_j\leftarrow\mathrm{clip}_{[L,H]}\bigl(\alpha_j-y_j(E_i-E_j)/\eta\bigr)$\\
+\hiii $\alpha_i\leftarrow\alpha_i+y_iy_j(\alpha_j^{\mathrm{alt}}-\alpha_j)$\\
+\hiii $b\leftarrow$ so, dass KKT für $i,j$ gilt (Mittel von $b_1,b_2$)
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=4]{Beispiel: 1D-SVM von Hand}
+\hnq\ $x=-1,0$ mit $y=-1$; $x=2,3$ mit $y=+1$. Finde $w,b$, $\alpha$ und klassifiziere $x=1.4$.\\
+\hnsol\ Support Vectors: $x=0$ ($y{=}-1$) und $x=2$ ($y{=}+1$): $b=-1$, $2w+b=1\Rightarrow w=1$.\\
+Margin-Breite $2/\|w\|=2$, Grenze bei $x=1$. Kontrolle: $x=3$: $f=2\ge1$ \checkmark, $x=-1$: $y f=2\ge1$ \checkmark.\\
+Dual: $w=2\alpha_{(2)}=1\Rightarrow\alpha_{(2)}=0.5$, $\sum\alpha y=0\Rightarrow\alpha_{(0)}=0.5$; alle anderen $\alpha=0$.\\
+$f(1.4)=1.4-1=0.4>0\Rightarrow$ Klasse $\ora{+1}$.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{11}{Varianten, Kernels \& Praxis (aus den ML Notes)}
+\textbf{Linear}, \textbf{nichtlinear} (Kernel), \textbf{SVR} (Regression, $\varepsilon$-Schlauch). Kernels: linear, Polynom $(\gamma x\T z+r)^d$, RBF $e^{-\gamma\|x-z\|^2}$, Sigmoid. $\gamma$ klein: glatt; groß: lokal, Overfitting. Praxis: $C,\gamma$ per CV, Features skalieren, Multiklasse one-vs-rest, erst linear, dann RBF.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item konvex, globales Optimum
+\item Kernel $\Rightarrow$ nichtlinear
+\item sparse: nur Support Vectors zählen
+\item gut bei hoher Dimension
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item Training teuer bei großem $n$
+\item liefert keine Wahrscheinlichkeiten
+\item Wahl von $C$ und Kernel-Parametern
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{10}{Key Takeaways}
+\begin{hnchk}
+\item Max.\ Margin: $\min\frac12\|w\|^2$
+\item Dual + Kernel: $f=\sum\alpha_iy_iK+b$
+\item Soft-Margin: $C$ steuert Trade-off
+\item SMO: 2 $\alpha$ pro Schritt
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was sind Support Vectors?}{Punkte mit $\alpha_i>0$; nur sie bestimmen die Grenze.}{Rolle von $C$?}{Klein: großer Margin, mehr Fehler; groß: wenige Fehler, Overfitting-Risiko.}{Warum sind SVMs kernelfähig?}{Das Dual enthält nur $\langle x_i,x_j\rangle\to K(x_i,x_j)$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Nicht die Masse der Daten entscheidet, sondern die wenigen Punkte am Rand.“
+\end{hnbanner}
+\end{hngrid}

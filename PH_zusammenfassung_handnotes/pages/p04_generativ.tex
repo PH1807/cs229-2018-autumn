@@ -1,0 +1,114 @@
+\hnheader[Statt $p(y|x)$ direkt zu lernen: modelliere, wie die Daten jeder Klasse aussehen.][Bayes: $p(y|x)\propto p(x|y)\,p(y)$]{Generative}{Modelle}{Gaussian Discriminant Analysis \& Naive Bayes}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Diskriminativ vs.\ generativ}
+\textbf{Diskriminativ} (LogReg): lernt $p(y|x)$ direkt.\\
+\textbf{Generativ}: lernt $p(x|y)$ und $p(y)$, klassifiziert per Bayes:
+\[ p(y|x)=\frac{p(x|y)\,p(y)}{p(x)} \]\[ p(x)=\sum_y p(x|y)p(y) \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{GDA-Modell}
+$x|y$ ist multivariat normalverteilt, gemeinsame Kovarianz $\Sigma$:
+\begin{align*}
+y&\sim\mathrm{Bernoulli}(\phi)\\
+x|y{=}k&\sim\N(\mu_k,\Sigma)
+\end{align*}
+Dichte: $\frac{1}{(2\pi)^{d/2}|\Sigma|^{1/2}}e^{-\frac12(x-\mu)\T\Sigma^{-1}(x-\mu)}$
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: zwei Gauß-Wolken}
+\centering
+\begin{tikzpicture}
+  \draw[->,hnnavy] (0,0)--(4.7,0); \draw[->,hnnavy] (0,0)--(0,3.4);
+  \foreach \r in {.35,.65,.95}{
+    \draw[hnorange,rotate around={25:(1.5,1.2)}] (1.5,1.2) ellipse ({\r*1.15} and {\r*.65});
+    \draw[hnpurple,rotate around={25:(3.2,2.3)}] (3.2,2.3) ellipse ({\r*1.15} and {\r*.65});}
+  \fill[hnorange] (1.5,1.2) circle(.06) node[below,font=\tiny]{$\mu_0$};
+  \fill[hnpurple] (3.2,2.3) circle(.06) node[above,font=\tiny]{$\mu_1$};
+  \draw[hnnavy,very thick,dashed] (.9,2.9)--(3.9,.4);
+  \node[font=\tiny,hnnavy] at (3.9,.15) {lineare Grenze};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{GDA: Schätzer (MLE) \& Ablauf}
+\hnleg{$\I\{\cdot\}$ Indikator (1, wenn wahr), $n$ Anzahl Beispiele, $\hat\phi$ Anteil der Klasse 1, $\hat\mu_k$ Klassenmittel, $\hat\Sigma$ gemeinsame Kovarianz.}
+\[ \hat\phi=\tfrac1n\sum_i\I\{y^{(i)}{=}1\},\quad \hat\mu_k=\frac{\sum_i\I\{y^{(i)}{=}k\}x^{(i)}}{\sum_i\I\{y^{(i)}{=}k\}} \]
+\[ \hat\Sigma=\tfrac1n\sum_i(x^{(i)}-\hat\mu_{y^{(i)}})(x^{(i)}-\hat\mu_{y^{(i)}})\T \]
+\begin{pcode}[GDA]
+\kw{train}: $\hat\phi,\hat\mu_0,\hat\mu_1,\hat\Sigma$ aus den Daten zählen/mitteln\\
+\kw{predict}($x$):\\
+\hii $s_k\leftarrow\log\mathcal N(x;\hat\mu_k,\hat\Sigma)+\log p(y{=}k)$\\
+\hii \kw{return} $\arg\max_k s_k$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Naive Bayes}
+\hlt{Naive} Annahme: Features sind gegeben $y$ unabhängig:
+\[ p(x|y)=\prod_{j=1}^{d}p(x_j|y) \]
+Spam-Filter ($x_j\in\{0,1\}$: Wort $j$ vorhanden?, $d$ Wörter, $\hat\phi_{j|k}=P(x_j{=}1|y{=}k)$) mit \ora{Laplace-Glättung} gegen Nullwahrscheinlichkeiten:
+\[ \hat\phi_{j|k}=\frac{1+\sum_i\I\{x_j^{(i)}{=}1,y^{(i)}{=}k\}}{2+\sum_i\I\{y^{(i)}{=}k\}} \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Naive Bayes: Ablauf}
+\begin{pcode}[Naive Bayes (binäre Features)]
+\kw{train}: für jede Klasse $k$, Feature $j$:\\
+\hii $\hat\phi_{j|k}\leftarrow(1+\#\{x_j{=}1,y{=}k\})/(2+\#\{y{=}k\})$\\
+\hii $\hat p(k)\leftarrow\#\{y{=}k\}/n$\\
+\kw{predict}($x$): \kw{return} $\arg\max_k$\\
+\hii $\log\hat p(k)+\sum_j\log\hat p(x_j|k)$\\
+\cm{\# Summe der Logs statt Produkt: numerisch stabil}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Spam-Filter mit einem Wort}
+\hnq\ 10 Trainingsmails: 4 Spam (davon 3 mit „Gratis“), 6 Ham (davon 1 mit „Gratis“). Neue Mail enthält „Gratis“.\\
+\hnsol\ $p(\text{Spam})=0.4$; mit Laplace: $P(\text{Gratis}|\text{Spam})=\frac{3+1}{4+2}=0.67$, $P(\text{Gratis}|\text{Ham})=\frac{1+1}{6+2}=0.25$.\\
+Spam: $0.67\cdot0.4=0.267$, Ham: $0.25\cdot0.6=0.150$.\\
+Normiert: $P(\text{Spam}|x)=0.267/0.417\approx\ora{0.64}\Rightarrow$ Spam.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{7}{GDA vs.\ LogReg}
+Ist $p(x|y)$ wirklich Gauß, hat der Posterior \emph{immer} die logistische Form $1/(1+e^{-\theta\T x})$.\\
+\textbf{GDA}: stärkere Annahmen $\Rightarrow$ bei wenig Daten und richtiger Annahme besser.\\
+\textbf{LogReg}: schwächere Annahmen $\Rightarrow$ robuster, wenn die Gauß-Annahme verletzt ist.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Vorteile}
+\begin{hnpro}
+\item sehr schnell, kein Iterieren
+\item wenig Daten reichen
+\item skaliert (Naive Bayes)
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{9}{Grenzen}
+\begin{hncon}
+\item starke Verteilungsannahmen
+\item „naiv“: korrelierte Features
+\item Wahrscheinlichkeiten oft schlecht kalibriert
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{10}{Key Takeaways \& Anwendungen}
+\begin{hnchk}
+\item Generativ: $p(x|y)p(y)$ + Bayes
+\item GDA: Gauß, gleiches $\Sigma$ $\Rightarrow$ lineare Grenze
+\item Naive Bayes: Unabhängigkeit + Laplace-Glättung
+\item Rechnen mit Log-Wahrscheinlichkeiten (stabil)
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{+}{Naive-Bayes-Varianten \& allgemeine Glättung (aus den ML Notes)}
+\textbf{Gaussian NB}: stetige Features, $x_j|y\sim\N$. \textbf{Multinomial NB}: Wortzähler (Text). \textbf{Bernoulli NB}: Wort vorhanden ja/nein. Allgemeine Glättung: $P(x_i|C)=\frac{\mathrm{count}(x_i,C)+\alpha}{\mathrm{count}(C)+\alpha V}$ ($V$ Vokabulargröße, $\alpha{=}1$ Laplace; für Bernoulli $V{=}2$).\\
+\emph{Beispiel} (Vokabular win, cash, prize, offer): $P(\text{Spam})=0.6$, $P(\text{win}|S)=0.4$, $P(\text{cash}|S)=0.3$, $P(\text{prize}|S)=0.2$; Ham: $0.4,\,0.1,\,0.1,\,0.05$. Mail ``win cash prize'': Spam $0.6\cdot0.4\cdot0.3\cdot0.2=0.0144$ vs.\ Ham $0.4\cdot0.1\cdot0.1\cdot0.05=0.0002$ $\Rightarrow$ \ora{Spam}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was modelliert GDA (vs.\ LogReg)?}{$p(x|y)$ und $p(y)$ (Gauß, gleiches $\Sigma$); Klassifikation per Bayes.}{Wozu Laplace-Glättung?}{Verhindert $P=0$ bei ungesehenen Kombinationen (Zähler $+1$, Nenner $+2$).}{Wann schlägt LogReg GDA?}{Wenn die Gauß-Annahme verletzt ist (schwächere Annahmen, robuster).}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Generative Modelle können neue Daten erzeugen -- diskriminative nur sortieren.“
+\end{hnbanner}
+\end{hngrid}

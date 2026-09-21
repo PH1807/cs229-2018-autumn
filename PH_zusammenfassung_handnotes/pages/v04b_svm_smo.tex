@@ -1,0 +1,31 @@
+\hnheader[Wie wird das Dual in der Praxis gelöst? SMO, ein Rechenbeispiel und getesteter Code.][Zwei $\alpha$ auf einmal: eine Parabel statt eines großen QP]{SVM:}{Praxis}{SMO, Beispiel und Code mit sklearn}
+\hnsrc{main\_notes.pdf Kap.\ 6 (Margins, Lagrange duality, dual form, SMO), materials/smo.pdf, section/cs229-cvxopt2.pdf; Schritte ergänzt; Code: code/sk\_svm.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{SMO: zwei $\alpha$ gleichzeitig}
+\hnleg{$\zeta$ Konstante, $E_k=f(x_k)-y_k$ Fehler von Punkt $k$, $\eta$ Krümmung der Parabel (nicht der GLM-Parameter), $[L,H]$ erlaubtes Intervall für $\alpha_j$.}
+Wegen $\sum\alpha_iy_i=0$ kann ein einzelnes $\alpha$ nicht allein geändert werden. Wähle $\alpha_i,\alpha_j$: $\alpha_i=\zeta-y_iy_j\alpha_j$ (Konstante $\zeta$). Eingesetzt wird $W$ eine \emph{quadratische Funktion von $\alpha_j$}; Nullsetzen der Ableitung liefert
+\[ \alpha_j\leftarrow\alpha_j-\frac{y_j(E_i-E_j)}{\eta},\quad\eta=2K_{ij}-K_{ii}-K_{jj},\;E_k=f(x_k)-y_k \]
+und anschließendes Clipping auf $[L,H]$ (aus $0\le\alpha\le C$), dann $\alpha_i$ aus der Gleichheit.
+\hnwords{Mit zwei freien $\alpha$ bleibt nur eine Parabel in einer Variablen: sie lässt sich exakt lösen, ohne ein großes QP zu rechnen.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Dual in 1D lösen}
+Punkte $x=0$ ($y{=}-1$, Gewicht $\alpha_a$) und $x=2$ ($y{=}+1$, Gewicht $\alpha_b$); $W$ ist die duale Zielfunktion.\\
+\hnsol\ Nebenbedingung: $\alpha_a=\alpha_b=:\alpha$. Nur der Term $(b,b)$ ist $\ne0$ (wegen $x_a=0$):\\
+$W=2\alpha-\frac12\alpha^2\cdot(2\cdot2)=2\alpha-2\alpha^2$, $W'=2-4\alpha=0\Rightarrow\alpha=\ora{0.5}$, $W=0.5$.\\
+$w=\sum\alpha_iy_ix_i=0.5\cdot2=1$ $\Rightarrow$ $\frac12\|w\|^2=0.5=W$ \hlm{(Primal $=$ Dual)}.
+\end{hnex}
+%
+\hnsnip[hnteal]{sk_svm}{SVM mit RBF-Kernel und Gitter-Suche für $C,\gamma$}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum ist $\sum_i\alpha_iy_i=0$?}{Ableitung der Lagrange-Funktion nach $b$ gleich Null.}{Woher kommt die Schranke $\alpha_i\le C$?}{Aus $C-\alpha_i-\mu_i=0$ mit $\mu_i\ge0$ (Multiplikator der Bedingung $\xi_i\ge0$).}{Warum ändert SMO zwei $\alpha$?}{Die Gleichheitsbedingung $\sum\alpha_iy_i=0$ verbietet ein einzelnes Update.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Primal in $w$, Dual in $\alpha$ -- und im Dual stecken nur noch Skalarprodukte.“
+\end{hnbanner}
+%
+\end{hngrid}

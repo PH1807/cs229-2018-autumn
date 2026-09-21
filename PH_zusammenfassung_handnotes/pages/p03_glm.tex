@@ -1,0 +1,110 @@
+\hnheader[Ein Rezept für viele Modelle: Verteilung wählen, Modell folgt automatisch.][Lineare, logistische und Poisson-Regression sind alle GLMs!]{Generalisierte}{Lineare Modelle}{Regression und Klassifikation unter einem Dach}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Statt für jedes Problem ein neues Modell zu erfinden: \hlt{Wähle die zu $y$ passende Verteilung} (Zahl, Ja/Nein, Zähldaten\ldots), der Rest ergibt sich. Das erklärt, warum die Update-Regeln so ähnlich aussehen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Exponentialfamilie}
+\[ p(y;\eta)=b(y)\exp\bigl(\eta\T T(y)-a(\eta)\bigr) \]
+$\eta$: natürlicher Parameter, $T(y)$: hinreichende Statistik, $a(\eta)$: Log-Partitionsfunktion, $b(y)$: Basismaß.\\
+Gauß, Bernoulli, Poisson, Multinomial u.\,v.\,m.\ gehören dazu.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Pipeline}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={font=\scriptsize,draw=hnnavy,rounded corners=1.5pt,fill=hnblue!50,inner sep=2.5pt}]
+  \node (x) at (0,2.6) {Eingabe $x$};
+  \node (e) at (0,1.75) {$\eta=\theta\T x$ (linear)};
+  \node (h) at (0,.9) {$h(x)=\E[y|x]=g(\eta)$};
+  \node (y) at (0,.05) {$y\sim\mathrm{ExpFam}(\eta)$};
+  \draw[->] (x)--(e); \draw[->] (e)--(h); \draw[->] (h)--(y);
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Die drei GLM-Annahmen}
+\begin{enumerate}
+\item $y\mid x;\theta\sim\mathrm{ExpFam}(\eta)$
+\item Hypothese: $h(x)=\E[T(y)\mid x;\theta]$
+\item Linearer Zusammenhang: $\eta=\theta\T x$
+\end{enumerate}
+Die \ora{Responsefunktion} $g(\eta)=\E[T(y);\eta]$ verbindet $\eta$ mit dem Mittelwert; ihre Inverse heißt \ora{Linkfunktion}. Das Lernen (Maximum Likelihood) ergibt für alle GLMs dieselbe Form ($\alpha$ Lernrate, $h_\theta(x)=\E[y|x]$ Vorhersage):
+\[ \theta\leftarrow\theta+\alpha\bigl(y-h_\theta(x)\bigr)x \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Bekannte Vertreter}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{2.2cm}p{2.0cm}p{4.0cm}@{}}
+\hline
+\textbf{Verteilung}&\textbf{Response}&\textbf{Modell}\\\hline
+Gauß&Identität&Lineare Regression\\
+Bernoulli&Sigmoid&Logistische Regression\\
+Multinomial&Softmax&Softmax-Regression\\
+Poisson&$e^{\eta}$&Poisson-Regression (Zähldaten)\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Rezept: GLM bauen}
+\begin{pcode}[GLM in 4 Schritten]
+1. Verteilung passend zu $y$ wählen\\
+\hii (reell $\to$ Gauß, 0/1 $\to$ Bernoulli,\\
+\hii \ Zählwert $\to$ Poisson, $K$ Klassen $\to$ Multinomial)\\
+2. In Exponentialform bringen: $\eta,T,a,b$ ablesen\\
+3. $h(x)=g(\eta)$ mit $\eta=\theta^{\top}x$\\
+4. Log-Likelihood maximieren (SGD):\\
+\hii $\theta\leftarrow\theta+\alpha(y-h(x))\,x$
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Poisson-Regression (Zähldaten)}
+\hnq\ Besucher pro Stunde. Modell $\theta=(0.5,\,0.4)$, Feature $x=(1,\,2)$ (z.\,B.\ Temperatur-Score). Wie viele Besucher erwartet man?\\
+\hnsol\ $\eta=\theta\T x=0.5+0.8=1.3$, Response $h=e^{\eta}=e^{1.3}\approx\ora{3.67}$.\\
+Warum $e^{\eta}$? Poisson: $p(y;\lambda)=\lambda^{y}e^{-\lambda}/y!$ mit $\eta=\log\lambda$ $\Rightarrow$ $\lambda=e^{\eta}>0$ (Zählwerte sind nie negativ).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item einheitliche Theorie \& Update-Regel
+\item passende Verteilung $\Rightarrow$ bessere Modelle
+\item Ausgaben immer im gültigen Bereich
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item Verteilung muss zur Exponentialfamilie gehören
+\item $\eta$ bleibt linear in $x$
+\item Wahl der Verteilung ist Modellannahme
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Erst Verteilung, dann Modell
+\item $\eta=\theta\T x$, $h=g(\eta)$
+\item Alle: $\theta\mathrel{+}=\alpha(y-h)x$
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{10}{Herleitung: Bernoulli $\to$ Sigmoid}
+$p(y;\phi)=\phi^y(1-\phi)^{1-y}=\exp\bigl(y\log\tfrac{\phi}{1-\phi}+\log(1-\phi)\bigr)$\\
+Ablesen: $\eta=\log\frac{\phi}{1-\phi}$, $T(y)=y$, $a(\eta)=\log(1+e^{\eta})$, $b(y)=1$.\\
+Umstellen: $\phi=\dfrac{1}{1+e^{-\eta}}$ \; $\Rightarrow$ \hlt{das ist genau die Sigmoid-Funktion.}\\
+\textbf{Gauß} ($\sigma^2{=}1$): $\eta=\mu$, $T(y)=y$, $a(\eta)=\eta^2/2$ $\Rightarrow$ $h=\eta$ (Identität).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{11}{Praktische Eigenschaften}
+Für $T(y)=y$ gilt: $\E[y;\eta]=a'(\eta)$ und $\mathrm{Var}(y;\eta)=a''(\eta)$.\\
+Die log-Likelihood ist in $\theta$ \ora{konkav} $\Rightarrow$ keine lokalen Maxima; Gradient Ascent oder Newton finden das globale Optimum.\\
+Anwendungen: Zähldaten (Poisson), Wartezeiten (Exponential), Anteile (Bernoulli/Binomial).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Welche drei Annahmen definieren ein GLM?}{$y|x\sim$ ExpFam$(\eta)$; $h=\E[T(y)|x]$; $\eta=\theta\T x$.}{Response bei Poisson-Regression?}{$h=e^{\eta}$ (Erwartungswert $\lambda>0$).}{Warum haben alle GLMs dieselbe Update-Regel?}{Gradient der Log-Likelihood ist $(y-h)x$ bei kanonischer Response.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wähle die Verteilung, die zu deinen Daten passt -- den Rest erledigt das GLM.“
+\end{hnbanner}
+\end{hngrid}

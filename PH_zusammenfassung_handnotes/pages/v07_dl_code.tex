@@ -1,0 +1,21 @@
+\hnheader[Trainingsschleife, CNN und LSTM in PyTorch -- plus die Herleitung der Adam-Bias-Korrektur.][Backprop: \texttt{loss.backward()} -- Update: \texttt{opt.step()}]{DL-Praxis, CNN \& RNN:}{Vertiefung}{Adam, Trainingsschleife und CNN}
+\hnsrc{main\_notes.pdf (Deep Learning); Adam, Dropout, CNN, LSTM als Web-Ergänzung (markiert); Herleitung ausformuliert; Code: code/torch\_mlp.py, torch\_cnn.py, torch\_lstm.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple]{1}{Adam: warum Bias-Korrektur?}
+\hnleg{$t$ Schrittzähler, $g_t$ Gradient in Schritt $t$, $m_t$ gleitender Mittelwert der Gradienten (Momentum), $\beta_1\approx0.9$ Abklingrate, $\hat m_t$ korrigierter Wert, $\hat v_t$ dasselbe für die Gradientenquadrate.}
+$m_0=0$, $m_t=\beta_1m_{t-1}+(1{-}\beta_1)g_t=(1{-}\beta_1)\sum_{i=1}^t\beta_1^{t-i}g_i$. Bei stationären Gradienten $\E g_i=g$:
+\begin{align*}
+\E[m_t]&=(1-\beta_1)\,g\sum_{i=1}^t\beta_1^{t-i}&&\why{Erwartungswert}\\
+&=(1-\beta_1^{t})\,g&&\why{geometrische Summe}
+\end{align*}
+Der Schätzer ist am Anfang zu klein $\Rightarrow$ Korrektur $\hat m_t=m_t/(1-\beta_1^t)$ (analog $\hat v_t$). Beispiel $t=1$: $m_1=0.1\,g$, $\hat m_1=g$.
+\hnwords{$m_t$ ist ein Durchschnitt der letzten Gradienten. Weil er bei 0 startet, fällt er anfangs zu klein aus; das Teilen durch $1-\beta_1^t$ gleicht das aus.}
+\end{hnp}
+%
+\hnsnip[hnpurple]{torch_mlp}{MLP mit Mini-Batches, Adam, Dropout und Weight Decay}
+%
+\hnsnip[hnteal]{torch_cnn}{CNN: Formen und Parameterzahlen}
+%
+\end{hngrid}

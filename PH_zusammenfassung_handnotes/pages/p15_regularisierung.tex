@@ -1,0 +1,107 @@
+\hnheader[Große Gewichte bestrafen: das Modell wird einfacher, die Varianz sinkt.][L2 $=$ Gauß-Prior, L1 $=$ Laplace-Prior (MAP-Sicht)]{Regularisierung}{\& Modellauswahl}{Overfitting bändigen, Hyperparameter richtig wählen}
+\hnsrc{main\_notes.pdf (Regularization and model selection), notes/cs229-notes5.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Zum Verlust einen \hlt{Strafterm} addieren:
+\begin{align*}
+\text{L2 (Ridge):}\;&J_\lambda=J+\tfrac\lambda2\|\theta\|_2^2\\
+\text{L1 (Lasso):}\;&J_\lambda=J+\lambda\|\theta\|_1
+\end{align*}
+$\lambda$ steuert den Kompromiss Bias $\leftrightarrow$ Varianz ($J$: ursprünglicher Verlust, $\|\theta\|_2^2=\sum\theta_j^2$, $\|\theta\|_1=\sum|\theta_j|$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Bayessche Sicht (MAP)}
+\[ \theta_{\mathrm{MAP}}=\arg\max_\theta\bigl[\log p(y|X,\theta)+\log p(\theta)\bigr] \]
+Gauß-Prior $\theta_j\sim\N(0,\tau^2)$ ($\tau^2$ Prior-Varianz) $\Rightarrow$ L2. Laplace-Prior $p(\theta_j)\propto e^{-|\theta_j|/b}$ $\Rightarrow$ L1. Lineare Regression: $\theta=(X\T X+2\lambda\sigma^2I)^{-1}X\T y$ (immer invertierbar; $\sigma^2$ Rauschvarianz, $b$ Laplace-Skala, $I$ Einheitsmatrix).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: L1 vs.\ L2}
+\centering
+\begin{tikzpicture}[>=Stealth,scale=.75]
+  \begin{scope}
+    \draw[->,gray] (-1.5,0)--(1.5,0); \draw[->,gray] (0,-1.5)--(0,1.5);
+    \draw[hnpurple,thick] (0,0) circle(.85);
+    \draw[hnorange,thick,rotate around={-30:(1.2,.9)}] (1.2,.9) ellipse (.9 and .45);
+    \fill[hnnavy] (.68,.5) circle(.06);
+    \node[font=\tiny] at (0,-1.7) {L2: Kreis};
+  \end{scope}
+  \begin{scope}[shift={(3.5,0)}]
+    \draw[->,gray] (-1.5,0)--(1.5,0); \draw[->,gray] (0,-1.5)--(0,1.5);
+    \draw[hnpurple,thick] (0,.9)--(.9,0)--(0,-.9)--(-.9,0)--cycle;
+    \draw[hnorange,thick,rotate around={-30:(1.2,.9)}] (1.2,.9) ellipse (.9 and .45);
+    \fill[hnnavy] (.9,0) circle(.06);
+    \node[font=\tiny] at (0,-1.7) {L1: Raute $\Rightarrow$ Ecken};
+  \end{scope}
+\end{tikzpicture}\\[-2pt]
+{\tiny L1 trifft oft eine Achse: $\theta_j=0$ (Sparsität)}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Kreuzvalidierung}
+\begin{pcode}[K-Fold Cross-Validation]
+teile Daten in $K$ gleich große Teile\\
+\kw{for} jeden Kandidaten $\lambda$:\\
+\hii \kw{for} $k=1..K$:\\
+\hiii trainiere auf allen Teilen außer $k$\\
+\hiii $e_k\leftarrow$ Fehler auf Teil $k$\\
+\hii $\mathrm{CV}(\lambda)\leftarrow\frac1K\sum_ke_k$\\
+wähle $\lambda^*=\arg\min\mathrm{CV}(\lambda)$\\
+trainiere neu auf \emph{allen} Trainingsdaten
+\end{pcode}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Modellauswahl-Strategien}
+\begin{itemize}
+\item \textbf{Hold-out} (z.\,B.\ 70/30 oder Train/Val/Test): schnell, aber verschwendet Daten.
+\item \textbf{$K$-Fold} ($K{=}5,10$): stabilere Schätzung.
+\item \textbf{Leave-one-out} ($K{=}n$): fast unverzerrt, teuer.
+\item \textbf{Feature-Auswahl}: Forward Search (Features einzeln hinzufügen), Backward Search (entfernen), Filter (Korrelation).
+\end{itemize}
+Testset nur \emph{einmal} am Ende benutzen!
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Ridge in 1D}
+Daten $(1,1),(2,2),(3,2)$, Modell $y\approx\theta x$ (ohne Bias). $\sum xy=11$, $\sum x^2=14$.\\
+\hnsol\ $\theta_\lambda=\dfrac{\sum xy}{\sum x^2+\lambda}=\dfrac{11}{14+\lambda}$\\
+$\lambda=0$: $\theta=0.786$ \;|\; $\lambda=2$: $\theta=0.688$ \;|\; $\lambda=14$: $\theta=0.393$\\
+\hlm{Je größer $\lambda$, desto stärker schrumpft $\theta$ Richtung 0.}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Implizite Regularisierung}
+Auch ohne Strafterm regularisiert Gradient Descent: im überparametrisierten Regime wählt SGD unter allen Interpolatoren bevorzugt die mit \emph{minimaler Norm} (ähnlich L2). Frühes Stoppen wirkt ähnlich.\\
+\hlt{Tipp:} $\lambda$ per Kreuzvalidierung auf logarithmischem Gitter suchen ($10^{-4},\dots,10^{2}$).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item weniger Overfitting
+\item L1: automatische Feature-Auswahl
+\item stabilere Lösung ($X\T X$ invertierbar)
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{itemize}
+\item[\textcolor{hnred}{$\times$}] $\lambda$ muss gewählt werden
+\item[\textcolor{hnred}{$\times$}] zu großes $\lambda$ $\Rightarrow$ Bias
+\item[\textcolor{hnred}{$\times$}] Features vorher skalieren
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item L2 schrumpft, L1 macht spärlich
+\item Regularisierung $=$ Prior (MAP)
+\item $\lambda$ via Kreuzvalidierung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{L1 vs.\ L2?}{L2 schrumpft gleichmäßig; L1 erzeugt Sparsität (Nullen).}{Bayessche Deutung?}{L2 $=$ Gauß-Prior, L1 $=$ Laplace-Prior (MAP).}{Wozu $K$-Fold-CV?}{Hyperparameter wählen, danach auf allen Daten neu trainieren.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Regularisierung ist Vorsicht in Formeln: lieber ein bisschen zu einfach als zu eifrig.“
+\end{hnbanner}
+\end{hngrid}

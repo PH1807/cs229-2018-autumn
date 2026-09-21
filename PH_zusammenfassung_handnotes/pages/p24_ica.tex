@@ -1,0 +1,91 @@
+\hnheader[Cocktailparty: aus Mischungen die ursprünglichen Sprecher zurückgewinnen.][Quellen dürfen \emph{nicht} gaußverteilt sein!]{Independent}{Component Analysis}{Blind Source Separation}
+\hnsrc{main\_notes.pdf (ICA), notes/cs229-notes11.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Problem}
+$n$ Sprecher (Quellen $s\in\R^n$), $n$ Mikrofone messen Mischungen $x=As$. Gesucht: Entmischungsmatrix $W=A^{-1}$, sodass $s=Wx$ -- ganz ohne Kenntnis von $A$ oder $s$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Ambiguitäten}
+\begin{itemize}
+\item \textbf{Skalierung}: $A\,\mathrm{diag}(c)\cdot\mathrm{diag}(1/c)\,s$ erzeugt dasselbe $x$
+\item \textbf{Permutation}: Reihenfolge der Quellen unbestimmt
+\item \textbf{Gauß}: gaußsche Quellen sind nie identifizierbar (rotationssymmetrisch)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Mischen \& Entmischen}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,rounded corners=1.5pt,font=\scriptsize,inner sep=3pt}]
+  \node[fill=hnmint] (s) at (0,0) {Quellen $s$};
+  \node[fill=hnyellow] (a) at (1.8,0) {Mischen $A$};
+  \node[fill=hnblue!60] (x) at (3.6,0) {$x=As$};
+  \node[fill=hnpink] (w) at (1.8,-1.1) {Entmischen $W$};
+  \draw[->] (s)--(a); \draw[->] (a)--(x);
+  \draw[->,hnorange,thick] (x.south) |- (w.east);
+  \draw[->,hnorange,thick] (w.west) -| (s.south) node[near end,left,draw=none,font=\tiny]{$\hat s=Wx$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Likelihood \& Regel}
+Mit unabhängigen Quellen $p(s)=\prod_jp_s(s_j)$ ($w_j$ $j$-te Zeile von $W$, $|W|$ Determinante) gilt
+\[ p_x(x)=\prod_{j=1}^{n}p_s(w_j\T x)\cdot|W| \]
+Wähle $p_s$ mit CDF $g(s)=1/(1+e^{-s})$ (super-gaußsch). Stochastischer Gradient-Aufstieg auf $\log p_x$ ($\alpha$ Lernrate):
+\[ W\leftarrow W+\alpha\Bigl(\bigl(1-2g(Wx)\bigr)x\T+(W\T)^{-1}\Bigr) \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Algorithmus}
+\begin{pcode}[ICA (Gradient-Aufstieg)]
+$W\leftarrow I$ (oder zufällig)\\
+\kw{repeat} bis Konvergenz:\\
+\hii \kw{for} Beispiel $x_i$ in zufälliger Reihenfolge:\\
+\hiii $W\leftarrow W+\alpha\bigl((1-2g(Wx_i))x_i^{\top}+(W^{\top})^{-1}\bigr)$\\
+$\hat s_i\leftarrow Wx_i$ \ \cm{\# geschätzte Quellen}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Mischen und Entmischen}
+$A=\begin{psmallmatrix}1&0.5\\0.5&1\end{psmallmatrix}$, Quellen $s=(1,-1)$.\\
+\hnsol\ $x=As=(1-0.5,\;0.5-1)=(0.5,-0.5)$.\\
+$\det A=0.75$, $W=A^{-1}=\frac1{0.75}\begin{psmallmatrix}1&-0.5\\-0.5&1\end{psmallmatrix}$.\\
+$Wx=\frac1{0.75}(0.5+0.25,\;-0.25-0.5)=\ora{(1,-1)}=s$ \hlm{Quellen zurückgewonnen.}
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Warum nicht gaußsch?}
+Bei gaußschen Quellen ist $p(x)$ rotationssymmetrisch: jede Drehung von $W$ erklärt die Daten gleich gut $\Rightarrow$ keine eindeutige Lösung. Nur \emph{nicht-gaußsche} Unabhängigkeit liefert Information.\\
+\textbf{PCA vs.\ ICA:} PCA dekorreliert (2.\ Momente), ICA macht \emph{unabhängig} (höhere Momente).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Anwendungen}
+\begin{itemize}
+\item Audio: Cocktailparty
+\item EEG/MEG: Artefakte entfernen
+\item Bild-/Signalanalyse
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item Skalierung/Reihenfolge unbestimmt
+\item Quellen nicht gaußsch nötig
+\item Anzahl Mikrofone $\ge$ Quellen
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item $x=As$, gesucht $W=A^{-1}$
+\item Unabhängigkeit + Nicht-Gauß
+\item SGD auf Log-Likelihood
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was ist gesucht?}{$W=A^{-1}$, sodass $s=Wx$ aus $x=As$.}{Warum keine Gauß-Quellen?}{Rotationssymmetrie: jede Drehung erklärt die Daten gleich gut.}{Welche Ambiguitäten bleiben?}{Skalierung und Permutation der Quellen.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Aus dem Stimmengewirr die einzelne Stimme herausfiltern.“
+\end{hnbanner}
+\end{hngrid}

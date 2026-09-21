@@ -1,0 +1,220 @@
+% ==================================================================
+% Präambel: "Handnotes"-Stil (Infografik-Einseiter im Handschrift-Look)
+% Compile mit XeLaTeX (System-Schriften: Chalkboard SE, Marker Felt, Menlo)
+% ==================================================================
+\documentclass[10pt,a4paper]{article}
+% Druckvariante: vor \input{preamble} \def\PRINTMODE{1} setzen (weißer Grund, Graustufen)
+\ifdefined\PRINTMODE\PassOptionsToPackage{gray}{xcolor}\fi
+\usepackage[a4paper,left=9mm,right=9mm,top=8mm,bottom=13mm]{geometry}
+\usepackage{fontspec}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb,mathtools,bm}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,shapes.misc,arrows.meta,positioning,calc,fit,backgrounds,decorations.pathmorphing,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tcolorbox}
+\tcbuselibrary{raster,skins,breakable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{etoolbox}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{listings}
+\usepackage[hidelinks,pdfusetitle=false,bookmarksopen=false]{hyperref}
+
+% ---------- Schriften ----------
+\setmainfont{Chalkboard SE}[Ligatures=TeX]
+\setmonofont{Menlo}[Scale=0.9]
+\newfontfamily\hnhead{Marker Felt}
+\newfontfamily\hnscript{Bradley Hand}[BoldFont={Bradley Hand Bold}]
+
+% ---------- Farben (angelehnt an die Vorlagen) ----------
+\definecolor{hncream}{HTML}{FBF7EC}
+\definecolor{hntext}{HTML}{1B2140}
+\definecolor{hnnavy}{HTML}{1E2A5E}
+\definecolor{hnorange}{HTML}{F26B21}
+\definecolor{hnmint}{HTML}{C8EFDB}
+\definecolor{hnpink}{HTML}{F9CFE2}
+\definecolor{hnlilac}{HTML}{DFD5F8}
+\definecolor{hnyellow}{HTML}{FFF0A6}
+\definecolor{hnblue}{HTML}{D2E8FA}
+\definecolor{hngreen}{HTML}{2E8B57}
+\definecolor{hnred}{HTML}{D63A3A}
+\definecolor{hnpurple}{HTML}{7A4CE0}
+\definecolor{hnteal}{HTML}{1F9FB0}
+\definecolor{hnrose}{HTML}{E0559A}
+
+% Druckvariante: weißer Hintergrund, dunkleres Orange für lesbare Hervorhebungen
+\ifdefined\PRINTMODE
+  \definecolor{hncream}{HTML}{FFFFFF}
+  \definecolor{hnorange}{HTML}{8C3A12}
+  \definecolor{hngreen}{HTML}{1E5A3A}
+  \definecolor{hnpurple}{HTML}{4A2C9A}
+  \definecolor{hnteal}{HTML}{10606C}
+  \definecolor{hnrose}{HTML}{8A2A5E}
+\fi
+\pagecolor{hncream}
+\color{hntext}
+
+% ---------- Icons ----------
+\newcommand{\hnheart}{\tikz[baseline=-.3ex,scale=.09]{\draw[hnorange,line width=.6pt](0,-1.7) .. controls (-3,.6) and (-1.5,2.6) .. (0,1) .. controls (1.5,2.6) and (3,.6) .. (0,-1.7);}}
+\newcommand{\hnstar}{\tikz[baseline=-.5ex]\node[star,star points=5,star point ratio=2.3,draw=hnorange,line width=.5pt,inner sep=.7pt,minimum size=2.3mm]{};}
+\newcommand{\hncheckbox}{\tikz[baseline=-.2ex]{\draw[hngreen,line width=.55pt,rounded corners=.5pt](0,0) rectangle (2.4mm,2.4mm);\draw[hngreen,line width=.8pt](.4mm,1.2mm)--(1mm,.5mm)--(2.1mm,2.0mm);}}
+
+% ---------- Text-Makros ----------
+\newcommand{\hnfsz}{7.5}\newcommand{\hnlead}{9.1}\newcommand{\hncfsz}{6.6}\newcommand{\hnclead}{8}
+\newcommand{\hntabsz}{6.9}\newcommand{\hntablead}{8.2}\newcommand{\hncodesz}{5.9}\newcommand{\hncodelead}{7.1}
+\newcommand{\hnscale}[1]{\pgfmathsetmacro{\hnfsz}{7.5*#1}\pgfmathsetmacro{\hnlead}{9.1*#1}\pgfmathsetmacro{\hncfsz}{6.6*#1}\pgfmathsetmacro{\hnclead}{8*#1}\pgfmathsetmacro{\hntabsz}{6.9*#1}\pgfmathsetmacro{\hntablead}{8.2*#1}\pgfmathsetmacro{\hncodesz}{5.9*min(1,#1)}\pgfmathsetmacro{\hncodelead}{7.1*min(1,#1)}}
+\newcommand{\hnbody}{\fontsize{\hnfsz}{\hnlead}\selectfont\color{hntext}\setlength{\abovedisplayskip}{2pt}\setlength{\belowdisplayskip}{2pt}\setlength{\abovedisplayshortskip}{0pt}\setlength{\belowdisplayshortskip}{1pt}}
+\newcommand{\hncode}{\ttfamily\fontsize{\hncfsz}{\hnclead}\selectfont\color{hntext}}
+\newcommand{\ora}[1]{\textcolor{hnorange}{\textbf{#1}}}
+\newcommand{\nav}[1]{\textcolor{hnnavy}{\textbf{#1}}}
+\newcommand{\hlt}[1]{\colorbox{hnyellow}{\strut#1}}
+\newcommand{\hlm}[1]{\colorbox{hnmint}{\strut#1}}
+\newcommand{\hlp}[1]{\colorbox{hnpink}{\strut#1}}
+\newcommand{\hll}[1]{\colorbox{hnlilac}{\strut#1}}
+\newcommand{\hlb}[1]{\colorbox{hnblue}{\strut#1}}
+\newcommand{\kw}[1]{\textcolor{hnorange}{\textbf{#1}}}
+\newcommand{\cm}[1]{\textcolor{gray}{#1}}
+\newcommand{\hii}{\hspace*{1.4em}}
+\newcommand{\hiii}{\hspace*{2.8em}}
+\newcommand{\hiv}{\hspace*{4.2em}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\T}{^{\top}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+\newcommand{\I}{\mathbf{1}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\hnsol}{\colorbox{hnmint}{\hnhead\footnotesize\strut Lösung}}
+\newcommand{\hnq}{\colorbox{hnlilac}{\hnhead\footnotesize\strut Aufgabe}}
+
+
+% ---------- Code-Listings (echte, getestete Snippets aus code/) ----------
+\lstdefinestyle{hnpy}{language=Python,basicstyle=\ttfamily\fontsize{\hncodesz}{\hncodelead}\selectfont\color{hntext},
+  keywordstyle=\color{hnorange}\bfseries,commentstyle=\color{gray},stringstyle=\color{hngreen!70!black},
+  showstringspaces=false,columns=fullflexible,keepspaces=true,upquote=true,aboveskip=0pt,belowskip=0pt,xleftmargin=0pt,
+  morekeywords={as,with,self,True,False,None}}
+\lstdefinestyle{hnout}{basicstyle=\ttfamily\fontsize{\hncodesz}{\hncodelead}\selectfont\color{hntext!90},columns=fullflexible,keepspaces=true,
+  aboveskip=0pt,belowskip=0pt,xleftmargin=0pt}
+% \hnsnip{Datei}{Titel}: Code (links) + reale Ausgabe (rechts) als eigenes Panel
+\newcommand{\hnsnip}[3][hnnavy]{%
+  \begin{hnp}[raster multicolumn=6,acc=#1]{$\langle/\rangle$}{#3}
+  \begin{minipage}[t]{.665\linewidth}\begin{tcolorbox}[enhanced,breakable=false,colback=hnblue!40!white,colframe=hnnavy!50,boxrule=.4pt,arc=1mm,left=1.2mm,right=.8mm,top=.6mm,bottom=.6mm,boxsep=0pt]
+  \lstinputlisting[style=hnpy]{code/#2.py}\end{tcolorbox}\end{minipage}\hfill
+  \begin{minipage}[t]{.315\linewidth}\begin{tcolorbox}[enhanced,breakable=false,colback=hnyellow!25!white,colframe=hnorange!60,boxrule=.4pt,arc=1mm,left=1.2mm,right=.8mm,top=.6mm,bottom=.6mm,boxsep=0pt,before upper={{\hnscript\bfseries\color{hnorange}Ausgabe (real ausgeführt)}\par\vspace{1pt}}]
+  \lstinputlisting[style=hnout]{code/out/#2.txt}\end{tcolorbox}\end{minipage}
+  \end{hnp}}
+% ---------- Legende & "In Worten" ----------
+% \hnleg{Symbol = Bedeutung, ...}: Variablenlegende im Panel; \hnwords{...}: Formel in Worten
+\newcommand{\hnsmall}{\pgfmathsetmacro{\lgsz}{.94*\hnfsz}\pgfmathsetmacro{\lgld}{.94*\hnlead}\fontsize{\lgsz}{\lgld}\selectfont}
+\newcommand{\hnleg}[1]{\par\vspace{1.5pt}\noindent\fcolorbox{hnnavy!40}{hnblue!22}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\raggedright\hnsmall\textbf{\color{hnnavy}Legende:} #1}}\par\vspace{1pt}}
+\newcommand{\hnwords}[1]{\par\vspace{1.5pt}\noindent\fcolorbox{hnorange!45}{hnyellow!40}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\raggedright\hnsmall\textbf{\color{hnorange}In Worten:} #1}}\par\vspace{1pt}}
+% ---------- Herleitungen ----------
+\newcommand{\why}[1]{\text{\tiny\color{gray}#1}}
+\newcommand{\hnstep}[1]{\tikz[baseline=(n.base)]\node[circle,fill=hnorange,text=white,inner sep=.7pt,minimum size=3.3mm,font=\hnhead\tiny](n){#1};}
+
+% ---------- Listen ----------
+\setlist[itemize]{leftmargin=3.3mm,itemsep=.5pt,topsep=1pt,parsep=0pt,partopsep=0pt,label=\textcolor{hnorange}{\scriptsize$\bullet$}}
+\setlist[enumerate]{leftmargin=4.2mm,itemsep=.5pt,topsep=1pt,parsep=0pt,partopsep=0pt,label=\textcolor{hnorange}{\bfseries\arabic*.}}
+\newlist{hnpro}{itemize}{1}
+\setlist[hnpro]{leftmargin=3.6mm,itemsep=.5pt,topsep=1pt,parsep=0pt,label=\textcolor{hngreen}{$\checkmark$}}
+\newlist{hncon}{itemize}{1}
+\setlist[hncon]{leftmargin=3.6mm,itemsep=.5pt,topsep=1pt,parsep=0pt,label=\textcolor{hnred}{$\times$}}
+\newlist{hnchk}{itemize}{1}
+\setlist[hnchk]{leftmargin=4.2mm,itemsep=.6pt,topsep=1pt,parsep=0pt,label=\hncheckbox}
+
+% ---------- Panels ----------
+\tcbset{acc/.store in=\hnacc}
+\def\hnacc{hnnavy}
+\newcommand{\hnpaneltitle}[2]{%
+  {\tikz[baseline=(n.base)]\node[circle,draw=\hnacc,fill=\hnacc!14,line width=.7pt,inner sep=.8pt,minimum size=4.1mm,font=\hnhead\scriptsize,text=hnnavy](n){#1};}\;%
+  {\hnhead\small\color{hnnavy}#2}}
+\newtcolorbox{hnp}[3][]{%
+  enhanced, breakable=false, acc=hnnavy,
+  colback=white, colframe=hnnavy, boxrule=0pt, frame hidden,
+  arc=2.6mm, outer arc=2.6mm,
+  left=2.1mm, right=2.1mm, top=1.5mm, bottom=1.6mm, boxsep=0pt,
+  fontupper=\hnbody,
+  #1,
+  before upper={\parindent0pt\parskip1.6pt\raggedright\hnpaneltitle{#2}{#3}\par\vspace{1pt}},
+  overlay={\draw[dash pattern=on 2.4pt off 1.7pt,line width=.75pt,\hnacc,rounded corners=2.4mm]
+    ([xshift=.4pt,yshift=.4pt]frame.south west) rectangle ([xshift=-.4pt,yshift=-.4pt]frame.north east);}
+}
+% Beispiel (mint)
+\newtcolorbox{hnex}[2][]{%
+  enhanced, breakable=false, colback=hnmint!35, colframe=hngreen, boxrule=.5pt, arc=1.6mm,
+  left=1.6mm,right=1.6mm,top=1mm,bottom=1mm, boxsep=0pt, fontupper=\hnbody,
+  #1,
+  before upper={\parindent0pt\parskip1.4pt\raggedright{\hnhead\small\color{hngreen!80!black}#2}\par}}
+% Code (blau)
+\newtcolorbox{pcode}[1][Pseudo-Code]{%
+  enhanced, breakable=false, colback=hnblue!45!white, colframe=hnnavy!55, boxrule=.5pt, arc=1.2mm,
+  left=1.5mm,right=1mm,top=.9mm,bottom=.9mm, boxsep=0pt, fontupper=\hncode,
+  before upper={\parindent0pt\parskip0pt\raggedright{\hnhead\scriptsize\color{hnnavy}$\langle/\rangle$\ #1}\par\vspace{1.5pt}}}
+% Merke-Zettel (gelb)
+\newtcolorbox{hnnote}[1][Merke:]{%
+  enhanced, breakable=false, colback=hnyellow!45!white, colframe=hnorange!75, boxrule=.5pt, arc=1.4mm,
+  left=1.6mm,right=1.6mm,top=1.3mm,bottom=1mm, boxsep=0pt, fontupper=\hnbody,
+  before upper={\parindent0pt\parskip1.3pt\raggedright{\hnscript\bfseries\color{hnorange}#1}\par},
+  overlay={\fill[hnred!75] ([xshift=5mm]frame.north west) circle(1mm);}}
+% Banner mit Zitat (Seitenende)
+\newtcolorbox{hnbanner}[1][]{enhanced,breakable=false,colback=hnpink!75,colframe=hnpink!75,boxrule=0pt,arc=4mm,
+  halign=center,fontupper=\hnscript\normalsize\color{hnnavy},left=3mm,right=3mm,top=1.1mm,bottom=1.1mm,boxsep=0pt,#1}
+% Sprechblase / Notizkarte für die Kopfzeile
+\newtcolorbox{hnbubble}{%
+  enhanced, colback=white, colframe=hnnavy, boxrule=.6pt, arc=3.6mm,
+  left=1.6mm,right=1.6mm,top=1.1mm,bottom=1.1mm, boxsep=0pt,
+  fontupper=\hnscript\footnotesize\color{hnnavy}, halign=left}
+\newtcolorbox{hncard}[1][Merke:]{%
+  enhanced, colback=white, colframe=hnnavy!75, boxrule=.5pt, sharp corners, rotate=-1.5,
+  left=1.6mm,right=1.6mm,top=1.5mm,bottom=1mm, boxsep=0pt,
+  fontupper=\hnscript\footnotesize\color{hnnavy},
+  before upper={\parindent0pt\raggedright{\hnscript\bfseries\underline{#1}}\par},
+  overlay={\fill[hnred!80] ([xshift=-4mm,yshift=-.2mm]frame.north east) circle(.9mm);}}
+
+% Selbsttest: drei Frage/Antwort-Paare nebeneinander
+\newcommand{\hnquiz}[6]{%
+  \begin{minipage}[t]{.315\linewidth}\raggedright\textbf{\textcolor{hnpurple}{F1}}\ #1\\[.8pt]\textcolor{hngreen}{\textbf{A:}} #2\end{minipage}\hfill
+  \begin{minipage}[t]{.315\linewidth}\raggedright\textbf{\textcolor{hnpurple}{F2}}\ #3\\[.8pt]\textcolor{hngreen}{\textbf{A:}} #4\end{minipage}\hfill
+  \begin{minipage}[t]{.315\linewidth}\raggedright\textbf{\textcolor{hnpurple}{F3}}\ #5\\[.8pt]\textcolor{hngreen}{\textbf{A:}} #6\end{minipage}}
+% Quellenhinweis (klein, für Zusatzmaterial)
+\newcommand{\hnsrc}[1]{{\hnscript\footnotesize\color{hnnavy!70}\raggedright\sloppy\hspace*{1mm}\textit{Quelle:} #1\par}\vspace{1.2mm}}
+% Inhaltsverzeichnis-Zeile
+\newcommand{\tocl}[3]{\begin{minipage}[t]{.485\linewidth}\raggedright\tikz[baseline=(n.base)]\node[circle,draw=\hnacc,fill=\hnacc!14,line width=.6pt,inner sep=.6pt,minimum size=3.9mm,font=\hnhead\tiny,text=hnnavy](n){#1};\ \hyperref[pg:#2]{#3}\dotfill\hyperref[pg:#2]{\pageref*{pg:#2}}\end{minipage}}
+\newcommand{\tocw}[3]{\noindent\tikz[baseline=(n.base)]\node[circle,draw=\hnacc,fill=\hnacc!14,line width=.6pt,inner sep=.6pt,minimum size=3.9mm,font=\hnhead\tiny,text=hnnavy](n){#1};\ \hyperref[pg:#2]{#3}\dotfill\hyperref[pg:#2]{\pageref*{pg:#2}}\par}
+\newcommand{\tocvw}[2]{\noindent\hspace*{3.2mm}\tikz[baseline=(n.base)]\node[circle,draw=hnorange,fill=hnorange!14,line width=.5pt,inner sep=.4pt,minimum size=3.2mm,font=\hnhead\tiny,text=hnnavy](n){+};\ \hyperref[pg:#1]{\small #2}\dotfill\hyperref[pg:#1]{\pageref*{pg:#1}}\par}
+\newcommand{\tocv}[2]{\begin{minipage}[t]{.485\linewidth}\raggedright\hspace*{3.2mm}\tikz[baseline=(n.base)]\node[circle,draw=hnorange,fill=hnorange!14,line width=.5pt,inner sep=.4pt,minimum size=3.2mm,font=\hnhead\tiny,text=hnnavy](n){+};\ \hyperref[pg:#1]{\small #2}\dotfill\hyperref[pg:#1]{\pageref*{pg:#1}}\end{minipage}}
+% Rasterumgebung für eine Seite
+\newtcbox{\hnchip}[1][hnorange]{on line,colback=#1!22,colframe=#1!22,boxrule=0pt,arc=1mm,left=1mm,right=1mm,top=.2mm,bottom=.4mm,fontupper=\hnhead}
+\newenvironment{hngrid}{\begin{tcbraster}[raster columns=6,raster equal height=rows,raster column skip=2.2mm,raster row skip=2.2mm,raster valign=top]}{\end{tcbraster}}
+
+% Kopfzeile: \hnheader[Sprechblase][Merke-Notiz]{Titel-Teil-1}{Titel-Teil-2 (orange)}{Untertitel}
+\NewDocumentCommand{\hnheader}{O{} O{} m m m}{%
+  \noindent
+  \begin{minipage}[c]{.215\linewidth}
+    \ifblank{#1}{}{\begin{hnbubble}#1\ \hnheart\end{hnbubble}}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{.53\linewidth}\centering
+    {\hnhead\fontsize{25}{27}\selectfont\color{hnnavy}#3}\\[-1pt]
+    {\hnhead\fontsize{25}{27}\selectfont\color{hnorange}#4}\\[1pt]
+    {\hnscript\normalsize\color{hnnavy}#5}\\[-1pt]
+    \tikz{\draw[hnorange,line width=.9pt,dash pattern=on 3pt off 1.5pt](0,0)--(4.6,0);}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{.215\linewidth}
+    \ifblank{#2}{}{\begin{hncard}#2\end{hncard}}
+  \end{minipage}\par\vspace{3mm}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\hnscript\small\color{hnnavy}\hnheart\ \ CS229 · Machine Learning · Handnotes-Zusammenfassung \ \ \hnheart}
+\fancyfoot[R]{\hnhead\small\color{hnnavy}\hyperref[pg:c01_toc]{\thepage}}
+\setlength{\parindent}{0pt}
+\setlength{\headheight}{2pt}

@@ -1,0 +1,7 @@
+        select   TPR   PPV  acc
+Gruppe                         
+A          0.4  0.75  0.75  0.8
+B          0.1  0.25  0.50  0.8
+DP-Diff  : 0.3
+EO-Diff  : 0.5
+Disp.Imp.: 0.25

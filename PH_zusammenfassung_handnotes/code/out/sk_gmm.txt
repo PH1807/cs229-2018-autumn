@@ -1,0 +1,6 @@
+iter  1  logL  -1207.3  steigt: True
+iter  2  logL  -1207.2  steigt: True
+iter  3  logL  -1206.9  steigt: True
+iter  5  logL  -1205.0  steigt: True
+iter 10  logL  -1166.4  steigt: True
+iter 20  logL  -1147.4  steigt: True

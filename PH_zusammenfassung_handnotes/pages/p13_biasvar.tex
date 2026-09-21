@@ -1,0 +1,117 @@
+\hnheader[Zu einfach $\Rightarrow$ Bias (Underfitting). Zu flexibel $\Rightarrow$ Varianz (Overfitting).][Test-MSE $=\sigma^2+\mathrm{Bias}^2+\mathrm{Varianz}$]{Bias \&}{Varianz}{Generalisierung, Underfitting, Overfitting \& Double Descent}
+\hnsrc{main\_notes.pdf (Generalization, Kap.\ 8), notes/cs229-notes4.pdf, notes/error-analysis.pdf}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Intuition}
+\textbf{Bias}: Fehler, der bleibt, selbst mit \emph{unendlich} vielen Daten -- die Hypothesenklasse ist zu schwach (z.\,B.\ Gerade statt Parabel).\\
+\textbf{Varianz}: wie stark $h_S$ zwischen verschiedenen Trainingssets \emph{gleicher Größe} schwankt -- das Modell lernt Rauschen mit.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Zerlegung (Regression)}
+\[ \begin{aligned}\E\bigl[(y-h_S(x))^2\bigr]&=\underbrace{\sigma^2}_{\text{Rauschen}}+\underbrace{(h^*-\bar h)^2}_{\mathrm{Bias}^2}\\&\quad+\underbrace{\E[(\bar h-h_S)^2]}_{\text{Varianz}}\end{aligned} \]
+\hnleg{$y$ Beobachtung, $h_S$ auf Trainingsmenge $S$ gelerntes Modell, $h^*$ wahre Funktion, $\sigma^2$ Rauschvarianz, $\E_S$ Erwartung über Trainingsmengen.}
+$\bar h=\E_S[h_S]$ ist das ``mittlere Modell'' (Zentrum der Punktwolke rechts).
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Parameterraum: Zielscheiben}
+\centering
+\begin{tikzpicture}[scale=.72]
+  \foreach \ox/\oy/\sx/\sy/\sp in {0/0/0/0/.15, 3/0/0/0/.7, 0/-3/.75/.55/.15, 3/-3/.75/.55/.7}{
+    \begin{scope}[shift={(\ox,\oy)}]
+      \draw[gray!50] (-1.2,-1.2) rectangle (1.2,1.2);
+      \foreach \a/\b in {.3/.4,-.5/.2,.4/-.6,-.3/-.5,.7/.1,-.2/.7}{
+        \fill[red!70!black] ({\sx+\sp*\a},{\sy+\sp*\b}) circle(.09);}
+      \fill[hnblue!70!black] (0,0) circle(.1);
+    \end{scope}}
+  \node[font=\tiny] at (0,1.55) {Bias$\downarrow$ Var$\downarrow$};
+  \node[font=\tiny] at (3,1.55) {Bias$\downarrow$ Var$\uparrow$};
+  \node[font=\tiny] at (0,-1.45) {Bias$\uparrow$ Var$\downarrow$};
+  \node[font=\tiny] at (3,-1.45) {Bias$\uparrow$ Var$\uparrow$};
+\end{tikzpicture}\\[-1pt]
+{\tiny blau: $\theta^*$, rot: $\hat\theta_S$ verschiedener Datensätze}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Modellkomplexität}
+\centering
+\begin{tikzpicture}[scale=1.3,>=Stealth]
+  \draw[->,hnnavy] (0,0)--(5.2,0) node[right,font=\tiny]{Komplexität};
+  \draw[->,hnnavy] (0,0)--(0,2.6) node[above,font=\tiny]{Fehler};
+  \draw[hnrose,thick,domain=.2:5,samples=40] plot(\x,{2.2*exp(-.9*\x)+.05});
+  \draw[hnpurple,thick,domain=.2:5,samples=40] plot(\x,{.05+.02*exp(.95*\x)});
+  \draw[hnorange,very thick,domain=.2:5,samples=40] plot(\x,{.3+2.2*exp(-.9*\x)+.02*exp(.95*\x)});
+  \draw[dashed,gray] (2.05,0)--(2.05,2.4);
+  \node[font=\tiny,hnrose] at (.9,1.5) {Bias$^2$};
+  \node[font=\tiny,hnpurple] at (4.4,.65) {Varianz};
+  \node[font=\tiny,hnorange] at (4.2,2.2) {Test-Fehler};
+  \node[font=\tiny] at (2.05,-.25) {Optimum};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Double Descent}
+\centering
+\begin{tikzpicture}[scale=1.3,>=Stealth]
+  \draw[->,hnnavy] (0,0)--(5.2,0) node[right,font=\tiny]{\# Parameter $d$};
+  \draw[->,hnnavy] (0,0)--(0,2.6) node[above,font=\tiny]{Test-Fehler};
+  \draw[hnorange,very thick,domain=.1:2.3,samples=30] plot(\x,{1.0+.4*exp(-2*\x)+.25*\x+min(1.3,(\x>1.9)*6*(\x-1.9))});
+  \draw[hnorange,very thick,domain=2.4:5,samples=30] plot(\x,{2.2*exp(-.9*(\x-2.4))+.55});
+  \draw[dashed,gray] (2.4,0)--(2.4,2.4);
+  \node[font=\tiny] at (2.4,-.25) {$n\approx d$};
+  \node[font=\tiny,hnnavy] at (1.0,2.0) {klassisch};
+  \node[font=\tiny,hnnavy] at (4.1,2.0) {überparametrisiert};
+\end{tikzpicture}\\
+Im überparametrisierten Regime wählt Gradient Descent implizit die \emph{Minimum-Norm-Lösung} -- oft gut.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Polynomgrad wählen (illustrative Zahlen)}
+Daten aus einer Parabel + Rauschen.\\
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}c|ccc@{}}
+Grad&1&2&5\\\hline
+Train-MSE&0.30&0.05&0.00\\
+Test-MSE&0.32&0.06&0.45\\
+\end{tabular}\\
+Grad 1: beide hoch $\Rightarrow$ \hlp{Bias}. Grad 5: Train $\approx0$, Test hoch $\Rightarrow$ \hlp{Varianz}. Grad 2: bester Kompromiss.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Diagnose-Regeln}
+\begin{itemize}
+\item \textbf{Hoher Bias}: Trainingsfehler schon hoch, kleine Lücke zum Testfehler; mehr Daten helfen \emph{nicht}.
+\item \textbf{Hohe Varianz}: große Lücke Train/Test; Testfehler sinkt noch mit mehr Daten.
+\item Irreduzibles Rauschen $\sigma^2$ kann man nie eliminieren.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{7}{Gegen Bias}
+\begin{itemize}
+\item komplexeres Modell / mehr Features
+\item weniger Regularisierung
+\item länger trainieren
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{8}{Gegen Varianz}
+\begin{itemize}
+\item mehr Trainingsdaten
+\item Regularisierung, weniger Features
+\item Bagging / Ensembles
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item $\sigma^2+\mathrm{Bias}^2+\mathrm{Var}$
+\item Bias: Klasse zu schwach
+\item Varianz: Datensatz-Empfindlichkeit
+\item Double Descent bei $n\approx d$
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Zerlegung des Test-MSE?}{$\sigma^2$ (Rauschen) $+\ \mathrm{Bias}^2+$ Varianz.}{Woran erkennt man hohen Bias?}{Trainingsfehler schon hoch, kleine Lücke zum Testfehler.}{Was ist Double Descent?}{Testfehler steigt bei $n\approx d$ und fällt im überparametrisierten Regime erneut.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Ein Modell muss so komplex sein wie die Daten -- und keinen Deut komplexer.“
+\end{hnbanner}
+\end{hngrid}

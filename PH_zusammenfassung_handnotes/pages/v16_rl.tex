@@ -1,0 +1,48 @@
+\hnheader[Bellman-Gleichung, Konvergenz der Value Iteration, Policy-Gradient-Theorem und LQR-Riccati.][Der Log-Trick macht aus dem Gradienten einen Erwartungswert]{Bestärkendes Lernen:}{Vertiefung}{Bellman, Value Iteration, Policy Gradient}
+\hnsrc{main\_notes.pdf Kap.\ 15--17 (MDPs, Value/Policy Iteration, LQR, Policy Gradient), notes/cs229-notes12.pdf, cs229-notes13.pdf; Schritte ergänzt}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Bellman-Gleichung}
+\hnleg{$s$ Zustand, $a$ Aktion, $R(s)$ Belohnung, $\gamma\in[0,1)$ Diskontfaktor, $\pi$ Policy (Strategie), $V^\pi(s)$ erwartete Gesamtbelohnung ab $s$, $P_{sa}(s')$ Übergangswahrscheinlichkeit.}
+$V^\pi(s)=\E\bigl[R(s_0)+\gamma R(s_1)+\gamma^2R(s_2)+\cdots\mid s_0=s,\pi\bigr]$. Ersten Term abspalten:
+\begin{align*}
+V^\pi(s)&=R(s)+\gamma\,\E\bigl[R(s_1)+\gamma R(s_2)+\cdots\mid s_0=s\bigr]\\
+&=R(s)+\gamma\sum_{s'}P_{s\pi(s)}(s')\,V^\pi(s')&&\why{Markov}
+\end{align*}
+Lineares Gleichungssystem: $V^\pi=R+\gamma P^\pi V^\pi\Rightarrow V^\pi=(I-\gamma P^\pi)^{-1}R$ (Policy Evaluation).
+\hnwords{Der Wert eines Zustands ist die sofortige Belohnung plus der abgezinste erwartete Wert des Nachfolgezustands.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Value Iteration konvergiert}
+\hnleg{$\mathcal B$ Bellman-Operator (ein Value-Iteration-Schritt), $V,V'$ zwei Wertfunktionen, $\|\cdot\|_\infty$ größter Betrag über alle Zustände, $V^*$ optimaler Wert, $V_k$ Wert nach $k$ Schritten.}
+Operator $(\mathcal BV)(s)=\max_a\bigl[R(s,a)+\gamma\sum_{s'}P_{sa}(s')V(s')\bigr]$.
+\begin{align*}
+\|\mathcal BV-\mathcal BV'\|_\infty&\le\gamma\|V-V'\|_\infty&&\why{max 1-Lipschitz}
+\end{align*}
+$\mathcal B$ ist eine \emph{$\gamma$-Kontraktion} $\Rightarrow$ (Banach) genau ein Fixpunkt $V^*$ und $\|V_k-V^*\|_\infty\le\gamma^k\|V_0-V^*\|_\infty$: geometrische Konvergenz.
+\hnwords{Jeder Schritt bringt zwei beliebige Wertfunktionen um mindestens den Faktor $\gamma$ näher zusammen; sie laufen also auf einen gemeinsamen Punkt zu.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Policy-Gradient-Theorem}
+\hnleg{$\tau=(s_0,a_0,s_1,\dots)$ Trajektorie, $R(\tau)$ deren Gesamtbelohnung, $\pi_\theta(a|s)$ Policy mit Parametern $\theta$, $J(\theta)$ erwarteter Ertrag, $G_t$ Belohnung ab Zeit $t$.}
+$J(\theta)=\sum_\tau P(\tau;\theta)R(\tau)$, $P(\tau)=\mu(s_0)\prod_t\pi_\theta(a_t|s_t)P(s_{t+1}|s_t,a_t)$.
+\begin{align*}
+\nabla J&=\sum_\tau\nabla P(\tau)R(\tau)\\&=\sum_\tau P(\tau)\,\nabla\log P(\tau)\,R(\tau)&&\why{$\nabla P=P\nabla\log P$}\\
+\nabla\log P(\tau)&=\sum_t\nabla\log\pi_\theta(a_t|s_t)&&\why{$P(s'|s,a)$ ohne $\theta$}\\
+\nabla J&=\E_\tau\Bigl[\sum_t\nabla\log\pi_\theta(a_t|s_t)\,R(\tau)\Bigr]
+\end{align*}
+Kausalität: Aktion $a_t$ beeinflusst nur spätere Belohnungen $\Rightarrow$ $R(\tau)\to G_t$.
+\hnwords{Aktionen, die zu hoher Belohnung führten, bekommen mehr Wahrscheinlichkeit: $\nabla\log\pi$ zeigt, wie man $\pi$ erhöht, $R$ gewichtet.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{4}{Baseline verzerrt nicht}
+$b(s)$ hängt nicht von $a$ ab ($b$: Baseline, ein Vergleichswert):
+\begin{align*}
+\E_{a\sim\pi}\bigl[\nabla\log\pi(a|s)\,b(s)\bigr]&=b(s)\sum_a\pi(a|s)\tfrac{\nabla\pi(a|s)}{\pi(a|s)}\\
+&=b(s)\,\nabla\sum_a\pi(a|s)=b(s)\,\nabla1=0
+\end{align*}
+Also darf man $b(s_t)$ subtrahieren: gleicher Erwartungswert, aber \emph{kleinere Varianz} (typisch $b=V^\pi$).
+\end{hnp}
+%
+\end{hngrid}

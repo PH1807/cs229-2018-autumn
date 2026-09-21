@@ -1,0 +1,88 @@
+\hnheader[Wann darf ich dem Trainingsfehler trauen? Die Antwort liefert die Lerntheorie.][Generalisierungslücke $\approx\sqrt{\log|\mathcal H|/n}$: nur logarithmisch in $|\mathcal H|$!]{Lern-}{theorie}{Hoeffding, Uniform Convergence \& VC-Dimension}
+\hnsrc{notes/cs229-notes4.pdf, extra-notes/hoeffding.pdf (J.\ Duchi), main\_notes.pdf (Kap.\ 8)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Die Frage}
+Trainingsfehler $J(h)=\frac1n\sum_i\I\{h(x^{(i)})\ne y^{(i)}\}$ vs.\ wahrer Fehler $L(h)$ ($h$ Hypothese, $\mathcal H$ Hypothesenraum, $\I$ Indikator, $n$ Trainingsgröße). Wir wollen: \hlt{$|J(h)-L(h)|$ klein für \emph{alle} $h\in\mathcal H$} (uniform convergence), denn $\hat h$ wird erst nach Ansicht der Daten gewählt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Werkzeugkasten}
+\begin{itemize}
+\item \textbf{Markov}: $P(Z\ge t)\le\E[Z]/t$ ($Z\ge0$)
+\item \textbf{Chebyshev}: $P(|Z-\E Z|\ge t)\le\mathrm{Var}(Z)/t^2$
+\item \textbf{Chernoff}: exponentiell, über $\E[e^{\lambda Z}]$
+\item \textbf{Union Bound}: $P(\cup A_i)\le\sum P(A_i)$
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Konzentration}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (-2.5,0)--(2.6,0);
+  \draw[hnorange,thick,domain=-2.4:2.4,samples=60] plot(\x,{1.9*exp(-1.3*\x*\x)});
+  \draw[dashed,hnnavy] (0,0)--(0,2);
+  \fill[hnpink,opacity=.6] (-2.4,0)--(-1.05,0)--(-1.05,.05)--(-2.4,.05);
+  \draw[<->,hnnavy] (-.8,.55)--(.8,.55) node[midway,above,font=\tiny]{$\pm\gamma$};
+  \node[font=\tiny] at (0,-.28) {$\phi$ (wahr)};
+  \node[font=\tiny,hnorange] at (1.55,1.4) {$\hat\phi=\frac1n\sum Z_i$};
+  \node[font=\tiny] at (0,2.25) {mit $n\uparrow$ schmaler};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Hoeffdingsche Ungleichung}
+Seien $Z_i\in[a,b]$ unabhängig ($t$: erlaubte Abweichung des Mittelwerts). Dann für $t\ge0$:
+\[ P\Bigl(\Bigl|\tfrac1n\sum_i(Z_i-\E Z_i)\Bigr|\ge t\Bigr)\le2\exp\Bigl(-\frac{2nt^2}{(b-a)^2}\Bigr) \]
+Für Fehler-Indikatoren ($a{=}0,b{=}1$): $P(|J(h)-L(h)|\ge\gamma)\le2e^{-2\gamma^2n}$. Beweis: Chernoff + \emph{Hoeffdings Lemma} $\E[e^{\lambda(Z-\E Z)}]\le e^{\lambda^2(b-a)^2/8}$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Endliche Hypothesenklasse}
+Union Bound über $k=|\mathcal H|$ Hypothesen ($\gamma$ Toleranz, $\delta$ Fehlerwahrscheinlichkeit, $\hat h$ ERM-Lösung): $P(\exists h:|J-L|>\gamma)\le2k\,e^{-2\gamma^2n}$. Mit Wahrscheinlichkeit $\ge1-\delta$:
+\[ |J(h)-L(h)|\le\sqrt{\frac{\log(2k/\delta)}{2n}}\quad\forall h\in\mathcal H \]
+Stichprobenkomplexität: $n\ge\frac1{2\gamma^2}\log\frac{2k}{\delta}$. Für ERM: $L(\hat h)\le\min_hL(h)+2\gamma$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{VC-Dimension}
+$\mathrm{VC}(\mathcal H)$ = Größe der größten Punktmenge, die $\mathcal H$ in \emph{jeder} Beschriftung korrekt trennen kann (``shattern''). Lineare Klassifikatoren in $\R^d$: $\mathrm{VC}=d+1$.\\
+Für unendliches $\mathcal H$ gilt (mit Wkt.\ $\ge1-\delta$; $O(\cdot)$: bis auf Konstanten)
+\[ L(h)\le J(h)+O\Bigl(\sqrt{\tfrac{\mathrm{VC}}{n}\log\tfrac{n}{\mathrm{VC}}+\tfrac1n\log\tfrac1\delta}\Bigr) \]
+$\Rightarrow$ Bedarf an Daten wächst \emph{linear} mit $\mathrm{VC}$.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: zwei Rechnungen}
+\textbf{(a)} $k=10^6$ Hypothesen, $\delta=0.05$, $\gamma=0.05$:\\
+$n\ge\frac{\ln(2\cdot10^6/0.05)}{2\cdot0.05^2}=\frac{17.5}{0.005}\approx\ora{3500}$ Beispiele.\\
+\textbf{(b)} Geraden in 2D ($d{=}2$): 3 Punkte in allgemeiner Lage lassen sich in allen $2^3$ Beschriftungen trennen $\Rightarrow$ $\mathrm{VC}=3=d+1$. Vier Punkte in XOR-Anordnung nicht.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{7}{Grenzen der Theorie}
+\begin{itemize}
+\item Schranken oft sehr pessimistisch
+\item Deep Learning: $\mathrm{VC}\gg n$, trotzdem gute Generalisierung (Double Descent)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{8}{Key Takeaways}
+\begin{hnchk}
+\item Hoeffding: $2e^{-2n\gamma^2}$
+\item Union Bound $\Rightarrow$ $\log|\mathcal H|$
+\item VC-Dim.\ für unendliche $\mathcal H$
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{9}{Querverweise}
+\begin{itemize}
+\item Bias-Varianz: $\gamma$ ist die Varianz-Seite
+\item Regularisierung senkt effektive Komplexität
+\item Perceptron: Fehlerschranke ähnlich im Geist
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was sagt Hoeffding?}{$P(|\bar Z-\E\bar Z|\ge t)\le2e^{-2nt^2/(b-a)^2}$.}{Woher kommt $\log|\mathcal H|$?}{Union Bound über $|\mathcal H|$ Hypothesen (uniform convergence).}{VC-Dimension linearer Klassifikatoren im $\R^d$?}{$d+1$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Mit genug Daten und einer nicht zu großen Hypothesenklasse wird aus Training Vertrauen.“
+\end{hnbanner}
+\end{hngrid}

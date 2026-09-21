@@ -1,0 +1,90 @@
+\hnheader[Neue Daten erzeugen: latente Variablen mit neuronalen Netzen -- VAE, GAN und Diffusion.][VAE $=$ EM mit neuronalen Netzen und Reparametrisierung]{Generative Modelle:}{VAE, GAN \& Co.}{Von EM zu modernen generativen Netzen}
+\hnsrc{main\_notes.pdf Kap.\ 11.5 (Variational Auto-Encoder); GAN und Diffusion als Web-Zusatz (markiert); Code: Vertiefungsseite}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Diskriminative Modelle lernen $p(y|x)$; \textbf{generative} lernen $p(x)$ und können \emph{neue Beispiele sampeln}. Latente Variable $z$ (niedrigdimensional) erklärt die Daten: $z\to x$ (Decoder). Der VAE erweitert EM auf kontinuierliche $z$ und neuronale Netze.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{VAE-Modell (Notes)}
+\begin{align*}
+z&\sim\N(0,I_k)\\
+x|z&\sim\N(g(z;\theta),\sigma^2I)\quad\text{(Decoder)}\\
+Q_i&=\N\bigl(q(x^{(i)};\phi),\mathrm{diag}(v(x^{(i)};\psi))^2\bigr)
+\end{align*}
+Encoder $q,v$ (Mittel und Streuung, Parameter $\phi,\psi$) approximieren den intraktablen Posterior $p(z|x)$; $\theta$ sind die Decoder-Parameter.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Autoencoder}
+\centering
+\begin{tikzpicture}[>=Stealth,every node/.style={draw=hnnavy,font=\scriptsize,inner sep=3pt}]
+  \node[fill=hnmint,trapezium,trapezium angle=70,rotate=-90,minimum width=1.4cm] (e) at (0,0) {};
+  \node[draw=none] at (0,-.85) {Encoder};
+  \node[fill=hnyellow,circle] (z) at (1.5,0) {$z$};
+  \node[fill=hnpink,trapezium,trapezium angle=70,rotate=90,minimum width=1.4cm] (d) at (3.0,0) {};
+  \node[draw=none] at (3.0,-.85) {Decoder};
+  \draw[->,thick,hnorange] (.65,0)--(1.25,0); \draw[->,thick,hnorange] (1.75,0)--(2.35,0);
+  \node[draw=none,font=\tiny] at (-.9,.3) {$x$}; \node[draw=none,font=\tiny] at (3.9,.3) {$\hat x$};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{ELBO und Reparametrisierung}
+\[ \mathrm{ELBO}=\underbrace{\E_{Q}[\log p(x|z)]}_{\text{Rekonstruktion}}-\underbrace{\mathrm{KL}\bigl(Q(z|x)\,\|\,p(z)\bigr)}_{\text{Regularisierer}} \]
+Gradient nach $\phi,\psi$ ist knifflig (Sampling hängt von ihnen ab) $\Rightarrow$ \hlt{Reparametrisierungs-Trick}: $z=q(x;\phi)+v(x;\psi)\odot\xi$ mit $\xi\sim\N(0,I)$. Für Gauß: $\mathrm{KL}=\frac12\sum_j(\mu_j^2+\sigma_j^2-1-\log\sigma_j^2)$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{VAE-Training}
+\begin{pcode}[VAE-Schritt]
+$(\mu,\log\sigma^2)\leftarrow$ Encoder$(x)$\\
+$\xi\sim\N(0,I)$;\;\; $z\leftarrow\mu+\sigma\odot\xi$\\
+$\hat x\leftarrow$ Decoder$(z)$\\
+$\mathcal L\leftarrow\|x-\hat x\|^2+\mathrm{KL}(\N(\mu,\sigma^2)\|\N(0,I))$\\
+Gradient über $\mathcal L$ (Backprop), Update von $\phi,\psi,\theta$
+\end{pcode}
+Sampling neuer Daten: $z\sim\N(0,I)$, dann Decoder.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: KL-Term in 1D}
+Encoder liefert $\mu=0.5$, $\sigma=0.8$.\\
+\hnsol\ $\mathrm{KL}=\frac12(\mu^2+\sigma^2-1-\ln\sigma^2)=\frac12(0.25+0.64-1-\ln0.64)$\\
+$=\frac12(-0.11+0.446)=\ora{0.168}$ -- klein, weil $\N(0.5,0.8^2)$ nahe an $\N(0,1)$ liegt. $\mu=0,\sigma=1$ ergäbe $\mathrm{KL}=0$.\\
+Ausgabe des Code-Snippets (Vertiefungsseite): Rekonstruktion sinkt, KL steigt leicht -- der klassische Kompromiss.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{GAN: Spiel Generator vs.\ Diskriminator (Web)}
+\[ \min_G\max_D\;\E_{x}\log D(x)+\E_{z}\log\bigl(1-D(G(z))\bigr) \]
+$D$ unterscheidet echt/fake, $G$ soll $D$ täuschen. Abwechselnd: (1) $D$ auf echten und erzeugten Daten trainieren, (2) $G$ so ändern, dass $D(G(z))$ steigt (\emph{non-saturating}: $-\log D(G(z))$). Probleme: instabil, \emph{Mode Collapse}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{7}{Diffusionsmodelle (Web)}
+Vorwärts ($x_0$ Originalbild, $\bar\alpha_t$ Rauschplan, $\varepsilon$ Rauschen): nach und nach Rauschen hinzufügen, $x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\,\varepsilon$. Rückwärts: ein Netz $\varepsilon_\theta(x_t,t)$ lernt, das Rauschen vorherzusagen (Verlust $\|\varepsilon-\varepsilon_\theta\|^2$). Sampling: aus reinem Rauschen schrittweise entrauschen. Heute Stand der Technik bei Bildern.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{8}{Vergleich}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}p{1.2cm}p{2.0cm}p{2.0cm}p{2.5cm}@{}}
+\hline
+&\textbf{VAE}&\textbf{GAN}&\textbf{Diffusion}\\\hline
+Ziel&ELBO&Minimax&Rauschvorhersage\\
+Training&stabil&instabil&stabil\\
+Samples&eher unscharf&scharf&sehr gut\\
+Sampling&schnell&schnell&langsam\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item VAE: ELBO $=$ Rekonstruktion $-$ KL; Encoder $=$ approximativer Posterior; Reparametrisierung ermöglicht Backprop durch das Sampling
+\item GAN: adversariales Spiel; Diffusion: iteratives Entrauschen
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum der Reparametrisierungs-Trick?}{Damit der Gradient durch das Sampling fließt: Zufall steckt nur in $\xi$, nicht in $\phi,\psi$.}{Was bewirkt der KL-Term?}{Hält den Posterior nahe an $\N(0,I)$: glatter, samplebarer latenter Raum.}{Was ist Mode Collapse?}{Der GAN-Generator erzeugt nur wenige Varianten der Daten.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Wer die Daten erzeugen kann, hat sie verstanden.“
+\end{hnbanner}
+\end{hngrid}

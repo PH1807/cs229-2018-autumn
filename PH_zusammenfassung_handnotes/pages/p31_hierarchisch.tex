@@ -1,0 +1,100 @@
+\hnheader[Kein $K$ vorgeben: baue einen Baum von Clustern und schneide ihn an einer Höhe.][Die Höhe im Dendrogramm ist der Abstand beim Verschmelzen]{Hierarchisches}{Clustering}{Agglomerativ, Linkage \& Dendrogramm}
+\hnsrc{hand-notes/ML Notes.pdf (Hierarchical Clustering); Rechenbeispiel selbst ergänzt}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Idee}
+Unüberwachtes Clustern ohne feste Clusterzahl: es entsteht eine \hlt{Hierarchie} (Baum, \emph{Dendrogramm}). Die gewünschte Clusterzahl wählt man erst danach durch einen horizontalen Schnitt.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Agglomerativ vs.\ divisiv}
+\textbf{Agglomerativ} (bottom-up, Standard): jeder Punkt ein Cluster, das nächstliegende Paar verschmelzen, bis nur noch eines bleibt.\\
+\textbf{Divisiv} (top-down): alle in einem Cluster, rekursiv teilen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Dendrogramm}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \draw[->,hnnavy] (0,0)--(0,2.4) node[above,font=\tiny]{Höhe};
+  \draw[hnorange,thick] (.5,0)--(.5,.5)--(1.1,.5)--(1.1,0);
+  \draw[hnorange,thick] (2.0,0)--(2.0,.8)--(2.6,.8)--(2.6,0);
+  \draw[hnorange,thick] (.8,.5)--(.8,1.5)--(2.3,1.5)--(2.3,.8);
+  \draw[hnorange,thick] (3.4,0)--(3.4,2.1)--(1.55,2.1)--(1.55,1.5);
+  \draw[hnrose,dashed] (0,1.2)--(3.7,1.2); \node[font=\tiny,hnrose] at (3.05,1.05) {Schnitt $\to$ 2 Cluster};
+  \foreach \x/\l in {.5/1,1.1/2,2.0/3,2.6/4,3.4/5}{\node[font=\tiny] at (\x,-.2) {$x_{\l}$};}
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Linkage: Abstand zwischen Clustern}
+\begin{itemize}
+\item \textbf{Single}: $\min_{a\in A,b\in B}d(a,b)$ -- neigt zu Ketten
+\item \textbf{Complete}: $\max_{a,b}d(a,b)$ -- kompakte Cluster
+\item \textbf{Average}: Mittel aller Paarabstände
+\item \textbf{Ward}: verschmelzt so, dass die Zunahme der Varianz innerhalb der Cluster minimal ist (ähnlich K-Means)
+\end{itemize}
+Abstandsmaß: Euklid, Manhattan, Kosinus\dots
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Algorithmus (agglomerativ)}
+\begin{pcode}[Agglomeratives Clustering]
+jeder Punkt $\leftarrow$ eigenes Cluster\\
+berechne Distanzmatrix $D$\\
+\kw{repeat} bis 1 Cluster:\\
+\hii $(A,B)\leftarrow\arg\min D(A,B)$ \ \cm{\# nächstes Paar}\\
+\hii verschmelze $A\cup B$; merke Höhe $=D(A,B)$\\
+\hii aktualisiere $D$ (gemäß Linkage)\\
+schneide Dendrogramm an Höhe $h$ oder für $K$ Cluster
+\end{pcode}
+Aufwand $O(n^2)$ Speicher, bis $O(n^3)$ Zeit.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: 1D-Punkte $\{1,2,6,8,15\}$}
+\hnsol\ \textbf{Single Linkage}: verschmelze $(1,2)$ bei $d=1$; $(6,8)$ bei $2$; $\{1,2\}\text{--}\{6,8\}$ bei $\min=6-2=4$; zuletzt mit $15$ bei $15-8=7$.\\
+\textbf{Complete Linkage}: $1;\,2;\,\max=8-1=7;\,15-1=14$.\\
+Schnitt bei Höhe $3$ (single): Cluster $\{1,2\},\{6,8\},\{15\}$ -- der große Sprung $2\to4$ legt $K=3$ nahe.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Vergleich mit K-Means}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabular}{@{}p{1.5cm}p{3.3cm}p{3.5cm}@{}}
+\hline
+&\textbf{K-Means}&\textbf{Hierarchisch}\\\hline
+$K$&vorab&nachträglich (Schnitt)\\
+Form&kugelförmig&flexibel (je Linkage)\\
+Aufwand&$O(nKd)$&$O(n^2)$ und mehr\\
+Ergebnis&flache Partition&Hierarchie\\\hline
+\end{tabular}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Vorteile}
+\begin{hnpro}
+\item kein $K$ nötig, Dendrogramm
+\item beliebige Abstandsmaße
+\item gut für kleine Datensätze
+\end{hnpro}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnred]{8}{Grenzen}
+\begin{hncon}
+\item teuer bei großem $n$
+\item Verschmelzungen nicht umkehrbar
+\item empfindlich bei Rauschen/Ausreißern
+\end{hncon}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Baum statt fester Partition
+\item Linkage bestimmt die Clusterform
+\item Schnitt beim größten Höhensprung
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Was bedeutet die Höhe im Dendrogramm?}{Der Abstand (nach Linkage), bei dem zwei Cluster verschmolzen wurden.}{Single vs.\ Complete Linkage?}{Single: kleinster Paarabstand (Ketten); Complete: größter (kompakte Cluster).}{Wie wählt man die Clusterzahl?}{Dendrogramm dort schneiden, wo der vertikale Abstand zwischen Verschmelzungen am größten ist.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Kein $K$, kein Problem -- der Baum zeigt alle möglichen Clusterungen zugleich.“
+\end{hnbanner}
+\end{hngrid}

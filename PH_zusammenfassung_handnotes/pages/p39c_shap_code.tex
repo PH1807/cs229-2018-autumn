@@ -1,0 +1,31 @@
+\hnheader[Erklärungen in der Praxis: drei Verfahren am selben Modell vergleichen und die Ausgabe richtig lesen.][Impurity kann täuschen, Permutation ist ehrlicher, SHAP zerlegt pro Fall]{SHAP:}{Praxis}{Code mit sklearn und shap}
+\hnsrc{Code: code/sk\_shap.py (real ausgeführt); Interpretation nach Lundberg \& Lee (2017) und scikit-learn-Doku (Web-Zusatz)}
+
+\begin{hngrid}
+%
+\hnsnip[hnpurple]{sk_shap}{Random Forest: Impurity vs.\ Permutation vs.\ SHAP (globale und lokale Erklärung)}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{1}{Lesart der Ausgabe}
+Alle drei nennen \texttt{s5} und \texttt{bmi} vorn, aber Impurity gibt \texttt{bp} (0.09) und \texttt{s3} (0.06) noch Gewicht, während Permutation nur $0.03$ bzw.\ sogar \emph{negativ} ($-0.02$) liefert: Shufflen von \texttt{s3} verbessert das Testergebnis leicht, das Feature trägt auf Testdaten nichts bei. SHAP ist in Einheiten der Zielgröße und pro Patient zerlegbar; Baseline $+\sum\varphi_j$ ergibt exakt die Vorhersage (252.3).
+\end{hnp}
+%
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{2}{Welchen Explainer nehmen?}
+\begin{itemize}
+\item \textbf{Bäume} (RF, XGBoost, LightGBM): \texttt{TreeExplainer}, exakt und schnell.
+\item \textbf{Lineare Modelle}: \texttt{LinearExplainer} oder direkt $w_j(x_j-\E x_j)$.
+\item \textbf{Beliebige Modelle}: \texttt{KernelExplainer}; Hintergrund klein halten (k-Means-Zentren, 50 bis 100 Punkte), sonst wird es sehr langsam.
+\item \textbf{Tiefe Netze}: \texttt{DeepExplainer} bzw.\ \texttt{GradientExplainer}.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{3}{Typische Plots}
+\begin{itemize}
+\item \textbf{Summary/Beeswarm}: global, Farbe = Merkmalswert, x = $\varphi_j$.
+\item \textbf{Bar} (mean $|\varphi_j|$): Rangfolge wie Permutation, aber in Einheiten der Zielgröße.
+\item \textbf{Waterfall/Force}: lokal, Baseline $\to$ Vorhersage.
+\item \textbf{Dependence}: $\varphi_j$ gegen $x_j$, zeigt Nichtlinearität und Interaktionen.
+\end{itemize}
+\end{hnp}
+%
+\end{hngrid}

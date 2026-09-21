@@ -1,0 +1,440 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Colors
+\definecolor{fragecol}{RGB}{30, 90, 160}
+\definecolor{antworttop}{RGB}{240, 246, 255}
+\definecolor{antwortbottom}{RGB}{225, 237, 255}
+\definecolor{sectioncol}{RGB}{20, 70, 130}
+
+% Q&A boxes
+\tcbset{
+  frageboxstyle/.style={
+    enhanced,
+    colback=fragecol!10,
+    colframe=fragecol,
+    fonttitle=\bfseries\color{white},
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=fragecol, rounded corners},
+    breakable,
+    top=4mm,
+  },
+  antwortboxstyle/.style={
+    enhanced,
+    colback=antworttop,
+    colframe=fragecol!40,
+    breakable,
+    top=2mm, bottom=2mm,
+  }
+}
+
+\newenvironment{frage}[2]{%
+  \begin{tcolorbox}[frageboxstyle, title={Frage}]
+  \textbf{#1}\\[3pt]
+  {\small\itshape\color{black!55}\(\triangleright\) #2}
+  \end{tcolorbox}
+  \begin{tcolorbox}[antwortboxstyle]
+}{%
+  \end{tcolorbox}
+  \vspace{4mm}
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=fragecol,
+  urlcolor=fragecol,
+}
+
+\title{%
+  \textbf{\color{sectioncol}CS229 -- Verständnisfragen}\\[4pt]
+  \large Strukturiert nach Thematik
+}
+\author{}
+\date{Stand: \today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Logistic Regression -- Loss-Funktion und Gradient}
+% ============================================================
+
+\begin{frage}{Warum gilt die Umrechnung zwischen Gradient und Loss-Funktion?}{PS2-1 »Training Stability«, Notebook-Abschnitt zur Herleitung der Loss-Funktion aus dem Gradienten}
+
+Der Gradient der logistischen Regression lautet:
+\[
+  \nabla_\theta J(\theta)
+  = -\frac{1}{m} \sum_{i=1}^{m}
+      \frac{y^{(i)}\, x^{(i)}}{1 + \exp\!\bigl(y^{(i)}\,\theta^\top x^{(i)}\bigr)}
+\]
+
+\textbf{Behauptung:} Dieser Gradient gehört zur Loss-Funktion
+\[
+  \ell(\theta)
+  = \frac{1}{m} \sum_{i=1}^{m} \log\!\bigl(1 + \exp\!\bigl(-y^{(i)}\,\theta^\top x^{(i)}\bigr)\bigr).
+\]
+
+\textbf{Nachrechnen durch Ableiten:}
+
+\textit{Schritt 1 -- Einen Term ableiten:}
+\[
+  \frac{\partial}{\partial\theta}
+    \log\!\bigl(1 + \exp(-y\,\theta^\top x)\bigr)
+  = \frac{1}{1 + e^{-y\,\theta^\top x}}
+    \cdot e^{-y\,\theta^\top x} \cdot (-y\,x)
+\]
+
+\textit{Schritt 2 -- Vorfaktor vereinfachen} (mit $a := y\,\theta^\top x$):
+\[
+  \frac{e^{-a}}{1 + e^{-a}}
+  = \frac{e^{-a}}{1 + e^{-a}} \cdot \frac{e^{a}}{e^{a}}
+  = \frac{1}{e^{a} + 1}
+  = \frac{1}{1 + e^{a}}
+\]
+
+\textit{Schritt 3 -- Einsetzen:}
+\[
+  \frac{\partial}{\partial\theta}
+    \log\!\bigl(1 + e^{-y\,\theta^\top x}\bigr)
+  = \frac{-y\,x}{1 + e^{y\,\theta^\top x}}
+\]
+
+\textit{Schritt 4 -- Gesamt:}
+\[
+  \nabla_\theta\,\ell(\theta)
+  = \frac{1}{m} \sum_{i=1}^{m}
+      \frac{-y^{(i)}\,x^{(i)}}{1 + \exp\!\bigl(y^{(i)}\,\theta^\top x^{(i)}\bigr)}
+  = -\frac{1}{m} \sum_{i=1}^{m}
+      \frac{y^{(i)}\,x^{(i)}}{1 + \exp\!\bigl(y^{(i)}\,\theta^\top x^{(i)}\bigr)}
+\]
+
+Das stimmt mit dem angegebenen Gradienten überein. Die entscheidende Vereinfachung ist
+$e^{-a}/(1+e^{-a}) = 1/(1+e^{a})$.
+
+\end{frage}
+
+\begin{frage}{Was bedeutet \(\ell\) (``ell'')?}{Allgemeine CS229-Notation; tritt in PS2-1 Notebook und allen Loss-Herleitungen auf}
+
+$\ell$ ist der Name für die \textbf{Loss-Funktion}, abgeleitet vom Buchstaben \textit{l} (kleines L,
+kursiv), der in der Mathematik häufig für ``Loss'' oder ``Likelihood'' steht.
+
+In diesem Kontext bezeichnet $\ell(\theta)$ die \textbf{negative Log-Likelihood} der logistischen
+Regression:
+\[
+  \ell(\theta)
+  = \frac{1}{m} \sum_{i=1}^{m}
+    \log\!\bigl(1 + \exp\!\bigl(-y^{(i)}\,\theta^\top x^{(i)}\bigr)\bigr),
+\]
+die minimiert werden soll.
+
+\end{frage}
+
+% ============================================================
+\section{Lineare Trennbarkeit und Konvergenz}
+% ============================================================
+
+\begin{frage}{Warum gilt: Dataset ist linear trennbar $\Leftrightarrow$ $y^{(i)}\,\theta^\top x^{(i)} > 0$ für alle $i$?}{PS2-1 »Training Stability«, Teil (b) -- Ursache der Divergenz; Grundlage in main\_notes.pdf, Kap.\,6.3 (Funktionaler Margin, S.\,61)}
+
+Die Entscheidungsgrenze ist die Hyperebene $\{\,x : \theta^\top x = 0\,\}$. Ein Punkt liegt auf
+einer der zwei Seiten je nach Vorzeichen von $\theta^\top x$:
+
+\begin{center}
+\begin{tabular}{cccl}
+  \toprule
+  $y^{(i)}$ & $\theta^\top x^{(i)}$ & $y^{(i)}\cdot\theta^\top x^{(i)}$ & Klassifikation \\
+  \midrule
+  $+1$ & $> 0$ & $> 0$ & korrekt \\
+  $-1$ & $< 0$ & $> 0$ & korrekt \\
+  $+1$ & $< 0$ & $< 0$ & falsch \\
+  $-1$ & $> 0$ & $< 0$ & falsch \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+$y^{(i)}\,\theta^\top x^{(i)} > 0$ bedeutet also genau: Punkt $i$ liegt auf der richtigen Seite der
+Trennhyperebene. Gilt das für alle $i$, trennt $\theta$ alle Punkte korrekt -- das ist die Definition
+von \textbf{linearer Trennbarkeit}.
+
+\textbf{Im Skript:} \texttt{main\_notes.pdf}, Kap.\,6.3, S.\,61:
+\begin{quote}
+\itshape
+``if $y^{(i)}(w^\top x + b) > 0$, then our prediction on this example is correct.''
+\end{quote}
+Dies ist der sogenannte \textbf{funktionale Margin} $\hat{\gamma}^{(i)} = y^{(i)}(w^\top x + b)$.
+
+\end{frage}
+
+\begin{frage}{Warum konvergiert Gradient Descent nicht für linear trennbare Datasets?}{PS2-1 »Training Stability«, Teil (b) -- Erklärung des Divergenzverhaltens von Dataset~B}
+
+\textbf{Schritt 1: Die Loss-Funktion hat kein Minimum.}
+
+Sei das Dataset trennbar, d.\,h.\ es gibt $\theta^*$ mit $y^{(i)}\,\theta^{*\top} x^{(i)} > 0$
+für alle $i$. Betrachte $c\,\theta^*$ für wachsendes $c > 0$:
+\[
+  \ell(c\,\theta^*)
+  = \frac{1}{m} \sum_{i=1}^{m}
+    \underbrace{\log\!\bigl(1 + \exp\!\bigl(-c\cdot\underbrace{y^{(i)}\,\theta^{*\top} x^{(i)}}_{>0}\bigr)\bigr)}_{\to\, 0 \text{ für } c\to\infty}
+\]
+
+Da der Exponent $-c\cdot(\text{positiv})$ immer negativer wird:
+\begin{align*}
+  c = 1:   & \quad \log(1 + e^{-1}) \approx 0{,}31 \\
+  c = 10:  & \quad \log(1 + e^{-10}) \approx 0{,}000045 \\
+  c \to \infty: & \quad \to 0, \text{ aber nie } = 0
+\end{align*}
+
+Der Loss sinkt unbegrenzt, erreicht aber sein Infimum $0$ nie. Es gibt also \textbf{kein echtes
+Minimum} -- der Gradient wird nie exakt $\mathbf{0}$.
+
+\textbf{Schritt 2: Konsequenz für Gradient Descent.}
+
+Da kein endliches Minimum existiert, gilt $\|\theta\| \to \infty$. Das Abbruchkriterium
+$\|\theta_{t+1} - \theta_t\| < \varepsilon$ wird nie erfüllt.
+
+\textbf{Schritt 3: Nicht-trennbarer Fall zum Vergleich.}
+
+Wenn es mindestens einen falsch klassifizierten Punkt gibt, hilft Skalieren nicht: der Loss dieses
+Punktes wird durch größeres $c$ \emph{größer}, nicht kleiner. Der Loss hat daher ein echtes Minimum
+bei endlichem $\theta$, und Gradient Descent konvergiert dorthin.
+
+\end{frage}
+
+\begin{frage}{Ist das Divergenzproblem generell bei Logistic Regression?}{Folge aus PS2-1 »Training Stability«, Teil (c) -- Gegenmassnahmen; allgemeine Frage zur Methode}
+
+Ja, aber nur wenn das Dataset \textbf{linear trennbar} ist. Das ist kein Implementierungsfehler,
+sondern ein mathematisches Problem: die Log-Likelihood hat kein endliches Maximum.
+
+\textbf{Lösungen in der Praxis:}
+
+\begin{enumerate}[leftmargin=*, label=(\arabic*)]
+  \item \textbf{L2-Regularisierung} (häufigstes Vorgehen):
+    \[
+      \ell_{\text{reg}}(\theta)
+      = \ell(\theta) + \lambda\|\theta\|^2
+    \]
+    Für $\|\theta\| \to \infty$ gilt $\lambda\|\theta\|^2 \to \infty$, also gibt es ein endliches
+    Minimum.
+
+  \item \textbf{Early Stopping} -- Training abbrechen bevor $\theta$ zu groß wird.
+
+  \item \textbf{Abnehmende Lernrate} -- Schritte werden mit der Zeit kleiner.
+\end{enumerate}
+
+In \texttt{scikit-learn} ist L2-Regularisierung standardmäßig aktiv (\texttt{C=1.0}), weshalb das
+Problem dort normalerweise nicht auftritt.
+
+\end{frage}
+
+% ============================================================
+\section{SVM und Hinge Loss}
+% ============================================================
+
+\begin{frage}{Was ist Hinge Loss?}{PS2-1 »Training Stability«, Teil (d) -- Vergleich LR mit SVM als Alternative bei linear trennbaren Daten; Theorie in main\_notes.pdf, Kap.\,6}
+
+Hinge Loss ist die Loss-Funktion der SVMs. Definition für einen Punkt:
+\[
+  L\!\bigl(\theta, x^{(i)}, y^{(i)}\bigr)
+  = \max\!\bigl(0,\; 1 - y^{(i)}\,\theta^\top x^{(i)}\bigr)
+\]
+
+\textbf{Verhalten:}
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  $y\,\theta^\top x$ & Hinge Loss & Interpretation \\
+  \midrule
+  $\geq 1$ & $0$ & korrekt, mit ausreichend Abstand (Margin $\geq 1$) \\
+  $= 0$    & $1$ & Punkt liegt auf der Entscheidungsgrenze \\
+  $= -1$   & $2$ & falsch klassifiziert \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=10cm, height=6cm,
+  xlabel={$z = y\,\theta^\top x$},
+  ylabel={Loss},
+  xmin=-2.2, xmax=2.5,
+  ymin=-0.1, ymax=2.8,
+  grid=both,
+  grid style={line width=0.3pt, draw=gray!30},
+  major grid style={line width=0.5pt, draw=gray!60},
+  legend pos=north east,
+  legend style={font=\small},
+  tick label style={font=\small},
+  label style={font=\small},
+  axis lines=left,
+]
+  % Hinge Loss: max(0, 1-z)
+  \addplot[blue, very thick, domain=-2.2:1] {1 - x};
+  \addplot[blue, very thick, domain=1:2.5]  {0};
+  \addlegendentry{Hinge Loss: $\max(0, 1-z)$}
+
+  % Logistic Loss: log(1 + exp(-z)) / log(2)  [scaled for comparison]
+  \addplot[red, dashed, thick, domain=-2.2:2.5, samples=100]
+    {ln(1 + exp(-x)) / ln(2)};
+  \addlegendentry{Log. Loss: $\log_2(1+e^{-z})$}
+
+  % Mark z=1
+  \draw[dotted, gray] (axis cs:1,0) -- (axis cs:1,1);
+  \node[below, font=\small] at (axis cs:1,0) {$1$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\textbf{Vergleich mit logistischem Loss:}
+\begin{align*}
+  \text{Logistic Loss:} &\quad \log(1 + e^{-z}) > 0 \text{ immer} \\
+  \text{Hinge Loss:}    &\quad \max(0, 1-z) = 0 \text{ für } z \geq 1
+\end{align*}
+
+Deshalb hat das SVM das Konvergenzproblem bei trennbaren Datasets \emph{nicht}: Sobald alle Punkte
+$y^{(i)}\,\theta^\top x^{(i)} \geq 1$ erfüllen, ist der Loss exakt $0$ -- kein weiterer Gradient,
+kein Wachstum von $\theta$.
+
+\end{frage}
+
+% ============================================================
+\section{Mathematische Notation}
+% ============================================================
+
+\begin{frage}{Was bedeutet $\bigl|\bigl\{\,i \in I_{a,b}\,\bigr\}\bigr|$?}{PS2-2 »Model Calibration«, Kalibrierungsdefinition -- $I_{a,b}$ bezeichnet den Bucket von Beispielen mit Vorhersage in $[a,b]$}
+
+Das ist die \textbf{Kardinalität} (Anzahl der Elemente) einer Menge:
+\[
+  \bigl|\bigl\{\,i \in I_{a,b}\,\bigr\}\bigr|
+  \;=\; \text{Anzahl der Indizes } i \text{, die in der Menge } I_{a,b} \text{ enthalten sind.}
+\]
+
+\textbf{Beispiel:} Wenn $I_{a,b} = \{2, 5, 7, 9\}$, dann $|I_{a,b}| = 4$.
+
+Allgemein: $|S|$ bedeutet ``wie viele Elemente hat Menge $S$''.
+
+\end{frage}
+
+\begin{frage}{Was bedeutet $\mathbb{I}\bigl\{y^{(i)} = 1\bigr\}$?}{PS2-2 »Model Calibration«, Kalibrierungsformel -- allgemeine CS229-Notation für Indikatorfunktionen}
+
+Das ist die \textbf{Indikatorfunktion}:
+\[
+  \mathbb{I}\bigl\{y^{(i)} = 1\bigr\}
+  = \begin{cases}
+      1 & \text{falls } y^{(i)} = 1 \\
+      0 & \text{sonst}
+    \end{cases}
+\]
+
+Sie gibt $1$ zurück wenn die Bedingung wahr ist, sonst $0$.
+
+\textbf{Beispiel} mit $m=4$ Datenpunkten, $y = (1, 0, 1, 1)$:
+\begin{align*}
+  \mathbb{I}\{y^{(1)} = 1\} &= 1 \\
+  \mathbb{I}\{y^{(2)} = 1\} &= 0 \\
+  \mathbb{I}\{y^{(3)} = 1\} &= 1 \\
+  \mathbb{I}\{y^{(4)} = 1\} &= 1
+\end{align*}
+
+In Python entspricht das \texttt{(y == 1).astype(int)} bzw.\ direkt \texttt{y == 1} in einem
+booleschen Ausdruck.
+
+\end{frage}
+
+% ============================================================
+\section{Model Calibration (PS2-2)}
+% ============================================================
+
+\begin{frage}{Impliziert perfekte Kalibrierung perfekte Genauigkeit -- und umgekehrt?}{PS2-2 »Model Calibration«, Teil (b) -- Beweis der Unabhängigkeit beider Eigenschaften}
+
+\textbf{Antwort: Nein, in beide Richtungen.}
+
+\medskip
+\textbf{Richtung 1: Kalibrierung impliziert \emph{nicht} Genauigkeit.}
+
+\textit{Gegenbeispiel:} Alle $y^{(i)} = 1$ (nur positive Klasse).
+
+Für den Bucket $(a, b) = (0{,}5,\; 1)$ muss bei perfekter Kalibrierung gelten:
+\[
+  \frac{\sum_{i \in I_{a,b}} \mathbb{I}\{y^{(i)}=1\}}{|\{i \in I_{a,b}\}|}
+  = \frac{\sum_{i \in I_{a,b}} P(y^{(i)}=1 \mid x^{(i)};\,\theta)}{|\{i \in I_{a,b}\}|}
+\]
+
+Die linke Seite ist $1$ (alle Punkte haben $y=1$). Da $h(x) = \sigma(\theta^\top x) < 1$ immer gilt,
+muss die rechte Seite $< 1$ sein -- das Modell sagt für manche Punkte $h(x) < 0{,}5$ vorher: also
+\textbf{falsch klassifiziert}.
+
+\medskip
+\textbf{Richtung 2: Genauigkeit impliziert \emph{nicht} Kalibrierung.}
+
+Perfekte Genauigkeit bedeutet alle Punkte korrekt klassifiziert, also Anteil $y=1$ im Bucket $= 1$.
+Aber das Modell könnte trotzdem $h(x) = 0{,}6$ vorhersagen:
+\[
+  \underbrace{\frac{\sum_{i \in I_{a,b}} \mathbb{I}\{y^{(i)}=1\}}{|\{i \in I_{a,b}\}|}}_{= 1}
+  \neq
+  \underbrace{\frac{\sum_{i \in I_{a,b}} P(y^{(i)}=1 \mid x^{(i)};\,\theta)}{|\{i \in I_{a,b}\}|}}_{< 1}
+\]
+
+Kalibrierung verletzt, obwohl alle Entscheidungen korrekt sind.
+
+\medskip
+\textbf{Kernaussage:} Kalibrierung prüft ob Wahrscheinlichkeiten realistisch sind. Genauigkeit prüft
+nur ob die Entscheidung ($> 0{,}5$ oder nicht) stimmt. Beides ist voneinander unabhängig.
+
+\end{frage}
+
+% ============================================================
+\section{Kursstruktur}
+% ============================================================
+
+\begin{frage}{Greifen die PS2-Aufgaben auf Wissen aus späteren Kapiteln vor?}{Übergreifende Frage zur Kursstruktur -- entstanden beim Durcharbeiten aller PS2-Aufgaben}
+
+Ja. Mehrere PS2-Aufgaben setzen Konzepte voraus, die im Kursverlauf erst später behandelt werden:
+
+\begin{center}
+\begin{tabular}{p{2.5cm} p{3.5cm} p{4cm} p{4cm}}
+  \toprule
+  \textbf{Problem} & \textbf{Erwartete Notes} & \textbf{Tatsächlich benötigt} & \textbf{Hinweis} \\
+  \midrule
+  PS2-1 & Kap.\,2 (LR) & Kap.\,6 (Hinge Loss/SVM) für Teil~(d); Kap.\,9 (Regularisierung) für Teil~(c) & Teil~(d) setzt SVM-Konzepte voraus \\
+  \addlinespace
+  PS2-2 & Kap.\,2 (LR, MLE) & -- & vollständig in Kap.\,2 \\
+  \addlinespace
+  PS2-3 & Kap.\,2/9 & \textbf{Kap.\,9.4} (Bayesian Statistics) als Hauptquelle & Kap.\,9.4 kommt später im Kurs \\
+  \addlinespace
+  PS2-4 & -- & Kap.\,5+6 (Kernels, Mercer) vollständig & komplett aus Kap.\,5+6 \\
+  \addlinespace
+  PS2-5 & -- & Kap.\,5+6 (Kernel Trick, Representer Theorem) & komplett aus Kap.\,5+6 \\
+  \addlinespace
+  PS2-6 & Kap.\,4.2 (NB) & Kap.\,6 (SVM) für Teil~(d) & Hybrid-Problem \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Fazit:} PS2-4 und PS2-5 sind komplett aus Kap.\,5+6 (SVMs/Kernels), das nach PS1 kommt. PS2-3
+erfordert Kap.\,9.4 (Bayesian Statistics) als primäre Quelle -- ein deutlicher Vorgriff auf spätere
+Kursinhalte.
+
+\end{frage}
+
+\end{document}

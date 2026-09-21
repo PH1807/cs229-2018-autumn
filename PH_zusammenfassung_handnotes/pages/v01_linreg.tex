@@ -1,0 +1,42 @@
+\hnheader[Warum ist die Normalgleichung optimal -- und warum ist Least Squares der MLE?][Kein Gradient ohne Herleitung: Produktregel, Konvexität, Log-Likelihood]{Lineare Regression:}{Vertiefung}{Herleitung, Rechenbeispiel und Code}
+\hnsrc{main\_notes.pdf Kap.\ 1 (LMS, Normalgleichung, probabilistische Interpretation); Herleitung ausformuliert; Code: code/np\_gd.py, code/sk\_linreg.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Normalgleichung}
+Ziel $J(\theta)=\frac12\|X\theta-y\|^2=\frac12(X\theta-y)\T(X\theta-y)$.
+\hnleg{$X\in\R^{n\times d}$ Design-Matrix (Zeile $i$ ist $x^{(i)\top}$), $y\in\R^n$ Zielwerte, $\theta\in\R^d$ Parameter, $J$ Kosten, $\nabla_\theta$ Vektor der partiellen Ableitungen nach $\theta$, $\succeq0$ positiv semidefinit (Eigenwerte $\ge0$).}
+\hnwords{$X\theta-y$ ist der Fehlervektor aller $n$ Beispiele, $J$ die halbe Summe seiner Quadrate (die $\frac12$ kürzt die 2 beim Ableiten).}
+\begin{align*}
+J&=\tfrac12\theta\T X\T X\theta-\theta\T X\T y+\tfrac12y\T y&&\why{ausmultiplizieren}\\
+\nabla_\theta J&=X\T X\theta-X\T y&&\why{$\nabla x\T Ax=2Ax$, $\nabla a\T x=a$}\\
+\nabla_\theta J&=0\;\Rightarrow\;X\T X\theta=X\T y&&\why{Normalgleichungen}\\
+\hat\theta&=(X\T X)^{-1}X\T y&&\why{falls $X\T X$ invertierbar}
+\end{align*}
+$J$ ist konvex ($\nabla^2J=X\T X\succeq0$) $\Rightarrow$ das stationäre $\hat\theta$ ist das globale Minimum.
+\hnwords{Am Boden der Schüssel ist die Steigung null. $X\T(X\theta-y)=0$ heißt: der Fehler steht senkrecht auf allen Spalten von $X$ (orthogonale Projektion von $y$).}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Warum Least Squares? (MLE)}
+Modell $y^{(i)}=\theta\T x^{(i)}+\varepsilon^{(i)}$, $\varepsilon\sim\N(0,\sigma^2)$ iid, also $p(y|x;\theta)=\frac1{\sqrt{2\pi}\sigma}e^{-(y-\theta\T x)^2/2\sigma^2}$.
+\hnleg{$\varepsilon$ Rauschen, $\sigma^2$ dessen Varianz, $\N(0,\sigma^2)$ Normalverteilung, iid unabhängig und gleich verteilt, $p(y|x;\theta)$ Dichte von $y$ bei gegebenem $x$ und Parameter $\theta$, $\ell$ Log-Likelihood.}
+\begin{align*}
+\ell(\theta)&=\sum_i\log p(y^{(i)}|x^{(i)};\theta)&&\why{Log-Likelihood}\\
+&=n\log\tfrac1{\sqrt{2\pi}\sigma}-\tfrac1{2\sigma^2}\sum_i(y^{(i)}-\theta\T x^{(i)})^2&&\why{Logarithmus von $e^{\cdot}$}
+\end{align*}
+Erster Term unabhängig von $\theta$ $\Rightarrow$ $\max\ell\iff\min\sum_i(y^{(i)}-\theta\T x^{(i)})^2$. \hlt{MLE $=$ Least Squares.}
+\hnwords{Wähle $\theta$ so, dass die beobachteten Daten am wahrscheinlichsten werden; der Logarithmus macht aus dem Produkt eine Summe. Gauß-Rauschen bestraft große Fehler quadratisch.}
+\end{hnp}
+%
+\hnsnip[hnorange]{np_gd}{Gradient Descent in NumPy vs.\ Normalgleichung}
+%
+\hnsnip[hnpurple]{sk_linreg}{Lineare Regression und Ridge in scikit-learn}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum ist der stationäre Punkt der globale Minimierer?}{$J$ ist konvex: $\nabla^2J=X\T X\succeq0$.}{Warum ist Least Squares der MLE?}{Bei Gauß-Rauschen ist die Log-Likelihood $\text{const}-\frac1{2\sigma^2}\sum(y-\theta\T x)^2$.}{Wann GD statt Normalgleichung?}{Sehr großes $d$ (Inversion $O(d^3)$) oder singuläres $X\T X$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Erst ableiten, dann verstehen, warum die Formel stimmt.“
+\end{hnbanner}
+\end{hngrid}

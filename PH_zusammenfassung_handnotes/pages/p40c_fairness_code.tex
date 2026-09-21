@@ -1,0 +1,26 @@
+\hnheader[Reweighing mit echten Zahlen und die Fairness-Metriken je Gruppe in Code.][Offenlegen, was man misst -- die Wahl der Metrik ist eine Entscheidung]{Fairness:}{Praxis}{Reweighing-Beispiel und fairlearn}
+\hnsrc{Chouldechova (2017), Kleinberg et al.\ (2016), Kamiran \& Calders (2012), Hardt et al.\ (2016) als Web-Zusatz; Herleitungen ausformuliert; Code: code/np\_fairness.py (fairlearn, real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: Reweighing mit den 40 Anträgen (A: $8$ pos.\ / $12$ neg.;\ B: $4$ pos.\ / $16$ neg.)}
+\hnsol\ $P(A)=P(B)=0.5$, $P(Y{=}1)=\frac{12}{40}=0.3$.\\
+$w(A,1)=\frac{0.5\cdot0.3}{0.2}=\ora{0.75}$, $w(A,0)=\frac{0.5\cdot0.7}{0.3}=1.17$, $w(B,1)=\frac{0.5\cdot0.3}{0.1}=\ora{1.5}$, $w(B,0)=\frac{0.5\cdot0.7}{0.4}=0.875$.\\
+Gewichtete positive Rate: A $=\frac{0.75\cdot8}{0.75\cdot8+1.17\cdot12}=\frac{6}{20}=0.30$, B $=\frac{1.5\cdot4}{1.5\cdot4+0.875\cdot16}=\frac{6}{20}=0.30$ \hlm{gleich}: positive Beispiele der benachteiligten Gruppe zählen mehr.
+\end{hnex}
+%
+\hnsnip[hnorange]{np_fairness}{Fairness-Analyse mit fairlearn: Metriken je Gruppe (\texttt{MetricFrame}) und Differenzen}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{5}{Lesart der Ausgabe}
+Beide Gruppen haben dieselbe Accuracy ($0.8$), aber die TPR fällt von $0.75$ (A) auf $0.25$ (B): \texttt{demographic\_parity\_difference} $=0.3$, \texttt{equalized\_odds\_difference} $=0.5$ (die größere der TPR- und FPR-Differenz), Disparate Impact $0.25$. Die Kennzahlen stammen aus \emph{einem} Modell -- welche davon zu optimieren ist, entscheidet der Anwendungskontext, nicht der Code.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Woher stammt $\mathrm{FPR}=\frac p{1-p}\frac{1-\mathrm{PPV}}{\mathrm{PPV}}\mathrm{TPR}$?}{Aus $\mathrm{PPV}=\frac{p\,\mathrm{TPR}}{p\,\mathrm{TPR}+(1-p)\mathrm{FPR}}$ nach FPR umgestellt.}{Warum kollidieren Predictive Parity und Equalized Odds?}{Bei gleichem PPV und TPR legt die Formel FPR über $p$ fest; verschiedene $p$ erzwingen verschiedene FPR.}{Was macht Reweighing?}{Gewichtet (Gruppe, Label) so, dass $A$ und $Y$ unabhängig werden.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Man kann nicht alles gleichzeitig gerecht machen -- aber man kann offenlegen, was man wählt.“
+\end{hnbanner}
+%
+\end{hngrid}

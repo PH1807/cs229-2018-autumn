@@ -1,0 +1,93 @@
+\hnheader[Neuronale Netze trainieren: Optimierer, Initialisierung, Normalisierung und Regularisierung.][Adam $\approx$ Momentum + adaptive Lernraten]{Deep Learning:}{Training \& Praxis}{Optimierer, Init, BatchNorm, Dropout, Early Stopping}
+\hnsrc{main\_notes.pdf (Deep Learning: LayerNorm, SGD, Regularisierung); Adam, Dropout, BatchNorm, Initialisierung als Web-Ergänzung (markiert), Code: Vertiefungsseite}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Momentum \& Adam (Web)}
+\hnleg{$g$ Gradient, $\theta$ Parameter, $\alpha$ Lernrate, $v$ Geschwindigkeit, $m$ gleitender Mittelwert der Gradienten, $v$ (bei Adam) der Quadrate, $\beta,\beta_1,\beta_2$ Abklingraten, $t$ Schritt, $\varepsilon$ kleine Konstante.}
+\textbf{Momentum}: $v\leftarrow\beta v+g$, $\theta\leftarrow\theta-\alpha v$ (glättet Zickzack).\\
+\textbf{Adam}: $m\leftarrow\beta_1m+(1{-}\beta_1)g$, $v\leftarrow\beta_2v+(1{-}\beta_2)g^2$, $\hat m=\frac m{1-\beta_1^t}$, $\hat v=\frac v{1-\beta_2^t}$:
+\[ \theta\leftarrow\theta-\alpha\frac{\hat m}{\sqrt{\hat v}+\varepsilon} \]
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Lernraten-Schedules}
+Konstante Lernrate ist selten optimal: \emph{Step decay}, \emph{Cosine}-Abklingen, \emph{Warmup} (klein starten, dann hoch). Zu große Rate $\to$ Verlust springt/divergiert; zu kleine $\to$ Stillstand. Vor dem Tuning: \hlt{Verlustkurve plotten}.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: SGD vs.\ Momentum}
+\centering
+\begin{tikzpicture}[>=Stealth]
+  \foreach \r in {.3,.6,.9}{\draw[gray!50] (2,1) ellipse ({\r*1.9} and {\r*.75});}
+  \draw[hnred,thick] (.2,1.9)--(.6,.4)--(.9,1.6)--(1.3,.5)--(1.6,1.3)--(1.9,.9)--(2,1);
+  \draw[hngreen,very thick] (.2,1.9) .. controls (1,1.5) and (1.5,1.1) .. (2,1);
+  \node[font=\tiny,hnred] at (.55,.15) {SGD: Zickzack};
+  \node[font=\tiny,hngreen] at (3.3,1.7) {Momentum: glatt};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Initialisierung (Web)}
+\emph{Nicht} alle Gewichte $=0$: dann sind alle Neuronen einer Schicht identisch (Symmetrie!). Zufällig mit passender Varianz ($n_{\mathrm{in}}$ Anzahl Eingänge): \textbf{Xavier} $\mathrm{Var}(W)=\frac{1}{n_{\mathrm{in}}}$ (Tanh/Sigmoid), \textbf{He} $\mathrm{Var}(W)=\frac{2}{n_{\mathrm{in}}}$ (ReLU).\\
+Ziel: Aktivierungen und Gradienten weder verschwinden noch explodieren lassen.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Normalisierung}
+\textbf{BatchNorm} (Web): $\mathrm{BN}(z)=\gamma\frac{z-\mu_B}{\sqrt{\sigma_B^2+\varepsilon}}+\beta$ mit Batch-Statistiken $\mu_B,\sigma_B^2$ ($\gamma,\beta$ lernbare Skala und Verschiebung) (im Test: gleitende Mittelwerte).\\
+\textbf{LayerNorm} (Notes): Statistik \emph{pro Beispiel} über die Features, unabhängig von der Batchgröße $\Rightarrow$ Standard in Transformern (Kapitel Neuronale Netze).\\
+Wirkung: stabileres, schnelleres Training, größere Lernraten.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: erster Adam-Schritt}
+$g=2$, $\beta_1=0.9$, $\beta_2=0.999$, $\alpha=0.001$, $t=1$.\\
+\hnsol\ $m=0.1\cdot2=0.2$, $v=0.001\cdot4=0.004$.\\
+$\hat m=\frac{0.2}{0.1}=2$, $\hat v=\frac{0.004}{0.001}=4$.\\
+Schritt $=\alpha\frac{2}{\sqrt4}=\ora{0.001}=\alpha$: Adam skaliert so, dass der erste Schritt etwa die Größe $\alpha$ hat, \emph{unabhängig} von der Gradientengröße.\\
+\textbf{Dropout} ($p_{\mathrm{keep}}=0.5$): aus $(1,2,3,4)$ wird z.\,B.\ $(2,0,6,0)$ (verbleibende $\times2$, \emph{inverted dropout}).
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Regularisierung im Deep Learning}
+\begin{itemize}
+\item \textbf{Weight Decay} $=$ L2 (Notes: $\frac\lambda2\|\theta\|^2$).
+\item \textbf{Dropout} (Web): im Training zufällig Neuronen ausschalten $\to$ implizites Ensemble.
+\item \textbf{Early Stopping}: Training beenden, wenn der Validierungsfehler steigt.
+\item \textbf{Datenaugmentierung}: Bilder drehen/spiegeln/zuschneiden.
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{7}{Training debuggen}
+\begin{enumerate}
+\item Erst auf \emph{kleinem Batch} überanpassen (Verlust $\to0$?) -- sonst Bug.
+\item Anfangsverlust prüfen ($\approx\log K$ bei $K$ Klassen).
+\item Lernrate über Größenordnungen probieren.
+\item Train- vs.\ Validierungskurve: Gap $\Rightarrow$ Overfitting.
+\item Gradient Clipping bei explodierenden Gradienten.
+\end{enumerate}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnteal]{8}{PyTorch-Trainingsschleife (Skizze)}
+\begin{pcode}[PyTorch]
+\kw{for} Epoche \kw{in} Epochen:\\
+\hii model.train()\\
+\hii \kw{for} $(x,y)$ \kw{in} Mini-Batches:\\
+\hiii opt.zero\_grad()\\
+\hiii loss $=$ loss\_fn(model$(x)$, $y$)\\
+\hiii loss.backward() \ \cm{\# Backprop}\\
+\hiii opt.step() \ \ \ \ \cm{\# Update}
+\end{pcode}
+Vollständiger, getesteter Code: Vertiefungsseite.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnorange]{9}{Key Takeaways}
+\begin{hnchk}
+\item Adam als robuster Standard, SGD+Momentum oft bessere Endleistung; Schedules und Warmup
+\item He-Initialisierung für ReLU; BatchNorm/LayerNorm stabilisieren; Dropout, Weight Decay, Early Stopping gegen Overfitting
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum nicht alle Gewichte mit $0$ initialisieren?}{Alle Neuronen bleiben identisch (gleiche Gradienten): Symmetrie wird nie gebrochen.}{Was bewirkt Dropout?}{Zufälliges Ausschalten erzwingt redundante Merkmale, wirkt wie ein Ensemble.}{Was unterscheidet BatchNorm und LayerNorm?}{BatchNorm normiert über den Batch, LayerNorm über die Features eines Beispiels.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Training ist Handwerk: beobachte die Kurven, verändere eine Sache nach der anderen.“
+\end{hnbanner}
+\end{hngrid}

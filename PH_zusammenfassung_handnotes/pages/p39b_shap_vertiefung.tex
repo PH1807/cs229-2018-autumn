@@ -1,0 +1,49 @@
+\hnheader[Warum genau diese Formel? Herleitung der Shapley-Werte, Linear-SHAP und getesteter Code.][Telescoping: die Grenzbeiträge einer Reihenfolge addieren sich zu $v(N)-v(\emptyset)$]{SHAP:}{Vertiefung}{Herleitung, Rechenbeispiel und exakter Code}
+\hnsrc{Shapley (1953), Lundberg \& Lee (2017) als Web-Zusatz; Herleitung ausformuliert; Code: code/np\_shapley.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Von Reihenfolgen zur Formel}
+\hnleg{$N$ Menge aller $n$ Features, $j$ das betrachtete Feature, $S\subseteq N$ Koalition (Teilmenge von Features), $v(S)$ Wert der Koalition (Vorhersage, wenn nur $S$ bekannt ist), $\varphi_j$ Shapley-Wert, $\pi$ Reihenfolge, $P_j^\pi$ Features vor $j$ in $\pi$.}
+Ordne die Features in einer Reihenfolge $\pi$ und ``füge sie nacheinander hinzu'': Beitrag von $j$ ist $v(P_j^\pi\cup\{j\})-v(P_j^\pi)$ ($P_j^\pi$: Vorgänger). Mittel über alle $n!$ Reihenfolgen:
+\begin{align*}
+\varphi_j&=\tfrac1{n!}\sum_\pi\bigl[v(P_j^\pi\cup\{j\})-v(P_j^\pi)\bigr]&&\why{Definition}\\
+&=\sum_{S\subseteq N\setminus j}\tfrac{|S|!(n-|S|-1)!}{n!}\bigl[v(S\cup j)-v(S)\bigr]&&\why{Reihenfolgen gruppieren}
+\end{align*}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Effizienz (Teleskopsumme)}
+Für \emph{eine} Reihenfolge $\pi=(j_1,\dots,j_n)$ ist die Summe aller Beiträge
+\[ \sum_{k=1}^{n}\bigl[v(\{j_1..j_k\})-v(\{j_1..j_{k-1}\})\bigr]=v(N)-v(\emptyset) \]
+(Zwischenterme kürzen sich).
+\hnwords{Fügt man die Features nacheinander hinzu, ergeben die Beiträge zusammen genau den Weg von der Baseline $v(\emptyset)$ zur Vorhersage $v(N)$.} Mittelung über $\pi$ ändert das nicht: $\sum_j\varphi_j=v(N)-v(\emptyset)=f(x)-\E[f(X)]$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Linear-SHAP}
+$f(x)=w\T x+b$, unabhängige Features, ($w$ Koeffizienten, $b$ Achsenabschnitt, $\E x_j$ Mittel von Feature $j$) $v(S)=\E[f\mid x_S]=\sum_{j\in S}w_jx_j+\sum_{j\notin S}w_j\E x_j+b$. Grenzbeitrag von $j$ ist \emph{unabhängig von $S$}:
+\[ v(S\cup j)-v(S)=w_j(x_j-\E x_j)\;\Rightarrow\;\varphi_j=w_j\,(x_j-\E x_j) \]
+Für lineare Modelle ist SHAP also Koeffizient $\times$ Abweichung vom Mittel.
+\hnwords{Ein Feature trägt so viel bei, wie sein Wert vom Durchschnitt abweicht, verstärkt durch den Koeffizienten.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{4}{KernelSHAP \& Aufwand}
+\hnleg{$z'\in\{0,1\}^n$ Koalitionsvektor (1: Feature bekannt), $|z'|$ Anzahl bekannter Features, $\binom n{|z'|}$ Binomialkoeffizient, $\pi(z')$ Gewicht.}
+Exakt: $2^n$ Koalitionen. \textbf{KernelSHAP}: gewichtete lineare Regression über Koalitionen $z'\in\{0,1\}^n$ mit dem \emph{Shapley-Kern}
+\[ \pi(z')=\frac{n-1}{\binom{n}{|z'|}\,|z'|\,(n-|z'|)} \]
+Die Regressionskoeffizienten sind dann die $\varphi_j$. \textbf{TreeSHAP}: nutzt die Baumstruktur (polynomial). Fehlende Features: \emph{interventional} (Hintergrunddaten, Standard) oder \emph{konditional} (mit Korrelation, schwer zu schätzen); der Hintergrund bestimmt $\varphi_0$.
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: Linear-SHAP}
+$f(x)=2x_1-x_2+3$ (Modell), $\E X=(1,2)$ (Mittelwerte der Features), $x=(3,1)$ (zu erklärende Instanz), $\varphi_j$ Beitrag von Feature $j$.\\
+\hnsol\ Baseline $\varphi_0=f(\E X)=2-2+3=3$.\\
+$\varphi_1=2\,(3-1)=\ora{4}$,\;$\varphi_2=-1\,(1-2)=\ora{+1}$.\\
+$3+4+1=8=f(x)$ \hlm{(Additivität)}. Beide Beiträge positiv: $x_2=1$ liegt unter dem Mittel, das Minuszeichen kehrt den Effekt um.
+\end{hnex}
+%
+\hnsnip[hnorange]{np_shapley}{Shapley-Werte exakt durch Aufzählen aller Reihenfolgen}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Warum ist die Summe der Shapley-Werte gleich $v(N)-v(\emptyset)$?}{Innerhalb jeder Reihenfolge ist die Summe der Grenzbeiträge eine Teleskopsumme; der Mittelwert über Reihenfolgen erhält das.}{Wie sieht SHAP für ein lineares Modell aus?}{$\varphi_j=w_j(x_j-\E x_j)$.}{Warum ist exakte Berechnung teuer?}{$2^n$ Koalitionen bzw.\ $n!$ Reihenfolgen; deshalb TreeSHAP/KernelSHAP.}
+\end{hnp}
+%
+\end{hngrid}

@@ -1,0 +1,63 @@
+\hnheader[Jensen, ELBO, Monotonie und der M-Schritt des Gauß-Gemischs -- mit Code, der die Log-Likelihood steigen lässt.][Alle Schätzer sind Maximum Likelihood mit Nebenbedingungen]{EM-Algorithmus:}{Vertiefung}{Herleitung und Code}
+\hnsrc{main\_notes.pdf Kap.\ 11 (EM, Jensen, ELBO), notes/cs229-notes8.pdf; Schritte ergänzt; Code: code/sk\_gmm.py (real ausgeführt)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnorange]{1}{Jensen $\Rightarrow$ ELBO}
+\hnleg{$x$ Beobachtung, $z$ verborgene Variable (z.\,B.\ Cluster), $\theta$ Parameter, $Q(z)$ frei gewählte Verteilung über $z$, $\E_{z\sim Q}$ Erwartung darüber, ELBO untere Schranke für $\log p(x;\theta)$.}
+\hnwords{Der Logarithmus einer Summe ist schwer zu maximieren. Jensen liefert eine handliche untere Schranke: die Summe steht dann außerhalb des Logarithmus.}
+Beliebiges $Q(z)$ mit $\sum_zQ=1$; $\log$ ist konkav ($\E f(X)\le f(\E X)$):
+\begin{align*}
+\log p(x;\theta)&=\log\sum_zQ(z)\frac{p(x,z;\theta)}{Q(z)}=\log\E_{z\sim Q}\Bigl[\tfrac{p(x,z;\theta)}{Q(z)}\Bigr]\\
+&\ge\E_{z\sim Q}\Bigl[\log\tfrac{p(x,z;\theta)}{Q(z)}\Bigr]=\mathrm{ELBO}(Q,\theta)&&\why{Jensen}
+\end{align*}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnpurple]{2}{Wann ist die Schranke scharf?}
+\[ \log p(x;\theta)=\mathrm{ELBO}(Q,\theta)+\mathrm{KL}\bigl(Q(z)\,\|\,p(z|x;\theta)\bigr) \]
+\hnleg{KL Kullback--Leibler-Divergenz (Abstand zweier Verteilungen, immer $\ge0$), $p(z|x;\theta)$ Posterior der verborgenen Variablen.}
+KL $\ge0$, $=0$ genau für $Q(z)=p(z|x;\theta)$: \hlt{E-Schritt}. (Gleichheit in Jensen: der Quotient $\frac{p(x,z)}{Q(z)}=p(x)$ ist konstant in $z$ genau dann, wenn $Q\propto p(x,z)$, also $Q=p(z|x)$.)
+\hnwords{Die Lücke zwischen $\log p$ und ELBO ist genau die KL. Wählt man $Q$ als Posterior, ist die Lücke null.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{3}{Warum EM nie schlechter wird}
+\hnleg{$\ell(\theta)=\log p(x;\theta)$ Log-Likelihood, $t$ Iteration, $Q_t$ Verteilung aus dem E-Schritt von Iteration $t$.}
+\begin{align*}
+\ell(\theta_t)&=\mathrm{ELBO}(Q_t,\theta_t)&&\why{E-Schritt: scharf}\\
+&\le\mathrm{ELBO}(Q_t,\theta_{t+1})&&\why{M-Schritt maximiert in $\theta$}\\
+&\le\ell(\theta_{t+1})&&\why{ELBO ist immer eine untere Schranke}
+\end{align*}
+$\ell(\theta_t)$ steigt monoton; Konvergenz zu einem \emph{lokalen} Maximum.
+\hnwords{E-Schritt legt die Schranke genau an die Kurve an, M-Schritt hebt sie, und die Schranke liegt nie über der Kurve: der Wert kann nicht sinken.}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{4}{M-Schritt für Gauß-Gemische}
+\hnleg{$\gamma_{ik}=Q(z_i{=}k)$ Verantwortung von Komponente $k$ für Punkt $i$, $\phi_k$ Mischgewicht, $\mu_k,\Sigma_k$ Mittel und Kovarianz von Komponente $k$, $\lambda$ Lagrange-Multiplikator für $\sum_k\phi_k=1$.}
+Zu maximieren: $\sum_{i,k}\gamma_{ik}\bigl[\log\phi_k+\log\N(x_i;\mu_k,\Sigma_k)\bigr]$.
+\begin{align*}
+\nabla_{\mu_k}&=\textstyle\sum_i\gamma_{ik}\Sigma_k^{-1}(x_i-\mu_k)=0\;\Rightarrow\;\mu_k=\frac{\sum_i\gamma_{ik}x_i}{\sum_i\gamma_{ik}}\\
+\mathcal L_\phi&=\textstyle\sum_{i,k}\gamma_{ik}\log\phi_k-\lambda(\sum_k\phi_k-1)\;\Rightarrow\;\frac{\sum_i\gamma_{ik}}{\phi_k}=\lambda\\
+&\Rightarrow\;\phi_k=\tfrac1n\textstyle\sum_i\gamma_{ik}\quad(\text{da }\sum_{i,k}\gamma_{ik}=n)
+\end{align*}
+\hnwords{Der M-Schritt ist eine gewichtete Maximum-Likelihood-Schätzung: Mittelwert und Anteile, jeweils mit den Verantwortungen gewichtet.}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=6]{Beispiel: die Likelihood steigt}
+Daten $x=(0,1,4)$, $\sigma=1$. Vor: $\mu=(0,4)$, $\phi=(0.5,0.5)$. Nach einer Iteration: $\mu=(0.50,3.95)$, $\phi=(0.66,0.34)$.\\
+\hnsol\ $\ell_{\text{vor}}\approx\ora{-5.32}$ $\to$ $\ell_{\text{nach}}\approx\ora{-4.91}$ (maschinell berechnet): \hlm{Log-Likelihood steigt}, wie der Beweis oben verlangt.
+\end{hnex}
+%
+\hnsnip[hnorange]{sk_gmm}{EM für ein Gauß-Gemisch: die Log-Likelihood steigt monoton}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnteal]{5}{Lesart der Ausgabe}
+Die Log-Likelihood steigt in jeder Iteration (\texttt{steigt: True}) -- das beweist die Herleitung oben: E-Schritt macht die ELBO scharf, M-Schritt hebt sie, ELBO $\le\log p$. Der Anstieg ist nicht gleichmäßig (langsam bei Iteration 1--5, dann schneller); EM konvergiert zu einem \emph{lokalen} Maximum, die Startwerte (\texttt{init\_params}) entscheiden.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das herleiten?}
+\hnquiz{Welche Ungleichung liefert die ELBO?}{Jensen für den konkaven $\log$.}{Warum ist $Q=p(z|x)$ die beste Wahl im E-Schritt?}{Dann verschwindet der KL-Term: ELBO $=\log p(x;\theta)$.}{Wie erhält man $\phi_k$ im M-Schritt?}{Lagrange mit $\sum\phi_k=1$: $\phi_k=\frac1n\sum_i\gamma_{ik}$.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Rate klug, schätze neu -- und die Likelihood kann nicht sinken.“
+\end{hnbanner}
+\end{hngrid}

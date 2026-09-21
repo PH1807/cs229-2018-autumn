@@ -1,0 +1,104 @@
+\hnheader[Der 0/1-Verlust ist nicht optimierbar -- also nutzen wir konvexe Ersatzverluste.][Margin $z=y\,\theta\T x$: $z>0$ heißt richtig klassifiziert!]{Verlust-}{funktionen}{Konvexe Ersatzverluste (Surrogate Losses)}
+\hnsrc{extra-notes/loss-functions.pdf und extra-notes/representer-function.pdf (J.\ Duchi)}
+
+\begin{hngrid}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{1}{Der Margin}
+Für $y\in\{-1,+1\}$ und $\hat y=\theta\T x$ ist $z=y\,\theta\T x$ der \hlt{Margin}: $z>0$ richtig, $z<0$ falsch; $|z|$ misst die Sicherheit. Empirisches Risiko: $J(\theta)=\frac1n\sum_i\phi(y^{(i)}\theta\T x^{(i)})$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnpurple]{2}{Problem: 0/1-Verlust}
+$\phi_{01}(z)=\I\{z\le0\}$ zählt Fehler, ist aber unstetig, nicht konvex und NP-hart zu minimieren.\\
+Wunsch: $\phi$ konvex, stetig, $\phi(z)\to0$ für $z\to\infty$, $\phi(z)\to\infty$ für $z\to-\infty$.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{3}{Skizze: Verluste über $z$}
+\centering
+\begin{tikzpicture}[x=.95cm,y=.66cm,>=Stealth]
+  \draw[->,hnnavy] (-2.2,0)--(3.2,0) node[right,font=\tiny]{$z$};
+  \draw[->,hnnavy] (0,-.1)--(0,4.3);
+  \draw[hnnavy,thick] (-2.2,1)--(0,1); \draw[hnnavy,thick] (0,0)--(3,0); \draw[hnnavy,dotted] (0,0)--(0,1);
+  \draw[hnorange,thick,domain=-2.2:3,samples=50] plot(\x,{ln(1+exp(-\x))/ln(2)});
+  \draw[hnpurple,thick] (-2.2,3.2)--(1,0)--(3,0);
+  \draw[hnrose,thick,domain=-1.1:3,samples=50] plot(\x,{exp(-\x)});
+  \node[font=\tiny,hnnavy] at (-1.6,1.4) {0/1};
+  \node[font=\tiny,hnorange] at (-1.7,2.55) {logistisch};
+  \node[font=\tiny,hnpurple] at (-1.3,3.5) {Hinge};
+  \node[font=\tiny,hnrose] at (-.35,3.7) {exp};
+\end{tikzpicture}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnnavy]{4}{Drei Verluste, drei Verfahren}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{2.0cm}p{2.8cm}p{3.6cm}@{}}
+\hline
+\textbf{Verlust}&$\phi(z)$&\textbf{Verfahren}\\\hline
+Logistisch&$\log(1+e^{-z})$&Logistische Regression\\
+Hinge&$\max(1-z,0)$&Support Vector Machine\\
+Exponentiell&$e^{-z}$&AdaBoost\\\hline
+\end{tabular}
+\\[3pt]
+\hlt{Verbindendes Prinzip:} alle minimieren $\frac1n\sum\phi(y\theta\T x)$ -- nur $\phi$ unterscheidet sich; alle sind konvexe obere Schranken des 0/1-Verlusts.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=3,acc=hngreen]{5}{Generisches Training}
+\begin{pcode}[ERM mit Ersatzverlust]
+\kw{init} $\theta\leftarrow0$\\
+\kw{repeat}: wähle Beispiel $(x_i,y_i)$\\
+\hii $z\leftarrow y_i\,\theta^{\top}x_i$\\
+\hii $g\leftarrow\phi'(z)\cdot y_i\,x_i$\\
+\hii $\theta\leftarrow\theta-\alpha\,g$\\
+\cm{\# $\alpha$: Lernrate, $\phi'$: Ableitung; logistisch $-1/(1+e^{z})$}\\
+\cm{\# Hinge: $-1$ falls $z<1$, sonst $0$ (Subgradient)}\\
+\cm{\# exp: $-e^{-z}$}
+\end{pcode}
+\end{hnp}
+%
+\begin{hnex}[raster multicolumn=3]{Beispiel: Verluste bei drei Margins}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}c|cccc@{}}
+$z$&0/1&logist.&Hinge&exp\\\hline
+$3$&$0$&$0.05$&$0$&$0.05$\\
+$0.5$&$0$&$0.47$&$0.5$&$0.61$\\
+$-1$&$1$&$1.31$&$2$&$2.72$\\
+\end{tabular}\\[2pt]
+Selbst \emph{richtig} klassifizierte Punkte mit kleinem Margin ($z=0.5$) werden noch bestraft $\Rightarrow$ Ansporn, den Margin zu vergrößern.
+\end{hnex}
+%
+\begin{hnp}[raster multicolumn=3,acc=hnrose]{6}{Verallgemeinerte Verluste}
+Allgemein: $L(\theta\T x,y)$ ($z$: Score, $k$: Anzahl Klassen). Regression: $\frac12(z-y)^2$. Binär: $\log(1+e^{-yz})$. Multiklasse mit $\Theta=[\theta_1\cdots\theta_k]$:
+\[ L(\Theta\T x,y)=\log\sum_{i=1}^{k}e^{x\T(\theta_i-\theta_y)} \]
+(Cross-Entropy/Softmax; $\theta_y$: Parameter der wahren Klasse, $\Theta$: alle Klassenparameter als Spalten). Mit konvexem $L$ und $\ell_2$-Regularisierung gilt das Representer-Theorem.
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hngreen]{7}{Wann welcher Verlust?}
+\begin{itemize}
+\item Wahrscheinlichkeiten nötig $\to$ logistisch
+\item Margin/Sparsität $\to$ Hinge
+\item Boosting $\to$ exponentiell (ausreißeranfällig)
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnorange]{8}{Key Takeaways}
+\begin{hnchk}
+\item Margin $z=y\theta\T x$
+\item 0/1 nicht optimierbar $\Rightarrow$ Surrogat
+\item logistisch = LogReg, Hinge = SVM, exp = AdaBoost
+\end{hnchk}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=2,acc=hnteal]{9}{Querverweise}
+\begin{itemize}
+\item Logistische Regression, SVM, Ensembles
+\item Praktische Aufgabe: \texttt{p01\_lr.py} (Aufgabenblatt 2) nutzt genau diese $\pm1$-Notation
+\end{itemize}
+\end{hnp}
+%
+\begin{hnp}[raster multicolumn=6,acc=hnpurple,colback=hnlilac!30]{?}{Selbsttest: kannst du das erklären?}
+\hnquiz{Warum nicht den 0/1-Verlust minimieren?}{Unstetig, nichtkonvex, NP-hart.}{Welcher Verlust gehört zu SVM, AdaBoost, LogReg?}{Hinge, exponentiell, logistisch.}{Was ist der Margin?}{$z=y\theta\T x$: $z>0$ richtig, $|z|$ Sicherheit.}
+\end{hnp}
+%
+\begin{hnbanner}[raster multicolumn=6]
+„Optimiere, was du optimieren kannst -- und hoffe, dass es mit dem zusammenfällt, was du willst.“
+\end{hnbanner}
+\end{hngrid}
